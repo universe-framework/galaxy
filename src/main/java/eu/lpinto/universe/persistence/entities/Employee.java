@@ -14,7 +14,7 @@ public class Employee extends Person implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String externalID;
+    private Long externalID;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Organization organization;
@@ -33,14 +33,14 @@ public class Employee extends Person implements Serializable {
         super(id);
     }
 
-    public Employee(final String externalID, final Organization organization, final WorkerProfile profile) {
+    public Employee(final Long externalID, final Organization organization, final WorkerProfile profile) {
         super();
         this.externalID = externalID;
         this.organization = organization;
         this.profile = profile;
     }
 
-    public Employee(final String externalID, final Organization organization, final WorkerProfile profile,
+    public Employee(final Long externalID, final Organization organization, final WorkerProfile profile,
                     final Long id, final String name, final Calendar created, final Calendar updated) {
 
         this.externalID = externalID;
@@ -48,7 +48,7 @@ public class Employee extends Person implements Serializable {
         this.profile = profile;
     }
 
-    public Employee(String externalID, Organization organization, WorkerProfile profile, String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public Employee(Long externalID, Organization organization, WorkerProfile profile, String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(email, phone, mobilePhone, nif, name, creator, created, updater, updated, id);
         this.externalID = externalID;
         this.organization = organization;
@@ -58,11 +58,11 @@ public class Employee extends Person implements Serializable {
     /*
      * Getters/Setters
      */
-    public String getExternalID() {
+    public Long getExternalID() {
         return externalID;
     }
 
-    public void setExternalID(String externalID) {
+    public void setExternalID(Long externalID) {
         this.externalID = externalID;
     }
 
