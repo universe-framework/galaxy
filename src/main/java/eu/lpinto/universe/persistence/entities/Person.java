@@ -6,13 +6,14 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 
 /**
- * A person is a real person. This means it can represent an application user an
- * animal owner or shelter worker...
+ * A person is a real person. This means it can represent an application user an animal owner or shelter worker...
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @Entity
 @Table(name = "Person")
+@NamedQueries({
+    @NamedQuery(name = "Person.findAllPhones", query = "SELECT phone FROM Person phone")})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Person extends AbstractEntity implements Serializable {
 

@@ -43,7 +43,7 @@ public class PersonController extends AbstractControllerCRUD<Person> {
             try {
                 savedPhones = facade.phones();
             } catch (Exception ex) {
-                throw new IllegalArgumentException("Error in findAllPhones querry");
+                throw new IllegalArgumentException("Error in findAllPhones query");
             }
 
             if (number != null) {
