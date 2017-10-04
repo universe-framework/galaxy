@@ -64,7 +64,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
         return new Employee(
                 entity.getExternalID(),
                 OrganizationDTS.T.toDomain(entity.getOrganization()),
-                entity.getRole() == null ? null : EmployeeProfile.values()[entity.getRole()],
+                entity.getProfile() == null ? null : EmployeeProfile.values()[entity.getProfile()],
                 entity.getEmail(),
                 entity.getPhone(),
                 entity.getMobilePhone(),

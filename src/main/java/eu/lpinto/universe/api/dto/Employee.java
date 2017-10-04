@@ -13,7 +13,7 @@ public class Employee extends Person {
 
     private Long externalID;
     private Long organization;
-    private Integer role;
+    private Integer profile;
 
     /*
      * Constructors
@@ -25,18 +25,18 @@ public class Employee extends Person {
         super(id);
     }
 
-    public Employee(Long externalID, Long organization, Integer role, String name, Long id) {
+    public Employee(Long externalID, Long organization, Integer profile, String name, Long id) {
         super(name, id);
         this.externalID = externalID;
         this.organization = organization;
-        this.role = role;
+        this.profile = profile;
     }
 
-    public Employee(Long externalID, Long organization, Integer role, String email, String phone, String mobilePhone, String nif, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public Employee(Long externalID, Long organization, Integer profile, String email, String phone, String mobilePhone, String nif, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(email, phone, mobilePhone, nif, name, creator, created, updater, updated, id);
         this.externalID = externalID;
         this.organization = organization;
-        this.role = role;
+        this.profile = profile;
     }
 
     /*
@@ -58,11 +58,11 @@ public class Employee extends Person {
         this.organization = organization;
     }
 
-    public Integer getRole() {
-        return role;
+    public Integer getProfile() {
+        return profile;
     }
 
-    public void setRole(Integer role) {
-        this.role = role;
+    public void setProfile(Integer profile) {
+        this.profile = profile;
     }
 }
