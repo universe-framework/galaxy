@@ -97,7 +97,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             throw new PermissionDeniedException();
         }
 
-        if (entity instanceof AbstractEntity) {
+        if (userID != null && entity instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
             abstractEntity.setCreator(new User(userID));
         }
