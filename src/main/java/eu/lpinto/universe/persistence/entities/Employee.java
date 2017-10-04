@@ -20,7 +20,7 @@ public class Employee extends Person implements Serializable {
     private Organization organization;
 
     @Enumerated(EnumType.ORDINAL)
-    private WorkerProfile profile;
+    private EmployeeProfile profile;
 
     /*
      * Constructors
@@ -33,14 +33,14 @@ public class Employee extends Person implements Serializable {
         super(id);
     }
 
-    public Employee(final Long externalID, final Organization organization, final WorkerProfile profile) {
+    public Employee(final Long externalID, final Organization organization, final EmployeeProfile profile) {
         super();
         this.externalID = externalID;
         this.organization = organization;
         this.profile = profile;
     }
 
-    public Employee(final Long externalID, final Organization organization, final WorkerProfile profile,
+    public Employee(final Long externalID, final Organization organization, final EmployeeProfile profile,
                     final Long id, final String name, final Calendar created, final Calendar updated) {
 
         this.externalID = externalID;
@@ -48,7 +48,7 @@ public class Employee extends Person implements Serializable {
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Organization organization, WorkerProfile profile, String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public Employee(Long externalID, Organization organization, EmployeeProfile profile, String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(email, phone, mobilePhone, nif, name, creator, created, updater, updated, id);
         this.externalID = externalID;
         this.organization = organization;
@@ -76,11 +76,11 @@ public class Employee extends Person implements Serializable {
         this.organization = organization;
     }
 
-    public WorkerProfile getProfile() {
+    public EmployeeProfile getProfile() {
         return profile;
     }
 
-    public void setProfile(final WorkerProfile profile) {
+    public void setProfile(final EmployeeProfile profile) {
         assertNotNull(profile);
 
         this.profile = profile;

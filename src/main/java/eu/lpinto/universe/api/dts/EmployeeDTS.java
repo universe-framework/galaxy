@@ -1,7 +1,7 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
+import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 
 /**
  *
@@ -64,7 +64,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
         return new Employee(
                 entity.getExternalID(),
                 OrganizationDTS.T.toDomain(entity.getOrganization()),
-                entity.getRole() == null ? null : WorkerProfile.values()[entity.getRole()],
+                entity.getRole() == null ? null : EmployeeProfile.values()[entity.getRole()],
                 entity.getEmail(),
                 entity.getPhone(),
                 entity.getMobilePhone(),

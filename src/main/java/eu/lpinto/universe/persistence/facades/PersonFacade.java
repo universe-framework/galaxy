@@ -1,7 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.persistence.entities.Person;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
+import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,9 +139,9 @@ public class PersonFacade extends AbstractFacade<Person> {
     }
 
     private List<Person> getByOrganizationAndProfiles(final Long clinicID, final String profile) {
-        List<WorkerProfile> profiles;
+        List<EmployeeProfile> profiles;
         if ("staff".equals(profile)) {
-            profiles = Arrays.asList(WorkerProfile.ADMIN, WorkerProfile.WORKER);
+            profiles = Arrays.asList(EmployeeProfile.ADMIN, EmployeeProfile.WORKER);
 
         } else {
             profiles = new ArrayList<>(0);

@@ -3,7 +3,7 @@ package eu.lpinto.universe.persistence.facades;
 import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Person;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
+import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -154,9 +154,9 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
     }
 
     private List<Employee> getByOrganizationAndProfiles(final Long organizationID, final String profile) {
-        List<WorkerProfile> profiles;
+        List<EmployeeProfile> profiles;
         if ("staff".equals(profile)) {
-            profiles = Arrays.asList(WorkerProfile.ADMIN, WorkerProfile.WORKER);
+            profiles = Arrays.asList(EmployeeProfile.ADMIN, EmployeeProfile.WORKER);
 
         } else {
             profiles = new ArrayList<>(0);
