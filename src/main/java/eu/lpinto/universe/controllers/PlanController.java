@@ -20,7 +20,7 @@ public class PlanController extends AbstractControllerCRUD<Plan> {
     }
 
     @Override
-    protected PlanFacade getFacade() {
+    public PlanFacade getFacade() {
         return facade;
     }
 }

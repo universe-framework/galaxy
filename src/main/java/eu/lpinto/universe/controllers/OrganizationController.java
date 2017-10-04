@@ -21,7 +21,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     }
 
     @Override
-    protected OrganizationFacade getFacade() {
+    public OrganizationFacade getFacade() {
         return facade;
     }
 }

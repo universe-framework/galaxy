@@ -20,7 +20,7 @@ public class FeatureController extends AbstractControllerCRUD<Feature> {
     }
 
     @Override
-    protected FeatureFacade getFacade() {
+    public FeatureFacade getFacade() {
         return facade;
     }
 }

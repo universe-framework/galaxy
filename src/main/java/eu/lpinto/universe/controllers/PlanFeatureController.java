@@ -21,7 +21,7 @@ public class PlanFeatureController extends AbstractControllerCRUD<PlanFeature> {
     }
 
     @Override
-    protected AbstractFacade<PlanFeature> getFacade() {
+    public AbstractFacade<PlanFeature> getFacade() {
         return facade;
     }
 }

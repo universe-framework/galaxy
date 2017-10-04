@@ -42,7 +42,8 @@ public class PersonController extends AbstractControllerCRUD<Person> {
 
             try {
                 savedPhones = facade.phones();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 throw new IllegalArgumentException("Error in findAllPhones query");
             }
 
@@ -72,14 +73,15 @@ public class PersonController extends AbstractControllerCRUD<Person> {
              */
             return personPhone;
 
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             throw new AssertionError("Error in search");
         }
     }
 
     @Override
-    protected AbstractFacade<Person> getFacade() {
+    public AbstractFacade<Person> getFacade() {
         return facade;
     }
 

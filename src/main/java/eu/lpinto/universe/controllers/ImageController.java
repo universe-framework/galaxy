@@ -68,7 +68,7 @@ public class ImageController extends AbstractControllerCRUD<Image> {
     }
 
     @Override
-    protected AbstractFacade<Image> getFacade() {
+    public AbstractFacade<Image> getFacade() {
         return facade;
     }
 }

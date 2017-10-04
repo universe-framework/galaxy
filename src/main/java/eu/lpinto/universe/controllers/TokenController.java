@@ -75,7 +75,7 @@ public class TokenController {
         return session.getUser();
     }
 
-    protected TokenFacade getFacade() {
+    public TokenFacade getFacade() {
         return facade;
     }
 }

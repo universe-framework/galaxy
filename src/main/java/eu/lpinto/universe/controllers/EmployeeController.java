@@ -21,7 +21,7 @@ public class EmployeeController extends AbstractControllerCRUD<Employee> {
     }
 
     @Override
-    protected EmployeeFacade getFacade() {
+    public EmployeeFacade getFacade() {
         return facade;
     }
 }
