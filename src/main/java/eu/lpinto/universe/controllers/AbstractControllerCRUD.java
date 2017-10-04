@@ -44,14 +44,15 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         try {
-            return doFind(options);
+            return doFind(userID, options);
 
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
             throw internalError(ex);
         }
     }
 
-    public List<E> doFind(final Map<String, Object> options) throws PreConditionException {
+    public List<E> doFind(final Long userID, final Map<String, Object> options) throws PreConditionException {
         return getFacade().find(options);
     }
 
@@ -74,7 +75,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             if (savedEntity == null) {
                 throw new UnknownIdException(entityName, id);
             }
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
             throw internalError(ex);
         }
 
@@ -110,7 +112,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         try {
             doCreate(entity, options);
             return entity;
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
             throw internalError(ex);
         }
     }
@@ -149,7 +152,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         try {
             doUpdate(entity);
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
 
             throw internalError(ex);
         }
@@ -183,7 +187,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         try {
             doDelete(savedEntity);
-        } catch (RuntimeException ex) {
+        }
+        catch (RuntimeException ex) {
 
             throw internalError(ex);
         }
