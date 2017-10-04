@@ -32,10 +32,6 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     /*
      * Services
      */
-    public List<E> doFindAll() throws PermissionDeniedException {
-        return getFacade().findAll();
-    }
-
     @Override
     public final List<E> find(final Long userID, final Map<String, Object> options) throws PermissionDeniedException, PreConditionException {
         Boolean permission = assertPremissionsRead(userID, null);
