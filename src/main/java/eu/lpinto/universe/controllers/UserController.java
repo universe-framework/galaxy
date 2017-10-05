@@ -57,8 +57,7 @@ public class UserController extends AbstractControllerCRUD<User> {
         try {
             savedUser = facade.findByEmail(email);
 
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw internalError(ex);
         }
 
@@ -95,8 +94,7 @@ public class UserController extends AbstractControllerCRUD<User> {
         try {
             savedUser = facade.findByEmail(email);
 
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw internalError(ex);
         }
 
@@ -146,8 +144,7 @@ public class UserController extends AbstractControllerCRUD<User> {
                                   + "</p>";
 
             emailController.sendEmail(user.getEmail(), "password", emailMessage);
-        }
-        catch (UnknownIdException ex) {
+        } catch (UnknownIdException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -162,6 +159,9 @@ public class UserController extends AbstractControllerCRUD<User> {
         entity.setPerson(newPerson);
 
         super.doCreate(entity, options);
+
+        newPerson.setCreator(entity);
+        personFacade.edit(newPerson);
     }
 
     @Override
