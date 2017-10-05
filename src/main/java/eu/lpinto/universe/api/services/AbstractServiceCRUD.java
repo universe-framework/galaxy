@@ -12,6 +12,7 @@ import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Asynchronous;
@@ -52,16 +53,36 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public final void find(@Suspended final AsyncResponse asyncResponse,
                            final @Context UriInfo uriInfo,
                            final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
-        asyncResponse.resume(doFind(uriInfo, userID));
+
+        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        for (String key : queryParameters.keySet()) {
+            List<String> values = queryParameters.get(key);
+
+            if (values != null && !values.isEmpty() && values.size() == 1) {
+
+                try {
+                    Long l = Long.valueOf(values.get(0));
+                    options.put(key, l);
+                } catch (NumberFormatException ex) {
+                    options.put(key, values.get(0));
+                }
+            }
+        }
+
+        options.put("user", userID);
+
+        asyncResponse.resume(doFind(options));
     }
 
-    public Response doFind(final UriInfo uriInfo, final Long userID) throws PreConditionException {
+    public Response doFind(final Map<String, Object> options) throws PreConditionException {
         try {
-            return ok(dts.toAPI(getController().find(userID, null)));
+            return ok(dts.toAPI(getController().find((Long) options.get("user"), options)));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.debug(ex.getMessage(), ex);
-            return forbidden(userID);
+            return forbidden((Long) options.get("user"));
 
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
