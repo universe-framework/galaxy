@@ -1,6 +1,5 @@
 package eu.lpinto.universe.controllers;
 
-import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.persistence.entities.Person;
 import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import eu.lpinto.universe.persistence.facades.PersonFacade;
@@ -42,8 +41,7 @@ public class PersonController extends AbstractControllerCRUD<Person> {
 
             try {
                 savedPhones = facade.phones();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new IllegalArgumentException("Error in findAllPhones query");
             }
 
@@ -73,8 +71,7 @@ public class PersonController extends AbstractControllerCRUD<Person> {
              */
             return personPhone;
 
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             throw new AssertionError("Error in search");
         }
@@ -83,10 +80,5 @@ public class PersonController extends AbstractControllerCRUD<Person> {
     @Override
     public AbstractFacade<Person> getFacade() {
         return facade;
-    }
-
-    @Override
-    public Boolean assertPremissionsUpdateDelete(final Long userID, final Person person) throws PermissionDeniedException {
-        return userFacade.retrieve(userID).getPerson().equals(person);
     }
 }

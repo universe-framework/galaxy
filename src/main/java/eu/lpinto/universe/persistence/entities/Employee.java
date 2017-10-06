@@ -9,8 +9,8 @@ import javax.persistence.*;
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @Entity
-@Table(name = "Organization_Person")
-public class Employee extends Person implements Serializable {
+@Table(name = "Employee")
+public class Employee extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,6 +22,9 @@ public class Employee extends Person implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private EmployeeProfile profile;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private User user;
+
     /*
      * Constructors
      */
@@ -31,6 +34,12 @@ public class Employee extends Person implements Serializable {
 
     public Employee(final Long id) {
         super(id);
+    }
+
+    public Employee(final Organization organization, final EmployeeProfile profile, final User user) {
+        this.organization = organization;
+        this.profile = profile;
+        this.user = user;
     }
 
     public Employee(final Long externalID, final Organization organization, final EmployeeProfile profile) {
@@ -48,11 +57,12 @@ public class Employee extends Person implements Serializable {
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Organization organization, EmployeeProfile profile, String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
-        super(email, phone, mobilePhone, nif, name, creator, created, updater, updated, id);
+    public Employee(Long externalID, Organization organization, EmployeeProfile profile, User user, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+        super(name, creator, created, updater, updated, id);
         this.externalID = externalID;
         this.organization = organization;
         this.profile = profile;
+        this.user = user;
     }
 
     /*
@@ -84,5 +94,13 @@ public class Employee extends Person implements Serializable {
         assertNotNull(profile);
 
         this.profile = profile;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

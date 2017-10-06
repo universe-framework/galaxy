@@ -33,11 +33,10 @@ public class User extends AbstractEntity implements Serializable {
     @Size(min = 1, max = 128, message = "Invalid password size")
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Person person;
-
     @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Token> tokens;
+
+    private List<Employee> employees;
 
     /*
      * Contructors
@@ -60,15 +59,13 @@ public class User extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
-    public User(final String email, final String password, final Person person, final List<Token> tokens,
-                final Long id, final String name, final Calendar created, final Calendar updated) {
-        super(id, name, created, updated);
+    public User(String email, String password, List<Token> tokens, List<Employee> employees, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+        super(name, creator, created, updater, updated, id);
         this.email = email;
         this.password = password;
-        this.person = person;
         this.tokens = tokens;
+        this.employees = employees;
     }
-
 
     /*
      * Getters/Setters
@@ -93,19 +90,19 @@ public class User extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(final Person person) {
-        this.person = person;
-    }
-
     public List<Token> getTokens() {
         return tokens;
     }
 
     public void setTokens(final List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 }

@@ -1,9 +1,9 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.persistence.entities.Employee;
+import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Person;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,8 +51,8 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                 } else if (options.containsKey("profile")) {
                     return getByOrganizationAndProfiles((Long) options.get("organization"), options.get("profile").toString());
 
-                } else if (options.containsKey("person")) {
-                    return getByOrganizationAndPerson((Long) options.get("organization"), (Long) options.get("person"));
+                } else if (options.containsKey("user")) {
+                    return getByOrganizationAndUser((Long) options.get("organization"), (Long) options.get("user"));
 
                 } else {
                     return getByOrganization((Long) options.get("organization"));
@@ -174,11 +174,13 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         }
     }
 
-    private List<Employee> getByOrganizationAndPerson(final Long organizationID, final Long personID) {
+    private List<Employee> getByOrganizationAndUser(final Long organizationID, final Long userID) {
         try {
-            List<Employee> organizationPeople = getEntityManager().createQuery("SELECT employee FROM Employee employee WHERE  employee.organization.id = :organizationID AND employee.person.id = :personID", Employee.class)
+            List<Employee> organizationPeople = getEntityManager()
+                    .createQuery("SELECT employee FROM Employee employee"
+                                 + " WHERE employee.organization.id = :organizationID AND employee.user.id = :userID", Employee.class)
                     .setParameter("organizationID", organizationID)
-                    .setParameter("personID", personID)
+                    .setParameter("userID", userID)
                     .getResultList();
 
             return organizationPeople;

@@ -7,13 +7,14 @@ import java.util.Calendar;
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
-public class Employee extends Person {
+public class Employee extends AbstractDTO {
 
     private static final long serialVersionUID = 1L;
 
     private Long externalID;
     private Long organization;
     private Integer profile;
+    private Long user;
 
     /*
      * Constructors
@@ -32,11 +33,12 @@ public class Employee extends Person {
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Long organization, Integer profile, String email, String phone, String mobilePhone, String nif, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(email, phone, mobilePhone, nif, name, creator, created, updater, updated, id);
+    public Employee(Long externalID, Long organization, Integer profile, Long user, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+        super(name, creator, created, updater, updated, id);
         this.externalID = externalID;
         this.organization = organization;
         this.profile = profile;
+        this.user = user;
     }
 
     /*
@@ -64,5 +66,13 @@ public class Employee extends Person {
 
     public void setProfile(Integer profile) {
         this.profile = profile;
+    }
+
+    public Long getUser() {
+        return user;
+    }
+
+    public void setUser(Long user) {
+        this.user = user;
     }
 }

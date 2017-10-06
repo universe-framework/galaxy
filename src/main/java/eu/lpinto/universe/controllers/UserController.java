@@ -4,12 +4,10 @@ import eu.lpinto.universe.api.util.Digest;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.Person;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.PersonFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -147,21 +145,6 @@ public class UserController extends AbstractControllerCRUD<User> {
         } catch (UnknownIdException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    @Override
-    public void doCreate(User entity, final Map<String, Object> options) throws PreConditionException {
-
-        Person newPerson = new Person(entity.getName());
-        newPerson.setEmail(entity.getEmail());
-        personFacade.create(newPerson);
-
-        entity.setPerson(newPerson);
-
-        super.doCreate(entity, options);
-
-        newPerson.setCreator(entity);
-        personFacade.edit(newPerson);
     }
 
     @Override

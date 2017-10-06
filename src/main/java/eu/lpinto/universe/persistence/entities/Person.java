@@ -44,6 +44,14 @@ public class Person extends AbstractEntity implements Serializable {
         super(name);
     }
 
+    public Person(final Person person) {
+        super(person.getName(), person.getCreator(), person.getCreated(), person.getUpdater(), person.getUpdated(), person.getId());
+        this.email = person.email;
+        this.phone = person.phone;
+        this.mobilePhone = person.mobilePhone;
+        this.nif = person.nif;
+    }
+
     public Person(String email, String phone, String mobilePhone, String nif, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.email = email;

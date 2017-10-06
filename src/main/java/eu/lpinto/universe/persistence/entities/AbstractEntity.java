@@ -105,10 +105,12 @@ public abstract class AbstractEntity implements UniverseEntity {
     /*
      * Getters / Setters
      */
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(final Long id) {
         this.id = id;
     }

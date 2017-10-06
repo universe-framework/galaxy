@@ -17,7 +17,6 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
         return new eu.lpinto.universe.api.dto.User(
                 entity.getEmail(),
                 null, // passowrd is never released
-                PersonDTS.id(entity.getPerson()),
                 null, // tokens
                 entity.getName(),
                 AbstractDTS.id(entity.getCreator()),
@@ -47,7 +46,7 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
     @Override
     public User toDomain(eu.lpinto.universe.api.dto.User dto) {
         return new User(
-                dto.getEmail().toLowerCase(), Digest.getSHA(dto.getPassword()), PersonDTS.T.toDomain(dto.getPerson()), TokenDTS.T.toDomainIDs(dto.getTokens()),
-                dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());
+                dto.getEmail().toLowerCase(), Digest.getSHA(dto.getPassword()),
+                dto.getName());
     }
 }

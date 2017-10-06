@@ -49,6 +49,9 @@ public class Organization extends AbstractEntity implements Serializable {
                    @JoinColumn(name = "image_id", referencedColumnName = "id")})
     private List<Image> avatars;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+    private List<Employee> employees;
+
     /*
      * Constructors
      */
@@ -168,5 +171,13 @@ public class Organization extends AbstractEntity implements Serializable {
         }
 
         this.avatars.add(avatar);
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 }
