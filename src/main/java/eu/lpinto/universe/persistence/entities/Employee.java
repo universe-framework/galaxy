@@ -17,7 +17,7 @@ public class Employee extends AbstractEntity implements Serializable {
     private Long externalID;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    private Organization organization;
+    private Company company;
 
     @Enumerated(EnumType.ORDINAL)
     private EmployeeProfile profile;
@@ -36,31 +36,31 @@ public class Employee extends AbstractEntity implements Serializable {
         super(id);
     }
 
-    public Employee(final Organization organization, final EmployeeProfile profile, final User user) {
-        this.organization = organization;
+    public Employee(final Company company, final EmployeeProfile profile, final User user) {
+        this.company = company;
         this.profile = profile;
         this.user = user;
     }
 
-    public Employee(final Long externalID, final Organization organization, final EmployeeProfile profile) {
+    public Employee(final Long externalID, final Company company, final EmployeeProfile profile) {
         super();
         this.externalID = externalID;
-        this.organization = organization;
+        this.company = company;
         this.profile = profile;
     }
 
-    public Employee(final Long externalID, final Organization organization, final EmployeeProfile profile,
+    public Employee(final Long externalID, final Company company, final EmployeeProfile profile,
                     final Long id, final String name, final Calendar created, final Calendar updated) {
 
         this.externalID = externalID;
-        this.organization = organization;
+        this.company = company;
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Organization organization, EmployeeProfile profile, User user, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public Employee(Long externalID, Company company, EmployeeProfile profile, User user, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.externalID = externalID;
-        this.organization = organization;
+        this.company = company;
         this.profile = profile;
         this.user = user;
     }
@@ -76,14 +76,14 @@ public class Employee extends AbstractEntity implements Serializable {
         this.externalID = externalID;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setOrganization(final Organization organization) {
-        assertNotNull(organization);
+    public void setCompany(final Company company) {
+        assertNotNull(company);
 
-        this.organization = organization;
+        this.company = company;
     }
 
     public EmployeeProfile getProfile() {

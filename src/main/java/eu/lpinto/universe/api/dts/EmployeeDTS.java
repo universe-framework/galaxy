@@ -19,7 +19,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
         } else if (entity.isFull()) {
             return new eu.lpinto.universe.api.dto.Employee(
                     entity.getExternalID(),
-                    OrganizationDTS.id(entity.getOrganization()),
+                    CompanyDTS.id(entity.getCompany()),
                     entity.getProfile() == null ? null : entity.getProfile().ordinal(),
                     UserDTS.id(entity.getUser()),
                     entity.getName(),
@@ -32,7 +32,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
         } else {
             return new eu.lpinto.universe.api.dto.Employee(
                     entity.getExternalID(),
-                    OrganizationDTS.id(entity.getOrganization()),
+                    CompanyDTS.id(entity.getCompany()),
                     entity.getProfile() == null ? null : entity.getProfile().ordinal(),
                     UserDTS.id(entity.getUser()),
                     entity.getName(),
@@ -57,7 +57,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
     public Employee toDomain(eu.lpinto.universe.api.dto.Employee entity) {
         return new Employee(
                 entity.getExternalID(),
-                OrganizationDTS.T.toDomain(entity.getOrganization()),
+                CompanyDTS.T.toDomain(entity.getCompany()),
                 entity.getProfile() == null ? null : EmployeeProfile.values()[entity.getProfile()],
                 UserDTS.T.toDomain(entity.getUser()),
                 entity.getName(),

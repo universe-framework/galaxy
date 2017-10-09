@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -22,9 +21,6 @@ public class PersonFacade extends AbstractFacade<Person> {
 
     @PersistenceContext
     private EntityManager em;
-
-    @EJB
-    private OrganizationFacade organizationFacade;
 
     /*
      * Constructors
