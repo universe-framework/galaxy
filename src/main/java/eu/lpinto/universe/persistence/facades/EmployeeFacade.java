@@ -1,9 +1,9 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.api.dto.Person;
 import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Person;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +27,6 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
 
     @EJB
     private CompanyFacade companyFacade;
-
-    @EJB
-    private PersonFacade personFacade;
 
     /*
      * Constructors

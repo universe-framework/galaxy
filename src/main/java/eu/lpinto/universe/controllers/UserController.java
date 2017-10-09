@@ -5,7 +5,6 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.facades.PersonFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -23,8 +22,7 @@ public class UserController extends AbstractControllerCRUD<User> {
 
     @EJB
     private UserFacade facade;
-    @EJB
-    private PersonFacade personFacade;
+
     @EJB
     private EmailController emailController;
 
