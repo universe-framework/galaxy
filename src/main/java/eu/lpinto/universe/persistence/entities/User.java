@@ -36,6 +36,7 @@ public class User extends AbstractEntity implements Serializable {
     @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Token> tokens;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Employee> employees;
 
     /*
