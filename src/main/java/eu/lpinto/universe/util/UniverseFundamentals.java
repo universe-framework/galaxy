@@ -11,21 +11,27 @@ import java.util.Properties;
  */
 public final class UniverseFundamentals {
 
-    public static final String FILE_PATH = "universe.properties";
+    static public final String FILE_PATH = "universe.properties";
 
-    public static final String ENV;
-    public static final String HOST;
+    static public final String ENV;
+    static public final String HOST;
+
+    /* Email */
+    static public final String SENDER_ADDR;
+    static public final String SENDER_PASS;
+    static public final String SMTP_ADDR;
+    static public final Integer SMTP_PORT;
 
     /* Images (upload) */
-    public static final String AVATAR_FOLDER;
-    public static final String AVATAR_URL_PREFIX;
-    public static final String AVATAR_DEFAULT_FILE_NAME;
+    static public final String AVATAR_FOLDER;
+    static public final String AVATAR_URL_PREFIX;
+    static public final String AVATAR_DEFAULT_FILE_NAME;
 
     /* REST api */
-    public static final String APP_NAME;
-    public static final String REST_BASE_URI = "api";
-    public static final String REST_SERVICES_PACKAGE = "eu.lpinto.universe.api.services";
-    public static final String REST_FILTERS_PACKAGE = "eu.lpinto.universe.api.filters";
+    static public final String APP_NAME;
+    static public final String REST_BASE_URI = "api";
+    static public final String REST_SERVICES_PACKAGE = "eu.lpinto.universe.api.services";
+    static public final String REST_FILTERS_PACKAGE = "eu.lpinto.universe.api.filters";
 
     static {
         try (InputStream inputStream = UniverseFundamentals.class.getClassLoader().getResourceAsStream(FILE_PATH);) {
@@ -43,6 +49,12 @@ public final class UniverseFundamentals {
             if (APP_NAME == null) {
                 throw new AssertionError("Missing property: APP_NAME");
             }
+
+            /* Email */
+            SENDER_ADDR = properties.getProperty("email_addr");
+            SENDER_PASS = properties.getProperty("email_pass");
+            SMTP_ADDR = properties.getProperty("smtp");
+            SMTP_PORT = properties.getProperty("port") == null ? null : Integer.valueOf(properties.getProperty("port"));
 
             /*
              * Avatars
@@ -73,8 +85,8 @@ public final class UniverseFundamentals {
 
     public interface Enviroments {
 
-        public static final String DEV = "dev";
-        public static final String QA = "qa";
-        public static final String PROD = "prod";
+        static public final String DEV = "dev";
+        static public final String QA = "qa";
+        static public final String PROD = "prod";
     }
 }

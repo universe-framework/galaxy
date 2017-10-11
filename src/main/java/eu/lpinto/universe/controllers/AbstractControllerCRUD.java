@@ -7,7 +7,6 @@ import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.Facade;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +41,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         try {
             return doFind(userID, options);
 
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw internalError(ex);
         }
     }
@@ -71,8 +69,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             if (savedEntity == null) {
                 throw new UnknownIdException(entityName, id);
             }
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw internalError(ex);
         }
 
@@ -91,7 +88,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     }
 
     @Override
-    public final E create(final Long userID, final E entity) throws PreConditionException, PermissionDeniedException {
+    public final E create(final Long userID, final E entity, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         Boolean permission = assertPremissionsCreate(userID, entity);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
@@ -102,19 +99,15 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             abstractEntity.setCreator(new User(userID));
         }
 
-        Map<String, Object> options = new HashMap<>(1);
-        options.put("user", userID);
-
         try {
             doCreate(entity, options);
             return entity;
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw internalError(ex);
         }
     }
 
-    public void doCreate(final E entity, final Map<String, Object> options) throws PreConditionException {
+    public void doCreate(final E entity, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         getFacade().create(entity);
     }
 
@@ -148,8 +141,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         try {
             doUpdate(entity);
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
 
             throw internalError(ex);
         }
@@ -183,8 +175,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         try {
             doDelete(savedEntity);
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
 
             throw internalError(ex);
         }

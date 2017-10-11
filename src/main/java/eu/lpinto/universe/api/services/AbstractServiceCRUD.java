@@ -95,15 +95,37 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public final void create(@Suspended final AsyncResponse asyncResponse,
+                             final @Context UriInfo uriInfo,
                              final @HeaderParam("userID") Long userID,
                              final @HeaderParam("Accept-Language") String locale,
-                             final D dto) {
-        asyncResponse.resume(doCreate(userID, locale, dto));
+                             final D dto) throws UnknownIdException {
+
+        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        for (String key : queryParameters.keySet()) {
+            List<String> values = queryParameters.get(key);
+
+            if (values != null && !values.isEmpty() && values.size() == 1) {
+
+                try {
+                    Long l = Long.valueOf(values.get(0));
+                    options.put(key, l);
+                } catch (NumberFormatException ex) {
+                    options.put(key, values.get(0));
+                }
+            }
+        }
+
+        options.put("user", userID);
+        options.put("baseURI", uriInfo.getBaseUri());
+
+        asyncResponse.resume(doCreate(userID, dto, options));
     }
 
-    public Response doCreate(final Long userID, final String locale, final D dto) {
+    public Response doCreate(final Long userID, final D dto, final Map<String, Object> options) throws UnknownIdException {
         try {
-            return ok(dts.toAPI(getController().create(userID, dts.toDomain(dto))));
+            return ok(dts.toAPI(getController().create(userID, dts.toDomain(dto), options)));
 
         } catch (PreConditionException ex) {
             LOGGER.debug(ex.getMessage(), ex);

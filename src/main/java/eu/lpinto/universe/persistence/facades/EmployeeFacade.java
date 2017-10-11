@@ -76,20 +76,6 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
     }
 
     @Override
-    public void create(Employee entity) {
-        Long companyID = entity.getCompany().getId();
-
-        Company savedCompany = companyFacade.retrieve(companyID);
-        if (savedCompany == null) {
-            throw new IllegalArgumentException("There is no Company with that id");
-        }
-
-        entity.setName(savedCompany.getName() + "_" + entity.getName());
-
-        super.create(entity);
-    }
-
-    @Override
     public void edit(final Employee newEmployee
     ) {
         Employee savedEmployee = new Employee();

@@ -234,7 +234,7 @@ public class Images extends HttpServlet {
         Image newImage = new Image();
         newImage.setUrl(imageUrl);
         newImage.setName(name);
-        Image savedImage = imageController.create(userID, newImage);
+        Image savedImage = imageController.create(userID, newImage, null);
         return savedImage;
     }
 

@@ -1,5 +1,6 @@
 package eu.lpinto.universe.controllers;
 
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.Properties;
 import javax.ejb.Stateless;
 import javax.mail.Message;
@@ -19,13 +20,13 @@ import javax.mail.internet.MimeMessage;
 @Stateless
 public class EmailController {
 
-    private String senderEmail = "software@petuniversal.com";
-    private String senderPassword = "4fdbf14afa3a763f30b42e8ca7ab036b";
+    private String senderEmail = UniverseFundamentals.SENDER_ADDR;
+    private String senderPassword = UniverseFundamentals.SENDER_PASS;
     private String SMTP_SSL_TRUST = "*";
     private String IMAP_SSL_TRUST = "*";
     private Boolean SMTP_TLS = true;
-    private String SMTP_ADDR = "smtp.petuniversal.com";
-    private Integer SMTP_PORT = 587;
+    private String SMTP_ADDR = UniverseFundamentals.SMTP_ADDR;
+    private Integer SMTP_PORT = UniverseFundamentals.SMTP_PORT;
 
     private final Session session;
 
@@ -63,9 +64,7 @@ public class EmailController {
             message.setSubject(subject == null ? senderEmail.split("@")[1] : subject);
             message.setContent(emailMessage == null ? "" : emailMessage, "text/html; charset=UTF-8");
             Transport.send(message);
-        }
-
-        catch (MessagingException e) {
+        } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }
