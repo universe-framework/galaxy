@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 
 /**
  *
- * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
+ * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @Entity
 public class Invite extends AbstractEntity implements Serializable {

@@ -6,7 +6,6 @@ import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.entities.Invite;
 import eu.lpinto.universe.persistence.facades.InviteFacade;
-import java.net.URI;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -36,7 +35,13 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
     public void doCreate(Invite entity, Map<String, Object> options) throws PreConditionException, UnknownIdException, PermissionDeniedException {
         Long userID = (long) options.get("user");
         Company savedCompany = companyController.retrieve(userID, entity.getCompany().getId());
-        URI baseURI = ((URI) options.get("baseURI"));
+
+        String baseURI = ((String) options.get("appPath"));
+        String origin = (String) options.get("origin");
+
+        if (baseURI == null || origin == null) {
+            throw new PreConditionException("header", "missingOrigin");
+        }
 
         super.doCreate(entity, options);
 
@@ -45,7 +50,7 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         String emailMessage = "<h1>Olá " + entity.getName() + ",</h1>"
                               + "<h2>Damos-lhe as boas-vindas à comunidade Pet universal.</h2>\n"
                               + "<p>Recebeu um convite para se juntar à empresa: <b>" + savedCompany.getName() + "</b>.</p>\n"
-                              + "<p>Poderá criar uma conta acedendo a <a href=\"" + baseURI.getPath() + "/invited/" + code + " target=\"_blank\">" + baseURI.getPath() + "/invited/" + code + "</a>.</p>\n"
+                              + "<p>Poderá criar uma conta acedendo a <a href=\"" + baseURI + "/i/" + code + " target=\"_blank\">" + baseURI + "/i/" + code + "</a>.</p>\n"
                               + "<h2>Ajuda.</h2>\n"
                               + "<p>Poderá consultar ainda um conjunto de <a href=\"https://petuniversal.com/app/#/faq\" target=\"_blank\">questões frequentes</a> e um  <a href=\"https://petuniversal.com/app/#/manual\" target=\"_blank\">manual de utilizador</a> para esclarecimento de dúvidas sobre a plataforma.</p>\n"
                               + "<p>Agradecemos a confiança demonstrada no nosso produto e ficamos ao dispor para qualquer esclarecimento.</p>\n"

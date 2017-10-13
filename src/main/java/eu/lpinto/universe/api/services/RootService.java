@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  *
- * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
+ * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @Path("/")
 public class RootService {

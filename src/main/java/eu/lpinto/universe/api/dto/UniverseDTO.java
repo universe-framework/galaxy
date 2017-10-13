@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * UniverseDTO DTO - Data Transformation Object
  *
- * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
+ * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 public abstract class UniverseDTO implements Serializable {
 

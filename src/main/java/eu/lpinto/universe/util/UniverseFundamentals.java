@@ -33,6 +33,11 @@ public final class UniverseFundamentals {
     static public final String REST_SERVICES_PACKAGE = "eu.lpinto.universe.api.services";
     static public final String REST_FILTERS_PACKAGE = "eu.lpinto.universe.api.filters";
 
+    /*
+     * Errors
+     */
+    static public final String ERRORS_EMAIL_ADDR;
+
     static {
         try (InputStream inputStream = UniverseFundamentals.class.getClassLoader().getResourceAsStream(FILE_PATH);) {
 
@@ -73,6 +78,11 @@ public final class UniverseFundamentals {
             AVATAR_DEFAULT_FILE_NAME = defaultName;
 
             HOST = properties.getProperty("HOST");
+
+            /*
+             * Erroes
+             */
+            ERRORS_EMAIL_ADDR = properties.getProperty("errors_email_addr");
 
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
