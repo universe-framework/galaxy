@@ -2,7 +2,7 @@ package eu.lpinto.universe.controllers;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Image;
-import eu.lpinto.universe.persistence.entities.Organization;
+import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import eu.lpinto.universe.persistence.facades.ImageFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
@@ -37,7 +37,7 @@ public class ImageController extends AbstractControllerCRUD<Image> {
      */
     public String upload(final String filePath, final String folder) {
         if (UniverseFundamentals.ENV == null) {
-            return Organization.DEFAULT_IMG;
+            return Company.DEFAULT_IMG;
         }
 
         String[] subpath = filePath.split("/");

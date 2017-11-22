@@ -3,7 +3,7 @@ package eu.lpinto.universe.api.dto;
 import java.util.Calendar;
 
 /**
- * Represents the relation between and organization and a person.
+ * Represents the relation between and company and a person.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
@@ -12,7 +12,7 @@ public class Employee extends AbstractDTO {
     private static final long serialVersionUID = 1L;
 
     private Long externalID;
-    private Long organization;
+    private Long company;
     private Integer profile;
     private Long user;
 
@@ -26,17 +26,17 @@ public class Employee extends AbstractDTO {
         super(id);
     }
 
-    public Employee(Long externalID, Long organization, Integer profile, String name, Long id) {
+    public Employee(Long externalID, Long company, Integer profile, String name, Long id) {
         super(name, id);
         this.externalID = externalID;
-        this.organization = organization;
+        this.company = company;
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Long organization, Integer profile, Long user, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public Employee(Long externalID, Long company, Integer profile, Long user, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.externalID = externalID;
-        this.organization = organization;
+        this.company = company;
         this.profile = profile;
         this.user = user;
     }
@@ -52,12 +52,12 @@ public class Employee extends AbstractDTO {
         this.externalID = externalID;
     }
 
-    public Long getOrganization() {
-        return organization;
+    public Long getCompany() {
+        return company;
     }
 
-    public void setOrganization(Long organization) {
-        this.organization = organization;
+    public void setCompany(Long company) {
+        this.company = company;
     }
 
     public Integer getProfile() {

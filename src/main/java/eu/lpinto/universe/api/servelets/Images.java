@@ -1,13 +1,13 @@
 package eu.lpinto.universe.api.servelets;
 
+import eu.lpinto.universe.controllers.CompanyController;
 import eu.lpinto.universe.controllers.ImageController;
-import eu.lpinto.universe.controllers.OrganizationController;
-import eu.lpinto.universe.persistence.entities.Image;
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
+import eu.lpinto.universe.persistence.entities.Company;
+import eu.lpinto.universe.persistence.entities.Image;
+import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.*;
 import javax.ejb.EJB;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
+ * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @WebServlet(name = "images", urlPatterns = {"/images"})
 @MultipartConfig
@@ -50,7 +50,7 @@ public class Images extends HttpServlet {
     @EJB
     private ImageController imageController;
     @EJB
-    private OrganizationController organizationController;
+    private CompanyController companyController;
 
     /**
      * Returns a short description of the servlet.
@@ -181,7 +181,7 @@ public class Images extends HttpServlet {
             String[] destinations = destination.split("/");
 
             /*
-             * Update Organization
+             * Update Company
              */
             long id = Long.valueOf(destinations[destinations.length - 1]);
             String entityName = destinations[destinations.length - 2].toLowerCase();
@@ -190,13 +190,13 @@ public class Images extends HttpServlet {
                 Image savedImage;
 
                 switch (entityName) {
-                    case "organizations":
+                    case "companies":
                         savedImage = createImage(imageUrl, name, userID);
-                        Organization savedOrganization = organizationController.retrieve(userID, id);
-                        savedOrganization.addAvatar(savedImage);
-                        savedOrganization.setSelectedAvatar(savedImage);
+                        Company savedCompany = companyController.retrieve(userID, id);
+                        savedCompany.addAvatar(savedImage);
+                        savedCompany.setSelectedAvatar(savedImage);
 
-                        organizationController.update(userID, savedOrganization);
+                        companyController.update(userID, savedCompany);
                         break;
 
                     default:
@@ -234,7 +234,7 @@ public class Images extends HttpServlet {
         Image newImage = new Image();
         newImage.setUrl(imageUrl);
         newImage.setName(name);
-        Image savedImage = imageController.create(userID, newImage);
+        Image savedImage = imageController.create(userID, newImage, null);
         return savedImage;
     }
 

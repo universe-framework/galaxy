@@ -1,27 +1,24 @@
 package eu.lpinto.universe.api.dts;
 
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
+import eu.lpinto.universe.persistence.entities.Invite;
 
 /**
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
-public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dto.Employee> {
+public class InviteDTS extends AbstractDTS<Invite, eu.lpinto.universe.api.dto.Invite> {
 
-    public static final EmployeeDTS T = new EmployeeDTS();
+    public static final InviteDTS T = new InviteDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Employee toAPI(Employee entity) {
+    public eu.lpinto.universe.api.dto.Invite toAPI(Invite entity) {
         if (entity == null) {
             return null;
 
         } else if (entity.isFull()) {
-            return new eu.lpinto.universe.api.dto.Employee(
-                    entity.getExternalID(),
+            return new eu.lpinto.universe.api.dto.Invite(
                     CompanyDTS.id(entity.getCompany()),
-                    entity.getProfile() == null ? null : entity.getProfile().ordinal(),
-                    UserDTS.id(entity.getUser()),
+                    entity.getEmail(),
                     entity.getName(),
                     AbstractDTS.id(entity.getCreator()),
                     entity.getCreated(),
@@ -30,11 +27,9 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
                     entity.getId());
 
         } else {
-            return new eu.lpinto.universe.api.dto.Employee(
-                    entity.getExternalID(),
+            return new eu.lpinto.universe.api.dto.Invite(
                     CompanyDTS.id(entity.getCompany()),
-                    entity.getProfile() == null ? null : entity.getProfile().ordinal(),
-                    UserDTS.id(entity.getUser()),
+                    entity.getEmail(),
                     entity.getName(),
                     AbstractDTS.id(entity.getCreator()),
                     entity.getCreated(),
@@ -45,21 +40,19 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
     }
 
     @Override
-    public Employee toDomain(Long id) {
+    public Invite toDomain(Long id) {
         if (id == null) {
             return null;
         }
 
-        return new Employee(id);
+        return new Invite(id);
     }
 
     @Override
-    public Employee toDomain(eu.lpinto.universe.api.dto.Employee entity) {
-        return new Employee(
-                entity.getExternalID(),
+    public Invite toDomain(eu.lpinto.universe.api.dto.Invite entity) {
+        return new Invite(
                 CompanyDTS.T.toDomain(entity.getCompany()),
-                entity.getProfile() == null ? null : EmployeeProfile.values()[entity.getProfile()],
-                UserDTS.T.toDomain(entity.getUser()),
+                entity.getEmail(),
                 entity.getName(),
                 UserDTS.T.toDomain(entity.getCreator()),
                 entity.getCreated(),
