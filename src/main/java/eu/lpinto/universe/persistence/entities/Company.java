@@ -23,7 +23,7 @@ public class Company extends AbstractEntity implements Serializable {
     private String phone;
     private String facebook;
     private String email;
-    private String businessHours;
+    private String vatNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selectedAvatar_id")
@@ -68,7 +68,7 @@ public class Company extends AbstractEntity implements Serializable {
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
-        this.businessHours = businessHours;
+        this.vatNumber = businessHours;
         this.selectedAvatar = selectedAvatar;
         this.plan = plan;
         this.parent = parent;
@@ -106,13 +106,13 @@ public class Company extends AbstractEntity implements Serializable {
         this.email = email;
     }
 
-    public String getBusinessHours() {
-        return businessHours;
+    public String getVatNumber() {
+        return vatNumber;
     }
 
-    public void setBusinessHours(final String businessHours) {
-        assertNotNull(businessHours);
-        this.businessHours = businessHours;
+    public void setVatNumber(final String vatNumber) {
+        assertNotNull(vatNumber);
+        this.vatNumber = vatNumber;
     }
 
     public Image getSelectedAvatar() {
