@@ -13,14 +13,15 @@ public class Company extends AbstractDTO implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private String phone;
-    private String facebook;
-    private String email;
-    private String businessHours;
-
     private Long avatar;
     private Long plan;
     private Long parent;
+
+    private String phone;
+    private String facebook;
+    private String email;
+    private String vatNumber;
+
     private List<Long> children;
     private List<Long> avatars;
 
@@ -34,12 +35,12 @@ public class Company extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public Company(String phone, String facebook, String email, String businessHours, Long avatar, Long plan, Long parent, List<Long> children, List<Long> avatars, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public Company(String phone, String facebook, String email, String vatNumber, Long avatar, Long plan, Long parent, List<Long> children, List<Long> avatars, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
-        this.businessHours = businessHours;
+        this.vatNumber = vatNumber;
         this.avatar = avatar;
         this.plan = plan;
         this.parent = parent;
@@ -74,12 +75,12 @@ public class Company extends AbstractDTO implements Serializable {
         this.email = email;
     }
 
-    public String getBusinessHours() {
-        return businessHours;
+    public String getVatNumber() {
+        return vatNumber;
     }
 
-    public void setBusinessHours(final String businessHours) {
-        this.businessHours = businessHours;
+    public void setVatNumber(final String vatNumber) {
+        this.vatNumber = vatNumber;
     }
 
     public Long getAvatar() {
