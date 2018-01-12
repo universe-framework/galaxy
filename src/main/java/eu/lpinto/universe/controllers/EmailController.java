@@ -3,11 +3,7 @@ package eu.lpinto.universe.controllers;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.Properties;
 import javax.ejb.Stateless;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -32,11 +28,14 @@ public class EmailController {
 
     public EmailController() {
         Properties props = new Properties();
-        props.put("mail.smtp.ssl.trust", SMTP_SSL_TRUST);
-        props.put("mail.imaps.ssl.trust", IMAP_SSL_TRUST);
-        props.put("mail.smtp.starttls.enable", SMTP_TLS);
-        props.put("mail.smtp.host", SMTP_ADDR);
-        props.put("mail.smtp.port", SMTP_PORT);
+
+        if (SMTP_ADDR != null) {
+            props.put("mail.smtp.ssl.trust", SMTP_SSL_TRUST);
+            props.put("mail.imaps.ssl.trust", IMAP_SSL_TRUST);
+            props.put("mail.smtp.starttls.enable", SMTP_TLS);
+            props.put("mail.smtp.host", SMTP_ADDR);
+            props.put("mail.smtp.port", SMTP_PORT);
+        }
 
         if (senderEmail == null) {
             session = Session.getInstance(props);
