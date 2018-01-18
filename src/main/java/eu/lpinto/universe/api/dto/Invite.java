@@ -13,6 +13,7 @@ public class Invite extends AbstractDTO {
 
     private Long company;
     private String email;
+    private String baseUrl;
 
     /*
      * Constructors
@@ -24,10 +25,11 @@ public class Invite extends AbstractDTO {
         super(id);
     }
 
-    public Invite(Long company, String email, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public Invite(Long company, String email, String name, String baseUrl, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.company = company;
         this.email = email;
+        this.baseUrl = baseUrl;
     }
 
     /*
@@ -47,5 +49,13 @@ public class Invite extends AbstractDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }
