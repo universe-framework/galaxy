@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.api.dto.UniverseDTO;
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,21 +16,21 @@ public abstract class AbstractDTS<E extends UniverseEntity, D extends UniverseDT
     /*
      * to API
      */
-    public static List<Long> abstractIDs(final List<? extends AbstractEntity> input) {
+    public static List<Long> abstractIDs(final List<? extends UniverseEntity> input) {
         if (input == null || input.isEmpty()) {
             return null;
         }
 
         List<Long> result = new ArrayList<>(input.size());
 
-        for (AbstractEntity elem : input) {
+        for (UniverseEntity elem : input) {
             result.add(id(elem));
         }
 
         return result;
     }
 
-    public static Long id(final AbstractEntity entities) {
+    public static Long id(final UniverseEntity entities) {
         if (entities == null) {
             return null;
         }
