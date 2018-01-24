@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
 import eu.lpinto.universe.api.dts.AbstractDTS;
-import static eu.lpinto.universe.api.services.AbstractService.ok;
 import eu.lpinto.universe.controllers.AbstractControllerCRUD;
 import eu.lpinto.universe.controllers.CrudController;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
@@ -124,6 +123,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             LOGGER.error(ex.getMessage(), ex);
             asyncResponse.resume(internalError(ex));
         }
+
+        options.put("user", userID);
 
         asyncResponse.resume(asyncCreate(userID, dto, options));
     }
