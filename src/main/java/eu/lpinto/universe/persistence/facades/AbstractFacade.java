@@ -1,8 +1,5 @@
 package eu.lpinto.universe.persistence.facades;
 
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -74,16 +71,6 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     public void create(final T entity, Map<String, Object> options) {
         if (entity == null) {
             throw new IllegalArgumentException("Cannot create a new " + this.entityClass.getCanonicalName() + " with [null] object");
-        }
-
-        if (entity instanceof AbstractEntity) {
-            AbstractEntity abstractEntity = (AbstractEntity) entity;
-
-            Calendar newNow = options == null || options.get("now") == null
-                              ? new GregorianCalendar()
-                              : (Calendar) options.get("now");
-            abstractEntity.setCreated(newNow);
-            abstractEntity.setUpdated(newNow);
         }
 
         getEntityManager().persist(entity);

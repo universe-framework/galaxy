@@ -7,6 +7,8 @@ import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.Facade;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +101,16 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             abstractEntity.setCreator(new User(userID));
         }
 
+        if (entity instanceof AbstractEntity) {
+            AbstractEntity abstractEntity = (AbstractEntity) entity;
+
+            Calendar newNow = options == null || options.get("now") == null
+                              ? new GregorianCalendar()
+                              : (Calendar) options.get("now");
+            abstractEntity.setCreated(newNow);
+            abstractEntity.setUpdated(newNow);
+        }
+
         try {
             doCreate(entity, options);
             return entity;
@@ -137,6 +149,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         if (entity instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
             abstractEntity.setUpdater(new User(userID));
+            abstractEntity.setUpdated(new GregorianCalendar());
         }
 
         try {
