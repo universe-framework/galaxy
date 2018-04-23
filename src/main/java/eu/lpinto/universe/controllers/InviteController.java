@@ -37,34 +37,29 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         Company savedCompany = companyController.retrieve(userID, entity.getCompany().getId());
 
         String baseURI = ((String) options.get("appPath"));
-        String origin = (String) options.get("origin");
-
-        if (baseURI == null || origin == null) {
-            throw new PreConditionException("header", "missingOrigin");
-        }
-
-        super.doCreate(entity, options);
 
         String code = "" + String.format("%04d", savedCompany.getId()) + System.currentTimeMillis() + String.format("%03d", entity.getId());
+        entity.setCode(code);
+        super.doCreate(entity, options);
 
         String emailMessage = "<h1>Olá " + entity.getName() + ",</h1>"
-                              + "<h2>Damos-lhe as boas-vindas à comunidade Pet universal.</h2>\n"
-                              + "<p>Recebeu um convite para se juntar à empresa: <b>" + savedCompany.getName() + "</b>.</p>\n"
-                              + "<p>Poderá criar uma conta acedendo a <a href=\"" + baseURI + "/i/" + code + " target=\"_blank\">" + baseURI + "/i/" + code + "</a>.</p>\n"
+                              + "<h2>Damos-lhe as boas-vindas &agrave; comunidade Pet universal.</h2>\n"
+                              + "<p>Recebeu um convite para se juntar &agrave; empresa: <b>" + savedCompany.getName() + "</b>.</p>\n"
+                              + "<p>Poderá criar uma conta acedendo a <a href=\"" + entity.getBaseUrl() + "i/" + code + " target=\"_blank\">" + entity.getBaseUrl() + "i/" + code + "</a>.</p>\n"
                               + "<h2>Ajuda.</h2>\n"
                               + "<p>Poderá consultar ainda um conjunto de <a href=\"https://petuniversal.com/app/#/faq\" target=\"_blank\">questões frequentes</a> e um  <a href=\"https://petuniversal.com/app/#/manual\" target=\"_blank\">manual de utilizador</a> para esclarecimento de dúvidas sobre a plataforma.</p>\n"
                               + "<p>Agradecemos a confiança demonstrada no nosso produto e ficamos ao dispor para qualquer esclarecimento.</p>\n"
                               + "<p>A equipa Pet universal,</p>\n"
                               + "<p><a href=\"http://petuniversal.com/\" target=\"_blank\" style=\"color:#8d8d8d;text-decoration: none;\">www.petuniversal.com</a></p>\n"
-                              + "<p><a href='https://www.facebook.com/petuniversal' target='_blank'>\n"
+                              + "<p><a href='https://www.facebook.com/petuniversal' target=\"_blank\">\n"
                               + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/facebook.png'/>\n"
                               + "    </a>\n"
                               + "    &nbsp;\n"
-                              + "    <a href='https://www.linkedin.com/company/pet-universal' target='_blank'>\n"
+                              + "    <a href='https://www.linkedin.com/company/pet-universal' target=\"_blank\">\n"
                               + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/linkedin.png'/>\n"
                               + "    </a>\n"
                               + "    &nbsp;\n"
-                              + "    <a href='http://twitter.com/Pet_universal' target='_blank'>\n"
+                              + "    <a href='http://twitter.com/Pet_universal' target=\"_blank\">\n"
                               + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/twitter.png'/>\n"
                               + "    </a>\n"
                               + "</p>";

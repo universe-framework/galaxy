@@ -19,6 +19,7 @@ public class Invite extends AbstractEntity implements Serializable {
     private Company company;
     private String email;
     private String code;
+    private String baseUrl;
 
     /*
      * Contructors
@@ -30,11 +31,12 @@ public class Invite extends AbstractEntity implements Serializable {
         super(id);
     }
 
-    public Invite(Company company, String email, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public Invite(Company company, String email, String name, String baseUrl, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.company = company;
         this.email = email;
-        this.code = code;
+        this.baseUrl = baseUrl;
+        this.code = null;
     }
 
     /*
@@ -62,5 +64,13 @@ public class Invite extends AbstractEntity implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

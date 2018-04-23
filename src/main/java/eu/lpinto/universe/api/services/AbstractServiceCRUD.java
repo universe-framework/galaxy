@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
 import eu.lpinto.universe.api.dts.AbstractDTS;
-import static eu.lpinto.universe.api.services.AbstractService.ok;
 import eu.lpinto.universe.controllers.AbstractControllerCRUD;
 import eu.lpinto.universe.controllers.CrudController;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
@@ -99,8 +98,6 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                              final @Context UriInfo uriInfo,
                              final @HeaderParam("userID") Long userID,
                              final @HeaderParam("Accept-Language") String locale,
-                             final @HeaderParam("Origin") String origin,
-                             final @HeaderParam("Referer") String referer,
                              final D dto) {
 
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
@@ -122,40 +119,12 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                 }
             }
 
-            options.put("user", userID);
-            options.put("absolutePath", uriInfo.getAbsolutePath().toString());
-
-//            String o = origin;
-//            if (origin != null && origin.endsWith("/")) {
-//                o = origin.substring(0, origin.length() - 1);
-//            }
-//            String r = referer;
-//            if (referer != null && referer.endsWith("/")) {
-//                r = referer.substring(0, referer.length() - 1);
-//            }
-//
-//            if (o == null) {
-//                if (r != null) {
-//                    options.put("origin", r);
-//                }
-//            } else {
-//                if (r == null) {
-//                    options.put("origin", o);
-//                } else if (o.equals(r)) {
-//                    options.put("origin", r);
-//                }
-//            }
-            options.put("origin", referer);
-
-            if (options.get("origin") != null) {
-                String baseURI = uriInfo.getAbsolutePath().toString().split("/api")[0];
-                String tmp = options.get("origin") + "/" + baseURI.substring(baseURI.lastIndexOf('/'));
-                options.put("appPath", baseURI);
-            }
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             asyncResponse.resume(internalError(ex));
         }
+
+        options.put("user", userID);
 
         asyncResponse.resume(asyncCreate(userID, dto, options));
     }
