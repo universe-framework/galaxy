@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
  * REST service interface for users.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
- * @param <E> Domain AbstractEntityDTO
- * @param <D> DTO
- * @param <C> Controller
+ * @param <E>   Domain AbstractEntityDTO
+ * @param <D>   DTO
+ * @param <C>   Controller
  * @param <DTS> DTS service
  */
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
@@ -67,6 +67,13 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                     options.put(key, l);
                 } catch (NumberFormatException ex) {
                     options.put(key, values.get(0));
+                }
+
+                if ("true".equals(values.get(0))) {
+                    options.put(key, Boolean.FALSE);
+                }
+                if ("false".equals(values.get(0))) {
+                    options.put(key, Boolean.FALSE);
                 }
             }
         }
