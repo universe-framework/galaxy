@@ -69,10 +69,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                     options.put(key, values.get(0));
                 }
 
-                if ("true".equals(values.get(0))) {
-                    options.put(key, Boolean.FALSE);
+                if ("true".equalsIgnoreCase(values.get(0))) {
+                    options.put(key, Boolean.TRUE);
                 }
-                if ("false".equals(values.get(0))) {
+                if ("false".equalsIgnoreCase(values.get(0))) {
                     options.put(key, Boolean.FALSE);
                 }
             }
