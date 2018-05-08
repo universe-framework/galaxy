@@ -11,8 +11,6 @@ import java.util.Map;
  */
 public interface Facade<T> {
 
-    public List<T> findAll();
-
     public List<T> find(final Map<String, Object> options);
 
     public T retrieve(final Long id);

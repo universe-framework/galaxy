@@ -28,15 +28,10 @@ public abstract class AbstractFacade<T> implements Facade<T> {
      * DAO
      */
     @Override
-    public List<T> findAll() {
+    public List<T> find(final Map<String, Object> options) {
         javax.persistence.criteria.CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
         cq.select(cq.from(entityClass));
         return getEntityManager().createQuery(cq).getResultList();
-    }
-
-    @Override
-    public List<T> find(final Map<String, Object> options) {
-        return findAll();
     }
 
     @Override

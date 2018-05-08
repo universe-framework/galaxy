@@ -3,7 +3,6 @@ package eu.lpinto.universe.persistence.facades;
 import eu.lpinto.universe.persistence.entities.Feature;
 import eu.lpinto.universe.persistence.entities.Plan;
 import eu.lpinto.universe.persistence.entities.PlanFeature;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -43,7 +42,7 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
     @Override
     public List<PlanFeature> find(final Map<String, Object> options) {
         if (options == null) {
-            return findAll();
+            return super.find(null);
 
         } else {
             if (options.containsKey("entity")) {

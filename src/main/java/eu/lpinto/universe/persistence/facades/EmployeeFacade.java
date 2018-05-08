@@ -57,7 +57,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
             }
         }
 
-        return super.findAll();
+        return super.find(null);
     }
 
     public Employee retrieve(final Long companyID, final Long personID) {
