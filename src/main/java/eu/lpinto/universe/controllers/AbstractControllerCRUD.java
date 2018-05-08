@@ -51,7 +51,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     }
 
     @Override
-    public final E retrieve(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+    public final E retrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         /*
          * Preconditions
          */
@@ -64,7 +64,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
          */
         E savedEntity;
         try {
-            savedEntity = doRetrieve(id);
+            savedEntity = doRetrieve(userID, options, id);
 
             if (savedEntity == null) {
                 throw new UnknownIdException(entityName, id);
@@ -81,14 +81,14 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         return savedEntity;
     }
 
-    public E doRetrieve(final Long id) throws UnknownIdException, PreConditionException {
+    public E doRetrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PreConditionException {
         E savedEntity;
         savedEntity = getFacade().retrieve(id);
         return savedEntity;
     }
 
     @Override
-    public final E create(final Long userID, final E entity, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+    public final E create(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         Boolean permission = assertPremissionsCreate(userID, entity);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
@@ -100,19 +100,19 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         try {
-            doCreate(entity, options);
+            doCreate(userID, options, entity);
             return entity;
         } catch (RuntimeException ex) {
             throw internalError(ex);
         }
     }
 
-    public void doCreate(final E entity, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+    public void doCreate(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         getFacade().create(entity);
     }
 
     @Override
-    public final void update(final Long userID, final E entity) throws UnknownIdException, PreConditionException, PermissionDeniedException {
+    public final void update(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PreConditionException, PermissionDeniedException {
         Long id = entity.getId();
         if (id == null) {
             throw missingParameter("id");
@@ -140,19 +140,19 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         try {
-            doUpdate(entity);
+            doUpdate(userID, options, entity);
         } catch (RuntimeException ex) {
 
             throw internalError(ex);
         }
     }
 
-    public void doUpdate(final E entity) {
+    public void doUpdate(final Long userID, final Map<String, Object> options, final E entity) {
         getFacade().edit(entity);
     }
 
     @Override
-    public final void delete(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+    public final void delete(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         if (id == null) {
             throw missingParameter("id");
         }
@@ -174,14 +174,14 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         try {
-            doDelete(savedEntity);
+            doDelete(userID, options, savedEntity);
         } catch (RuntimeException ex) {
 
             throw internalError(ex);
         }
     }
 
-    public void doDelete(E savedEntity) throws PreConditionException {
+    public void doDelete(final Long userID, final Map<String, Object> options, E savedEntity) throws PreConditionException {
         getFacade().remove(savedEntity);
     }
 

@@ -1,12 +1,13 @@
 package eu.lpinto.universe.controllers;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
-import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.entities.Company;
+import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import eu.lpinto.universe.persistence.facades.ImageFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class ImageController extends AbstractControllerCRUD<Image> {
      * Delete
      */
     @Override
-    public void doDelete(final Image savedEntity) throws PreConditionException {
+    public void doDelete(final Long userID, final Map<String, Object> options, final Image savedEntity) throws PreConditionException {
         String url = savedEntity.getUrl();
 
         String[] subsUrls = url.split("/");
@@ -59,7 +60,7 @@ public class ImageController extends AbstractControllerCRUD<Image> {
 
         delete(entityType + "/" + entityID + "/" + fileName);
 
-        super.doDelete(savedEntity);
+        super.doDelete(userID, options, savedEntity);
     }
 
     public void delete(final String filePath) {

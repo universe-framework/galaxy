@@ -16,11 +16,11 @@ public interface CrudController<E extends UniverseEntity> {
 
     public List<E> find(final Long userID, final Map<String, Object> options) throws PermissionDeniedException, PreConditionException;
 
-    public E retrieve(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException;
+    public E retrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 
-    public E create(final Long userID, final E entity, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException;
+    public E create(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 
-    public void update(final Long userID, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException;
+    public void update(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 
-    public void delete(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException;
+    public void delete(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 }

@@ -35,20 +35,19 @@ public class EmployeeController extends AbstractControllerCRUD<Employee> {
     }
 
     @Override
-    public void doCreate(Employee entity, Map<String, Object> options) throws PreConditionException, UnknownIdException, PermissionDeniedException {
+    public void doCreate(final Long userID, Map<String, Object> options, Employee entity) throws PreConditionException, UnknownIdException, PermissionDeniedException {
         Long companyID = entity.getCompany().getId();
-        Long userID = (long) options.get("user");
-        User savedUser = userComtroller.retrieve(userID, userID);
+        User savedUser = userComtroller.retrieve(userID, options, userID);
 
         Company savedCompany;
         try {
-            savedCompany = companyComtroller.retrieve(userID, companyID);
+            savedCompany = companyComtroller.retrieve(userID, options, companyID);
             if (savedCompany == null) {
                 throw new IllegalArgumentException("There is no Company with that id");
             }
             entity.setName(savedCompany.getName() + "_" + savedUser.getName());
 
-            super.doCreate(entity, options);
+            super.doCreate(userID, options, entity);
 
         } catch (UnknownIdException ex) {
             Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);

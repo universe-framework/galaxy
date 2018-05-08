@@ -32,15 +32,14 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
     }
 
     @Override
-    public void doCreate(Invite entity, Map<String, Object> options) throws PreConditionException, UnknownIdException, PermissionDeniedException {
-        Long userID = (long) options.get("user");
-        Company savedCompany = companyController.retrieve(userID, entity.getCompany().getId());
+    public void doCreate(final Long userID, final Map<String, Object> options, Invite entity) throws PreConditionException, UnknownIdException, PermissionDeniedException {
+        Company savedCompany = companyController.retrieve(userID, options, entity.getCompany().getId());
 
         String baseURI = ((String) options.get("appPath"));
 
         String code = "" + String.format("%04d", savedCompany.getId()) + System.currentTimeMillis() + String.format("%03d", entity.getId());
         entity.setCode(code);
-        super.doCreate(entity, options);
+        super.doCreate(userID, options, entity);
 
         String emailMessage = "<h1>Olá " + entity.getName() + ",</h1>"
                               + "<h2>Damos-lhe as boas-vindas &agrave; comunidade Pet universal.</h2>\n"
@@ -67,7 +66,7 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         entity.setCode(code);
         emailController.sendEmail(entity.getEmail(), "Convite", emailMessage);
 
-        super.doUpdate(entity);
+        super.doUpdate(userID, options, entity);
     }
 
     @Override

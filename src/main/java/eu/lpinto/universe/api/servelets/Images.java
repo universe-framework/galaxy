@@ -10,6 +10,7 @@ import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.*;
+import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -192,11 +193,11 @@ public class Images extends HttpServlet {
                 switch (entityName) {
                     case "companies":
                         savedImage = createImage(imageUrl, name, userID);
-                        Company savedCompany = companyController.retrieve(userID, id);
+                        Company savedCompany = companyController.retrieve(userID, new HashMap<>(0), id);
                         savedCompany.addAvatar(savedImage);
                         savedCompany.setSelectedAvatar(savedImage);
 
-                        companyController.update(userID, savedCompany);
+                        companyController.update(userID, new HashMap<>(0), savedCompany);
                         break;
 
                     default:
@@ -234,7 +235,7 @@ public class Images extends HttpServlet {
         Image newImage = new Image();
         newImage.setUrl(imageUrl);
         newImage.setName(name);
-        Image savedImage = imageController.create(userID, newImage, null);
+        Image savedImage = imageController.create(userID, new HashMap<>(0), newImage);
         return savedImage;
     }
 

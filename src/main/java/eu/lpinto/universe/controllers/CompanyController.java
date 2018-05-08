@@ -35,19 +35,17 @@ public class CompanyController extends AbstractControllerCRUD<Company> {
     }
 
     @Override
-    public void doCreate(Company entity, Map<String, Object> options) throws PreConditionException, UnknownIdException, PermissionDeniedException {
-
-        Long userID = (Long) options.get("user");
+    public void doCreate(final Long userID, final Map<String, Object> options, Company entity) throws PreConditionException, UnknownIdException, PermissionDeniedException {
 
         if (entity.getPlan() == null) {
             entity.setPlan(new Plan(1l));
         }
 
-        super.doCreate(entity, options);
+        super.doCreate(userID, options, entity);
 
         try {
-            Employee employee = new Employee(entity, EmployeeProfile.ADMIN, userController.retrieve(userID, userID));
-            employeeController.create(userID, employee, options);
+            Employee employee = new Employee(entity, EmployeeProfile.ADMIN, userController.retrieve(userID, options, userID));
+            employeeController.create(userID, options, employee);
         } catch (UnknownIdException | PermissionDeniedException ex) {
             throw new UnexpectedException("Problems creating employee for company.");
         }
