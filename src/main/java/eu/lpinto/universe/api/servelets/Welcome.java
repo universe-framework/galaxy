@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author lpint
  */
-@WebServlet(urlPatterns = {"/welcome"})
+@WebServlet(urlPatterns = {"/"})
 public class Welcome extends HttpServlet {
 
     /**

@@ -50,9 +50,9 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @GET
     @Asynchronous
     @Produces(value = MediaType.APPLICATION_JSON)
-    public final void find(@Suspended final AsyncResponse asyncResponse,
-                           final @Context UriInfo uriInfo,
-                           final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+    public void find(@Suspended final AsyncResponse asyncResponse,
+                     final @Context UriInfo uriInfo,
+                     final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
 
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
 
@@ -101,11 +101,11 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public final void create(@Suspended final AsyncResponse asyncResponse,
-                             final @Context UriInfo uriInfo,
-                             final @HeaderParam("userID") Long userID,
-                             final @HeaderParam("Accept-Language") String locale,
-                             final D dto) {
+    public void create(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam("Accept-Language") String locale,
+                       final D dto) {
 
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
 
@@ -136,7 +136,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         asyncResponse.resume(asyncCreate(userID, dto, options));
     }
 
-    public final Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
+    public Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
         try {
             return ok(doCreate(userID, dto, options));
 
@@ -166,10 +166,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public final void retrieve(@Suspended final AsyncResponse asyncResponse,
-                               final @Context UriInfo uriInfo,
-                               final @HeaderParam("userID") Long userID,
-                               final @PathParam("id") Long id) throws PermissionDeniedException {
+    public void retrieve(@Suspended final AsyncResponse asyncResponse,
+                         final @Context UriInfo uriInfo,
+                         final @HeaderParam("userID") Long userID,
+                         final @PathParam("id") Long id) throws PermissionDeniedException {
         asyncResponse.resume(doRetrieve(userID, id));
     }
 
@@ -202,11 +202,11 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public final void update(@Suspended final AsyncResponse asyncResponse,
-                             final @Context UriInfo uriInfo,
-                             final @HeaderParam("userID") Long userID,
-                             final @PathParam("id") Long id,
-                             final D dto) {
+    public void update(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @PathParam("id") Long id,
+                       final D dto) {
         asyncResponse.resume(doUpdate(userID, id, dto));
     }
 
@@ -248,8 +248,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public final void delete(@Suspended final AsyncResponse asyncResponse,
-                             final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
+    public void delete(@Suspended final AsyncResponse asyncResponse,
+                       final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
         asyncResponse.resume(doDelete(userID, id));
     }
 
