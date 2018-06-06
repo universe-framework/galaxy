@@ -1,5 +1,7 @@
 package eu.lpinto.universe.api.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
@@ -15,6 +17,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.ejb.Asynchronous;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
@@ -27,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * REST service interface for users.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
- * @param <E>   Domain AbstractEntityDTO
- * @param <D>   DTO
- * @param <C>   Controller
+ * @param <E> Domain AbstractEntityDTO
+ * @param <D> DTO
+ * @param <C> Controller
  * @param <DTS> DTS service
  */
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
@@ -50,11 +53,16 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @GET
     @Asynchronous
     @Produces(value = MediaType.APPLICATION_JSON)
-    public final void find(@Suspended final AsyncResponse asyncResponse,
-                           final @Context UriInfo uriInfo,
-                           final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+    public void find(@Suspended final AsyncResponse asyncResponse,
+                     final @Context UriInfo uriInfo,
+                     final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
 
+        /*
+         * Setup
+         */
+        final String requestID = UUID.randomUUID().toString();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         for (String key : queryParameters.keySet()) {
@@ -80,6 +88,13 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         options.put("user", userID);
 
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + " | " + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n" + optionsStr(options));
+
+        /*
+         * Body
+         */
         asyncResponse.resume(doFind(options));
     }
 
@@ -106,8 +121,12 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                              final @HeaderParam("userID") Long userID,
                              final @HeaderParam("Accept-Language") String locale,
                              final D dto) {
-
+        /*
+         * Setup
+         */
+        final String requestID = UUID.randomUUID().toString();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
 
         try {
 
@@ -133,10 +152,18 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         options.put("user", userID);
 
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t " + optionsStr(options)
+                     + "\n\t" + toJson(dto));
+
+        /*
+         * Body
+         */
         asyncResponse.resume(asyncCreate(userID, dto, options));
     }
 
-    public final Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
+    public Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
         try {
             return ok(doCreate(userID, dto, options));
 
@@ -166,10 +193,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public final void retrieve(@Suspended final AsyncResponse asyncResponse,
-                               final @Context UriInfo uriInfo,
-                               final @HeaderParam("userID") Long userID,
-                               final @PathParam("id") Long id) throws PermissionDeniedException {
+    public void retrieve(@Suspended final AsyncResponse asyncResponse,
+                         final @Context UriInfo uriInfo,
+                         final @HeaderParam("userID") Long userID,
+                         final @PathParam("id") Long id) throws PermissionDeniedException {
         asyncResponse.resume(doRetrieve(userID, id));
     }
 
@@ -202,11 +229,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public final void update(@Suspended final AsyncResponse asyncResponse,
-                             final @Context UriInfo uriInfo,
-                             final @HeaderParam("userID") Long userID,
-                             final @PathParam("id") Long id,
-                             final D dto) {
+    public void update(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @PathParam("id") Long id,
+                       final D dto) {
+        final String requestID = UUID.randomUUID().toString();
+        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
+
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t " + optionsStr(options)
+                     + "\n\t" + toJson(dto));
+
         asyncResponse.resume(doUpdate(userID, id, dto));
     }
 
@@ -296,6 +332,25 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                 throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
             }
             options.put(key, startedAfter);
+        }
+    }
+
+    private static String optionsStr(final Map<String, Object> options) {
+        String result = "";
+        for (Map.Entry<String, Object> a : options.entrySet()) {
+            result += "\t" + a.getKey() + " : " + toJson(a.getValue()) + "\n";
+        }
+
+        return result;
+
+    }
+
+    private static String toJson(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj) + "\n";
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Cannot serialize object: " + obj);
+            return "[cannot serialize]";
         }
     }
 
