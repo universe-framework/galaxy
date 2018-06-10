@@ -19,8 +19,8 @@ import javax.ws.rs.core.Response;
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
-@Path("contacts")
-public class ContactService extends AbstractService {
+@Path("communications")
+public class CommunicationService extends AbstractService {
 
     @EJB
     private EmailController emailController;
