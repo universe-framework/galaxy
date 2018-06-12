@@ -1,8 +1,8 @@
 package eu.lpinto.universe.api.filters;
 
+import eu.lpinto.universe.api.dto.FaultDTO;
 import eu.lpinto.universe.controllers.TokenController;
 import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.api.dto.FaultDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             requestContext.abortWith(Response
                     .status(Response.Status.UNAUTHORIZED)
                     .entity(new FaultDTO("101", "Missing Authorization token")).build());
-        
+
         } else if (bearerToken.isEmpty() || !bearerToken.startsWith(BEARER)) {
             requestContext.abortWith(Response
                     .status(Response.Status.UNAUTHORIZED)
@@ -94,8 +94,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
                     }
                 }
 
-            }
-            catch (RuntimeException ex) {
+            } catch (RuntimeException ex) {
                 requestContext.abortWith(Response
                         .status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(new FaultDTO("Cannot validate token. Error: " + ex.getLocalizedMessage())).build());
@@ -126,7 +125,10 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true; // root endpoint without '/'
         }
 
-        if (service[1].startsWith("/tokens/") || service[1].startsWith("/tokens/")) {
+        if (service[1].startsWith("/tokens/")
+            || service[1].startsWith("/invites")
+            || service[1].startsWith("/companies/")
+            || service[1].startsWith("/organizations/")) {
             return true;
         }
 

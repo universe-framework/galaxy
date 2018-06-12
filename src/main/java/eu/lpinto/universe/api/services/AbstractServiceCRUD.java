@@ -1,5 +1,7 @@
 package eu.lpinto.universe.api.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
@@ -15,6 +17,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.ejb.Asynchronous;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
@@ -54,7 +57,12 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                      final @Context UriInfo uriInfo,
                      final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
 
+        /*
+         * Setup
+         */
+        final String requestID = UUID.randomUUID().toString();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         for (String key : queryParameters.keySet()) {
@@ -80,6 +88,13 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         options.put("user", userID);
 
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + " | " + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n" + optionsStr(options));
+
+        /*
+         * Body
+         */
         asyncResponse.resume(doFind(options));
     }
 
@@ -106,8 +121,12 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                        final @HeaderParam("userID") Long userID,
                        final @HeaderParam("Accept-Language") String locale,
                        final D dto) {
-
+        /*
+         * Setup
+         */
+        final String requestID = UUID.randomUUID().toString();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
 
         try {
 
@@ -133,6 +152,14 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         options.put("user", userID);
 
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t " + optionsStr(options)
+                     + "\n\t" + toJson(dto));
+
+        /*
+         * Body
+         */
         asyncResponse.resume(asyncCreate(userID, dto, options));
     }
 
@@ -207,6 +234,14 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                        final @HeaderParam("userID") Long userID,
                        final @PathParam("id") Long id,
                        final D dto) {
+        final String requestID = UUID.randomUUID().toString();
+        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+        options.put("request", requestID);
+
+        LOGGER.debug(requestID
+                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t " + optionsStr(options)
+                     + "\n\t" + toJson(dto));
         asyncResponse.resume(doUpdate(userID, id, dto));
     }
 
@@ -296,6 +331,25 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                 throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
             }
             options.put(key, startedAfter);
+        }
+    }
+
+    private static String optionsStr(final Map<String, Object> options) {
+        String result = "";
+        for (Map.Entry<String, Object> a : options.entrySet()) {
+            result += "\t" + a.getKey() + " : " + toJson(a.getValue()) + "\n";
+        }
+
+        return result;
+
+    }
+
+    private static String toJson(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj) + "\n";
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Cannot serialize object: " + obj);
+            return "[cannot serialize]";
         }
     }
 
