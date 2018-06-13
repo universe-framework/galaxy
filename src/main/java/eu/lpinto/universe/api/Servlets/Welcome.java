@@ -23,11 +23,11 @@ public class Welcome extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      *
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -67,7 +67,7 @@ public class Welcome extends HttpServlet {
             out.println("          <div class='site-header-header'>");
             out.println("            <div class='site-header-brand'>");
             out.println("              <a href='https://github.com/universe-framework'>");
-            out.println("                Universe Framwork");
+            out.println("                Universe Framework");
             out.println("              </a>");
             out.println("            </div>");
             out.println("            <a class='primary-nav-toggle' href='#'>");
@@ -102,7 +102,7 @@ public class Welcome extends HttpServlet {
             out.println("                        </div>");
             out.println("                      </div>");
             out.println("                    </div> <!-- .countdown -->");
-            out.println("                    <p>Project built using the <a href='https://github.com/universe-framework'>Universe Framwork</a>.</p>");
+            out.println("                    <p>Project built using the <a href='https://github.com/universe-framework'>Universe Framework</a>.</p>");
             out.println("                    <p>Running <b>" + UniverseFundamentals.ENV + "</b> enviroment.</p>");
             out.println("                  </div>");
             out.println("                </div>");
@@ -127,11 +127,11 @@ public class Welcome extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      *
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -142,11 +142,11 @@ public class Welcome extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      *
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
