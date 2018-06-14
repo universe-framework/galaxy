@@ -2,8 +2,6 @@ package eu.lpinto.universe.api.services;
 
 import eu.lpinto.universe.api.dto.Plan;
 import eu.lpinto.universe.api.dts.PlanDTS;
-import eu.lpinto.universe.api.services.AbstractServiceCRUD;
-import eu.lpinto.universe.api.services.AbstractServiceCRUD;
 import javax.ejb.EJB;
 import javax.ws.rs.Path;
 

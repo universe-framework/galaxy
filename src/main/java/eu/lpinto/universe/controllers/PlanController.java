@@ -3,6 +3,7 @@ package eu.lpinto.universe.controllers;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Plan;
 import eu.lpinto.universe.persistence.facades.PlanFacade;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -27,13 +28,14 @@ public class PlanController extends AbstractControllerCRUD<Plan> {
         List<Plan> doFindAll = super.doFind(userID, options);
 
         if (doFindAll == null || doFindAll.isEmpty()) {
-            eu.lpinto.universe.persistence.entities.Plan p1 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Free", null, null);
+            Calendar now = Calendar.getInstance();
+            eu.lpinto.universe.persistence.entities.Plan p1 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Free", now, now);
             getFacade().create(p1);
 
-            eu.lpinto.universe.persistence.entities.Plan p2 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Trial", null, null);
+            eu.lpinto.universe.persistence.entities.Plan p2 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Trial", now, now);
             getFacade().create(p2);
 
-            eu.lpinto.universe.persistence.entities.Plan p3 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Premium", null, null);
+            eu.lpinto.universe.persistence.entities.Plan p3 = new eu.lpinto.universe.persistence.entities.Plan(null, null, "Premium", now, now);
             getFacade().create(p3);
         }
 

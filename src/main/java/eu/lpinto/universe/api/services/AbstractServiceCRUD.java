@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * REST service interface for users.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
- * @param <E> Domain AbstractEntityDTO
- * @param <D> DTO
- * @param <C> Controller
+ * @param <E>   Domain AbstractEntityDTO
+ * @param <D>   DTO
+ * @param <C>   Controller
  * @param <DTS> DTS service
  */
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
@@ -116,11 +116,11 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public final void create(@Suspended final AsyncResponse asyncResponse,
-                             final @Context UriInfo uriInfo,
-                             final @HeaderParam("userID") Long userID,
-                             final @HeaderParam("Accept-Language") String locale,
-                             final D dto) {
+    public void create(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam("Accept-Language") String locale,
+                       final D dto) {
         /*
          * Setup
          */
@@ -242,7 +242,6 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                      + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
                      + "\n\t " + optionsStr(options)
                      + "\n\t" + toJson(dto));
-
         asyncResponse.resume(doUpdate(userID, id, dto));
     }
 
@@ -284,8 +283,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public final void delete(@Suspended final AsyncResponse asyncResponse,
-                             final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
+    public void delete(@Suspended final AsyncResponse asyncResponse,
+                       final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
         asyncResponse.resume(doDelete(userID, id));
     }
 
