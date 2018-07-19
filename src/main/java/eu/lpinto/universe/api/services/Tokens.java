@@ -9,7 +9,7 @@ import eu.lpinto.universe.persistence.entities.User;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.EJB;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Luís Pinto <code>- mail@lpinto.eu</code>
  */
-@Singleton
+@Stateless
 @Path("tokens")
 public class Tokens extends AbstractService {
 
