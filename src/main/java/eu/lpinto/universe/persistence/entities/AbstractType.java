@@ -56,20 +56,13 @@ public abstract class AbstractType<T extends AbstractType<T>> extends AbstractEn
         setDescription(description);
     }
 
-    public AbstractType(Organization organization, String code, Boolean enable, T parent, String name,
-                        User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public AbstractType(Organization organization, T parent, Boolean enable, String code, String description,
+                        String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.organization = organization;
-        setCode(code);
+        this.parent = parent;
         this.enable = enable;
-        this.parent = parent;
-    }
-
-    public AbstractType(Organization organization, T parent, String code, String description, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
-        this.organization = organization;
-        this.parent = parent;
-        this.code = code;
+        setCode(code);
         this.description = description;
     }
 
