@@ -65,6 +65,14 @@ public abstract class AbstractType<T extends AbstractType<T>> extends AbstractEn
         this.parent = parent;
     }
 
+    public AbstractType(Organization organization, T parent, String code, String description, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+        super(name, creator, created, updater, updated, id);
+        this.organization = organization;
+        this.parent = parent;
+        this.code = code;
+        this.description = description;
+    }
+
     /*
      * Getters/Setters
      */
