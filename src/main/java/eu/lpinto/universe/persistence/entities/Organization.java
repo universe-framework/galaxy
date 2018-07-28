@@ -67,6 +67,8 @@ public class Organization extends AbstractEntity implements Serializable, Univer
                    @JoinColumn(name = "image_id", referencedColumnName = "id")})
     private List<Image> avatars;
 
+    private String customField;
+
     /*
      * Constructors
      */
@@ -80,7 +82,7 @@ public class Organization extends AbstractEntity implements Serializable, Univer
     public Organization(String country, String clientID, String clientSecret,
                         Boolean enable, String email, Long externalID, String fax, String phone, Plan plan,
                         List<Worker> staff, String street, String town, String zip, String website, List<Worker> workers,
-                        Company company, String calendarID, Image selectedAvatar, List<Image> avatars,
+                        Company company, String calendarID, Image selectedAvatar, List<Image> avatars, String billingID,
                         String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.country = country;
@@ -102,6 +104,7 @@ public class Organization extends AbstractEntity implements Serializable, Univer
         this.calendarID = calendarID;
         this.selectedAvatar = selectedAvatar;
         this.avatars = avatars;
+        this.customField = billingID;
     }
 
     /*
@@ -259,4 +262,11 @@ public class Organization extends AbstractEntity implements Serializable, Univer
         this.avatars = avatars;
     }
 
+    public String getCustomField() {
+        return customField;
+    }
+
+    public void setCustomField(String customField) {
+        this.customField = customField;
+    }
 }

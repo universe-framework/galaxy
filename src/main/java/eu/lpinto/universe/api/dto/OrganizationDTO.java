@@ -32,6 +32,7 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
     private String calendarID;
     private Long selectedAvatar;
     private List<Long> avatars;
+    private String customField;
 
 
     /*
@@ -48,7 +49,7 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
     public OrganizationDTO(String country, String clientID, String clientSecret, Boolean enable,
                            String email, String fax, String phone, Long plan, List<Long> staff, String street,
                            String town, String zip, String website, List<Long> workers,
-                           Long company, Long externalID, String calendarID, Long selectedAvatar, List<Long> avatars,
+                           Long company, Long externalID, String calendarID, Long selectedAvatar, List<Long> avatars, String billingID,
                            String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.country = country;
@@ -70,6 +71,7 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
         this.calendarID = calendarID;
         this.selectedAvatar = selectedAvatar;
         this.avatars = avatars;
+        this.customField = billingID;
     }
 
     public String getCountry() {
@@ -224,4 +226,11 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
         this.avatars = avatars;
     }
 
+    public String getCustomField() {
+        return customField;
+    }
+
+    public void setCustomField(String customField) {
+        this.customField = customField;
+    }
 }

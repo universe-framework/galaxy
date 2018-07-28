@@ -1,10 +1,6 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.api.dto.OrganizationDTO;
-import eu.lpinto.universe.api.dts.AbstractDTS;
-import eu.lpinto.universe.api.dts.ImageDTS;
-import eu.lpinto.universe.api.dts.PlanDTS;
-import eu.lpinto.universe.api.dts.UserDTS;
 import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.entities.Organization;
 
@@ -42,6 +38,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getCalendarID(),
                     AbstractDTS.id(entity.getSelectedAvatar()),
                     AbstractDTS.abstractIDs(entity.getAvatars()),
+                    entity.getCustomField(),
                     entity.getName(),
                     AbstractDTS.id(entity.getCreator()),
                     entity.getCreated(),
@@ -70,6 +67,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getCalendarID(),
                     AbstractDTS.id(entity.getSelectedAvatar()),
                     null,
+                    entity.getCustomField(),
                     entity.getName(),
                     UserDTS.id(entity.getCreator()),
                     entity.getCreated(),
@@ -110,6 +108,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                 dto.getCalendarID(),
                 ImageDTS.T.toDomain(dto.getSelectedAvatar()),
                 ImageDTS.T.toDomainIDs(dto.getAvatars()),
+                dto.getCustomField(),
                 dto.getName(),
                 UserDTS.T.toDomain(dto.getCreator()),
                 dto.getCreated(),
