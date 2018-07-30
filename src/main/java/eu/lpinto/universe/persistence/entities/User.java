@@ -33,7 +33,7 @@ public class User extends AbstractEntity implements Serializable {
     @Size(min = 1, max = 128, message = "Invalid password size")
     private String password;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Token> tokens;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

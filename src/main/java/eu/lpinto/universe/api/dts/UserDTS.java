@@ -45,8 +45,15 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
 
     @Override
     public User toDomain(eu.lpinto.universe.api.dto.User dto) {
-        return new User(
-                dto.getEmail().toLowerCase(), Digest.getSHA(dto.getPassword()),
-                dto.getName());
+        return new User(dto.getEmail(),
+                        Digest.getSHA(dto.getPassword()),
+                        null, // tokens,
+                        null, // employees,
+                        dto.getName(),
+                        UserDTS.T.toDomain(dto.getCreator()),
+                        dto.getCreated(),
+                        UserDTS.T.toDomain(dto.getUpdater()),
+                        dto.getUpdated(),
+                        dto.getId());
     }
 }
