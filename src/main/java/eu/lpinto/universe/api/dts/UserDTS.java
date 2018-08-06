@@ -1,6 +1,7 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.api.util.Digest;
+import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.entities.User;
 
 /**
@@ -15,9 +16,9 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
     @Override
     public eu.lpinto.universe.api.dto.User toAPI(User entity) {
         return new eu.lpinto.universe.api.dto.User(
+                entity.getCurrentAvatar() == null ? null : entity.getCurrentAvatar().getUrl(),
                 entity.getEmail(),
                 null, // passowrd is never released
-                null, // tokens
                 entity.getName(),
                 AbstractDTS.id(entity.getCreator()),
                 entity.getCreated(),
@@ -45,10 +46,12 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
 
     @Override
     public User toDomain(eu.lpinto.universe.api.dto.User dto) {
-        return new User(dto.getEmail(),
+        return new User(dto.getCurrentAvatar() == null ? null : new Image(dto.getCurrentAvatar()),
+                        null, // avatars
+                        null, // tokens
+                        null, // employees
+                        dto.getEmail(),
                         Digest.getSHA(dto.getPassword()),
-                        null, // tokens,
-                        null, // employees,
                         dto.getName(),
                         UserDTS.T.toDomain(dto.getCreator()),
                         dto.getCreated(),

@@ -2,7 +2,6 @@ package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * User DTO - Data Transformation Object
@@ -13,9 +12,15 @@ public class User extends AbstractDTO implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
+    /*
+     * Relations
+     */
+    private String currentAvatar;
+    /*
+     * Properties
+     */
     private String email;
     private String password;
-    private List<String> tokens;
 
     /*
      * Constructors
@@ -28,21 +33,30 @@ public class User extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public User(String email, String password, List<String> tokens, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public User(String currentAvatar, String email, String password,
+                String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
+        this.currentAvatar = currentAvatar;
         this.email = email;
         this.password = password;
-        this.tokens = tokens;
     }
 
     /*
      * Getters/Setters
      */
+    public String getCurrentAvatar() {
+        return currentAvatar;
+    }
+
+    public void setCurrentAvatar(String currentAvatar) {
+        this.currentAvatar = currentAvatar;
+    }
+
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -50,15 +64,7 @@ public class User extends AbstractDTO implements Serializable {
         return password;
     }
 
-    public void setPassword(final String password) {
+    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<String> getTokens() {
-        return tokens;
-    }
-
-    public void setTokens(final List<String> tokens) {
-        this.tokens = tokens;
     }
 }
