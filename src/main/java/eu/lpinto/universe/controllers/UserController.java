@@ -4,9 +4,11 @@ import eu.lpinto.universe.api.util.Digest;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
+import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -26,8 +28,32 @@ public class UserController extends AbstractControllerCRUD<User> {
     @EJB
     private EmailController emailController;
 
+    @EJB
+    private ImageController imageController;
+
     public UserController() {
         super(User.class.getCanonicalName());
+    }
+
+    /*
+     * CRUD
+     */
+    @Override
+    public void doCreate(Long userID, Map<String, Object> options, User entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        Image newImage = null;
+
+        if (entity.getCurrentAvatar() != null) {
+            newImage = entity.getCurrentAvatar();
+            entity.setCurrentAvatar(null);
+        }
+
+        super.doCreate(userID, options, entity);
+
+        if (newImage != null) {
+            newImage.setName("User_" + entity.getId() + "_Image#1");
+            imageController.create(entity.getId(), options, newImage);
+            entity.setCurrentAvatar(newImage);
+        }
     }
 
     /*
@@ -152,7 +178,7 @@ public class UserController extends AbstractControllerCRUD<User> {
 
     @Override
     public Boolean assertPremissionsRead(Long userID, User entity) throws PermissionDeniedException {
-        return userID.equals(entity.getId());
+        return true;
     }
 
     @Override

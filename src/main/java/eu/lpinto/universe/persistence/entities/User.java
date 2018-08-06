@@ -22,22 +22,50 @@ public class User extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Basic(optional = false)
-    @Column(nullable = false)
-    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-             message = "Invalid email")
-    private String email;
+    /*
+     * Relations
+     */
+    @OneToOne(fetch = FetchType.EAGER)
+    private Image currentAvatar;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ApplicationUser_Image",
+               joinColumns = {
+                   @JoinColumn(name = "applicationUser_id", referencedColumnName = "id")},
+               inverseJoinColumns = {
+                   @JoinColumn(name = "image_id", referencedColumnName = "id")})
+    private List<Image> avatars;
 
     @Basic(optional = false)
-    @Column(nullable = false)
-    @Size(min = 1, max = 128, message = "Invalid password size")
-    private String password;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Column(nullable = false,
+            unique = true, // sed only in DDL generation
+            updatable = false,
+            length = 128)
+    @Size(min = 1, max = 128, message = "Invalid email size")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Token> tokens;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Employee> employees;
+
+    /*
+     * Properties
+     */
+    @Basic(optional = false)
+    @Column(nullable = false,
+            unique = true, // used only in DDL generation
+            updatable = false,
+            length = 50)
+    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+             message = "Invalid email")
+    @Size(min = 1, max = 50, message = "Invalid email size")
+    private String email;
+
+    @Basic(optional = false)
+    @Column(nullable = false,
+            length = 50)
+    @Size(min = 1, max = 128, message = "Invalid password size")
+    private String password;
 
     /*
      * Contructors
@@ -54,48 +82,48 @@ public class User extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
-    public User(final String email, final String password, final String name) {
-        super(name);
+    public User(final String email, final String password, final String firstName) {
+        super(firstName);
         this.email = email;
         this.password = password;
     }
 
-    public User(String email, String password, List<Token> tokens, List<Employee> employees, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
+    public User(Image currentAvatar, List<Image> avatars, List<Token> tokens, List<Employee> employees,
+                String email, String password,
+                String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
-        this.email = email;
-        this.password = password;
+        this.currentAvatar = currentAvatar;
+        this.avatars = avatars;
         this.tokens = tokens;
         this.employees = employees;
+        this.email = email;
+        this.password = password;
     }
 
     /*
      * Getters/Setters
      */
-    public String getEmail() {
-        return email;
+    public Image getCurrentAvatar() {
+        return currentAvatar;
     }
 
-    public void setEmail(final String email) {
-        assertNotNull(email);
-
-        this.email = email;
+    public void setCurrentAvatar(Image currentAvatar) {
+        this.currentAvatar = currentAvatar;
     }
 
-    public String getPassword() {
-        return password;
+    public List<Image> getAvatars() {
+        return avatars;
     }
 
-    public void setPassword(final String password) {
-        assertNotNull(password);
-
-        this.password = password;
+    public void setAvatars(List<Image> avatars) {
+        this.avatars = avatars;
     }
 
     public List<Token> getTokens() {
         return tokens;
     }
 
-    public void setTokens(final List<Token> tokens) {
+    public void setTokens(List<Token> tokens) {
         this.tokens = tokens;
     }
 
@@ -105,5 +133,21 @@ public class User extends AbstractEntity implements Serializable {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
