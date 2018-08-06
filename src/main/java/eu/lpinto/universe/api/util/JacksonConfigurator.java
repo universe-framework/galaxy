@@ -29,10 +29,10 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         /* Serialization */
-//        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
-//        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
