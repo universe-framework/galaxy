@@ -55,7 +55,7 @@ public class TokenController {
         return newToken;
     }
 
-    public void logout(final Long userID, final String token) {
+    public void logout(final Long userID, final String token) throws PreConditionException {
         Token session;
 
         session = facade.findByToken(token);

@@ -1,5 +1,6 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Feature;
 import eu.lpinto.universe.persistence.entities.PlanFeature;
 import java.util.List;
@@ -29,7 +30,7 @@ public class FeatureFacade extends AbstractFacade<Feature> {
     }
 
     @Override
-    public List<Feature> find(Map<String, Object> options) {
+    public List<Feature> find(Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("organization")) {
 
             Long orgID = (Long) options.get("organization");
@@ -48,7 +49,7 @@ public class FeatureFacade extends AbstractFacade<Feature> {
     }
 
     @Override
-    public Feature retrieve(Long id) {
+    public Feature retrieve(Long id) throws PreConditionException {
         Feature result = super.retrieve(id);
 
         result.setPlans(getEntityManager()

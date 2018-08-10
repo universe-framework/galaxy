@@ -1,5 +1,6 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Feature;
 import eu.lpinto.universe.persistence.entities.Plan;
 import eu.lpinto.universe.persistence.entities.PlanFeature;
@@ -40,7 +41,7 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
      * CRUD
      */
     @Override
-    public List<PlanFeature> find(final Map<String, Object> options) {
+    public List<PlanFeature> find(final Map<String, Object> options) throws PreConditionException {
         if (options == null) {
             return super.find(null);
 
@@ -61,7 +62,7 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
     }
 
     @Override
-    public PlanFeature retrieve(Long id) {
+    public PlanFeature retrieve(Long id) throws PreConditionException {
         PlanFeature result = super.retrieve(id);
 
         result.setPlan(getEntityManager()
@@ -78,7 +79,7 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
     }
 
     @Override
-    public void create(PlanFeature entity) {
+    public void create(PlanFeature entity) throws PreConditionException {
 
         if (entity.getPlan() == null) {
             throw new IllegalArgumentException("Plan cannot be null");
@@ -116,7 +117,7 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
     }
 
     @Override
-    public void edit(final PlanFeature newPlanFeature) {
+    public void edit(final PlanFeature newPlanFeature) throws PreConditionException {
 
         Plan plan = newPlanFeature.getPlan();
         Feature feature = newPlanFeature.getFeature();

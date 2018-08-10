@@ -51,8 +51,12 @@ public class Tokens extends AbstractService {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response logout(@HeaderParam("userID") final Long userID, @PathParam("id") final String id) {
-        controller.logout(userID, id);
+        try {
+            controller.logout(userID, id);
 
-        return noContent();
+            return noContent();
+        } catch (PreConditionException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
 }

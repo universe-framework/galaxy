@@ -1,10 +1,9 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
 import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
-import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     }
 
     @Override
-    public Organization retrieve(Long id) {
+    public Organization retrieve(Long id) throws PreConditionException {
         Organization savedOrganization = super.retrieve(id);
 
         savedOrganization.setStaff(getEntityManager()

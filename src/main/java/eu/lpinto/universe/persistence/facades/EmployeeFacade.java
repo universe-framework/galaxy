@@ -1,6 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.api.dto.Person;
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.EmployeeProfile;
@@ -39,7 +40,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
      * CRUD
      */
     @Override
-    public List<Employee> find(Map<String, Object> options) {
+    public List<Employee> find(Map<String, Object> options) throws PreConditionException {
         if (options != null) {
             if (options.containsKey("company")) {
                 if (options.containsKey("externalID")) {
@@ -77,7 +78,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
 
     @Override
     public void edit(final Employee newEmployee
-    ) {
+    ) throws PreConditionException {
         Employee savedEmployee = new Employee();
         Company company = new Company();
         Person person = new Person();

@@ -1,7 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -41,7 +41,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
     }
 
     @Override
-    public List<Worker> find(final Map<String, Object> options) {
+    public List<Worker> find(final Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("organization")) {
             Long organizationID = (Long) options.get("organization");
 

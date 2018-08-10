@@ -1,7 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Token;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -35,8 +35,7 @@ public class TokenFacade extends AbstractFacade<Token> {
                     .getSingleResult();
 
             return session;
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -45,7 +44,7 @@ public class TokenFacade extends AbstractFacade<Token> {
      * CRUD
      */
     @Override
-    public void create(final Token entity) {
+    public void create(final Token entity) throws PreConditionException {
         if (entity.getUser() != null && entity.getUser().getTokens() != null && !entity.getUser().getTokens().isEmpty()) {
             Token oldToken = entity.getUser().getTokens().get(0);
             this.remove(oldToken);

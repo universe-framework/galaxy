@@ -38,12 +38,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             throw new PermissionDeniedException();
         }
 
-        try {
-            return doFind(userID, options);
-
-        } catch (RuntimeException ex) {
-            throw internalError(ex);
-        }
+        return doFind(userID, options);
     }
 
     public List<E> doFind(final Long userID, final Map<String, Object> options) throws PreConditionException {
@@ -63,14 +58,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
          * Body
          */
         E savedEntity;
-        try {
-            savedEntity = doRetrieve(userID, options, id);
+        savedEntity = doRetrieve(userID, options, id);
 
-            if (savedEntity == null) {
-                throw new UnknownIdException(entityName, id);
-            }
-        } catch (RuntimeException ex) {
-            throw internalError(ex);
+        if (savedEntity == null) {
+            throw new UnknownIdException(entityName, id);
         }
 
         Boolean permission = assertPremissionsRead(userID, savedEntity);
@@ -99,12 +90,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             abstractEntity.setCreator(new User(userID));
         }
 
-        try {
-            doCreate(userID, options, entity);
-            return entity;
-        } catch (RuntimeException ex) {
-            throw internalError(ex);
-        }
+        doCreate(userID, options, entity);
+        return entity;
     }
 
     public void doCreate(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
@@ -139,15 +126,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             abstractEntity.setUpdater(new User(userID));
         }
 
-        try {
-            doUpdate(userID, options, entity);
-        } catch (RuntimeException ex) {
-
-            throw internalError(ex);
-        }
+        doUpdate(userID, options, entity);
     }
 
-    public void doUpdate(final Long userID, final Map<String, Object> options, final E entity) {
+    public void doUpdate(final Long userID, final Map<String, Object> options, final E entity) throws PreConditionException {
         getFacade().edit(entity);
     }
 
@@ -173,12 +155,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
             throw new PermissionDeniedException();
         }
 
-        try {
-            doDelete(userID, options, savedEntity);
-        } catch (RuntimeException ex) {
-
-            throw internalError(ex);
-        }
+        doDelete(userID, options, savedEntity);
     }
 
     public void doDelete(final Long userID, final Map<String, Object> options, E savedEntity) throws PreConditionException {
