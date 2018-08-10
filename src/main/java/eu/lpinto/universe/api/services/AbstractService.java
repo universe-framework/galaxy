@@ -37,12 +37,13 @@ public abstract class AbstractService {
 
             if (message != null && message.contains(": ")) {
                 message = message.split(": ")[1];
+            } else {
+                message = ex.getClass().getSimpleName();
             }
 
             return message;
 
-        }
-        else {
+        } else {
             return firstCause(ex.getCause());
         }
     }
@@ -96,7 +97,7 @@ public abstract class AbstractService {
     }
 
     protected static Response internalError(final Exception ex) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new FaultDTO(firstCause(ex))).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new Errors("system", firstCause(ex))).build();
     }
 
     /*
