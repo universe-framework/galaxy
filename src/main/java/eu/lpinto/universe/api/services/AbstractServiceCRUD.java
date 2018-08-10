@@ -180,8 +180,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             return ok(doCreate(userID, dto, options));
 
         } catch (PreConditionException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return conflict(ex.getMessage());
+            return unprocessableEntity(new Errors(ex.getErrors()));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
