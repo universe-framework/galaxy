@@ -1,7 +1,10 @@
 package eu.lpinto.universe.api.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
@@ -89,13 +92,21 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         options.put("user", userID);
 
         LOGGER.debug(requestID
-                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + " | " + Thread.currentThread().getStackTrace()[1].getClassName()
-                     + "\n" + optionsStr(options));
+                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
+                     + "\n" + optionsStr(options)
+        );
 
         /*
          * Body
          */
-        asyncResponse.resume(doFind(options));
+        Response doFind = doFind(options);
+
+        LOGGER.debug(requestID
+                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
+                     + "\n" + toJson(doFind.getEntity())
+        );
+
+        asyncResponse.resume(doFind);
     }
 
     public Response doFind(final Map<String, Object> options) throws PreConditionException {
@@ -153,7 +164,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         options.put("user", userID);
 
         LOGGER.debug(requestID
-                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
+                     + "\n\t" + uriInfo.getPath().substring(1)
                      + "\n\t " + optionsStr(options)
                      + "\n\t" + toJson(dto));
 
@@ -239,7 +251,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         options.put("request", requestID);
 
         LOGGER.debug(requestID
-                     + "\n\t" + Thread.currentThread().getStackTrace()[1].getMethodName() + "" + Thread.currentThread().getStackTrace()[1].getClassName()
+                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
                      + "\n\t " + optionsStr(options)
                      + "\n\t" + toJson(dto));
         asyncResponse.resume(doUpdate(userID, id, dto));
@@ -337,7 +349,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     private static String optionsStr(final Map<String, Object> options) {
         String result = "";
         for (Map.Entry<String, Object> a : options.entrySet()) {
-            result += "\t" + a.getKey() + " : " + toJson(a.getValue()) + "\n";
+            result += '\t' + a.getKey() + " : " + toJson(a.getValue()) + "\n";
         }
 
         return result;
@@ -345,8 +357,25 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     private static String toJson(final Object obj) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        /*
+         * Serialization
+         */
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
-            return new ObjectMapper().writeValueAsString(obj) + "\n";
+            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
         } catch (JsonProcessingException ex) {
             LOGGER.error("Cannot serialize object: " + obj);
             return "[cannot serialize]";
