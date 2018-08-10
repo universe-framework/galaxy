@@ -20,7 +20,6 @@ public abstract class AbstractController {
     protected static final String CLINIC_REMOVED = "Clinic Removed";
 
     protected static UnexpectedException internalError(final Exception ex) {
-        LOGGER.info("UnexpectedException", ex);
         return new UnexpectedException(firstCause(ex));
     }
 
