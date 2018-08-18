@@ -35,9 +35,7 @@ public abstract class AbstractService {
 
             String message = ex.getMessage();
 
-            if (message != null && message.contains(": ")) {
-                message = message.split(": ")[1];
-            } else {
+            if (message == null) {
                 message = ex.getClass().getSimpleName();
             }
 
