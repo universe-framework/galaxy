@@ -64,7 +64,7 @@ public class User extends AbstractEntity implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false,
             length = 50)
-    @Size(min = 1, max = 128, message = "Invalid password size")
+    @Size(min = 1, max = 256, message = "Invalid password size")
     private String password;
 
     /*
