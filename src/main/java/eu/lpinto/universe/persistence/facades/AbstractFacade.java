@@ -38,7 +38,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     @Override
     public T retrieve(final Long id) throws PreConditionException {
         if (id == null) {
-            throw new IllegalArgumentException("Cannot perform a retrieve retrieve for " + this.entityClass.getCanonicalName() + " with id [null]");
+            throw new IllegalArgumentException("Cannot perform a retrieve for " + this.entityClass.getSimpleName() + " with id [null]");
         }
 
         return getEntityManager().find(entityClass, id);
