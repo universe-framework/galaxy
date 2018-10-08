@@ -21,11 +21,12 @@ public abstract class AbstractEntity implements UniverseEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     @Size(min = 1, message = "Invalid name size")
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
     private User creator;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -33,6 +34,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     private Calendar created;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updater_id")
     private User updater;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -75,6 +77,13 @@ public abstract class AbstractEntity implements UniverseEntity {
         this.created = created;
         this.updater = updater;
         this.updated = updated;
+    }
+
+    /*
+     * Public helpers
+     */
+    public String buildCode(String part1, String part2) {
+        return part1.replaceAll("\\s+", "_").toLowerCase() + "-" + part2.replaceAll("\\s+", "_").toLowerCase();
     }
 
     /*
@@ -170,7 +179,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     }
 
     /*
-     * Helpers
+     * Protected helpers
      */
     protected void assertNotNull(final List<Object> field) {
         if (field == null || field.isEmpty()) {
