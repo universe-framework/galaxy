@@ -64,6 +64,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
          * Setup
          */
         final String requestID = UUID.randomUUID().toString();
+        final Long startMillis = System.currentTimeMillis();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
         options.put("request", requestID);
 
@@ -90,6 +91,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
 
         options.put("user", userID);
+        options.put("startMillis", startMillis);
 
         LOGGER.debug(requestID
                      + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
@@ -101,10 +103,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
          */
         Response doFind = doFind(options);
 
-        LOGGER.debug(requestID
-                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
-                     + "\n" + toJson(doFind.getEntity())
-        );
+        logResponse(options, uriInfo, doFind.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
 
         asyncResponse.resume(doFind);
     }
@@ -136,6 +135,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
          * Setup
          */
         final String requestID = UUID.randomUUID().toString();
+        final Long startMillis = System.currentTimeMillis();
         Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
         options.put("request", requestID);
 
@@ -162,6 +162,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
 
         options.put("user", userID);
+        options.put("startMillis", startMillis);
 
         LOGGER.debug(requestID
                      + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
@@ -172,7 +173,11 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         /*
          * Body
          */
-        asyncResponse.resume(asyncCreate(userID, dto, options));
+        Response asyncCreate = asyncCreate(userID, dto, options);
+
+        logResponse(options, uriInfo, asyncCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        asyncResponse.resume(asyncCreate);
     }
 
     public Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
@@ -353,6 +358,25 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         return result;
 
+    }
+
+    private void logResponse(final Map<String, Object> options, final UriInfo uriInfo, Object response, String methodName) {
+        String body;
+
+        if (response instanceof List && ((List) response).size() > 3) {
+            body = "Result: " + ((List) response).size() + " objects.";
+        } else {
+            body = toJson(response);
+        }
+
+        LOGGER.debug(
+                "\n↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘ RESPONSE ↘↘"
+                + "\n\tID: " + options.get("request")
+                + "\n\tServide: " + uriInfo.getPath().substring(1) + "#" + methodName
+                + "\n\t Duration: " + (System.currentTimeMillis() - (Long) options.get("startMillis"))
+                + "\n" + body
+                + "\n↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗"
+        );
     }
 
     private static String toJson(final Object obj) {
