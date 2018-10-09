@@ -60,51 +60,19 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                      final @Context UriInfo uriInfo,
                      final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
 
-        /*
-         * Setup
-         */
-        final String requestID = UUID.randomUUID().toString();
-        final Long startMillis = System.currentTimeMillis();
-        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
-        options.put("request", requestID);
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
 
-        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        for (String key : queryParameters.keySet()) {
-            List<String> values = queryParameters.get(key);
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
 
-            if (values != null && !values.isEmpty() && values.size() == 1) {
-
-                try {
-                    Long l = Long.valueOf(values.get(0));
-                    options.put(key, l);
-                } catch (NumberFormatException ex) {
-                    options.put(key, values.get(0));
-                }
-
-                if ("true".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.TRUE);
-                }
-                if ("false".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.FALSE);
-                }
-            }
-        }
-
-        options.put("user", userID);
-        options.put("startMillis", startMillis);
-
-        LOGGER.debug(requestID
-                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
-                     + "\n" + optionsStr(options)
-        );
-
-        /*
-         * Body
-         */
+        /* Body */
         Response doFind = doFind(options);
 
+        /* Log response */
         logResponse(options, uriInfo, doFind.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
 
+        /* return */
         asyncResponse.resume(doFind);
     }
 
@@ -131,52 +99,19 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                        final @HeaderParam("userID") Long userID,
                        final @HeaderParam("Accept-Language") String locale,
                        final D dto) {
-        /*
-         * Setup
-         */
-        final String requestID = UUID.randomUUID().toString();
-        final Long startMillis = System.currentTimeMillis();
-        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
-        options.put("request", requestID);
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
 
-        try {
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
 
-            MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-            for (String key : queryParameters.keySet()) {
-                List<String> values = queryParameters.get(key);
-
-                if (values != null && !values.isEmpty() && values.size() == 1) {
-
-                    try {
-                        Long l = Long.valueOf(values.get(0));
-                        options.put(key, l);
-                    } catch (NumberFormatException ex) {
-                        options.put(key, values.get(0));
-                    }
-                }
-            }
-
-        } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            asyncResponse.resume(internalError(ex));
-        }
-
-        options.put("user", userID);
-        options.put("startMillis", startMillis);
-
-        LOGGER.debug(requestID
-                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
-                     + "\n\t" + uriInfo.getPath().substring(1)
-                     + "\n\t " + optionsStr(options)
-                     + "\n\t" + toJson(dto));
-
-        /*
-         * Body
-         */
+        /* Body */
         Response asyncCreate = asyncCreate(userID, dto, options);
 
+        /* Log response */
         logResponse(options, uriInfo, asyncCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
 
+        /* return */
         asyncResponse.resume(asyncCreate);
     }
 
@@ -213,7 +148,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                          final @Context UriInfo uriInfo,
                          final @HeaderParam("userID") Long userID,
                          final @PathParam("id") Long id) throws PermissionDeniedException {
-        asyncResponse.resume(doRetrieve(userID, id));
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
+
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* Body */
+        Response doRetrieve = doRetrieve(userID, id);
+
+        /* Log response */
+        logResponse(options, uriInfo, doRetrieve.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* return */
+        asyncResponse.resume(doRetrieve);
     }
 
     public Response doRetrieve(final Long userID, Long id) throws PermissionDeniedException {
@@ -250,15 +198,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                        final @HeaderParam("userID") Long userID,
                        final @PathParam("id") Long id,
                        final D dto) {
-        final String requestID = UUID.randomUUID().toString();
-        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
-        options.put("request", requestID);
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
 
-        LOGGER.debug(requestID
-                     + "\n\t" + uriInfo.getPath().substring(1) + "#" + Thread.currentThread().getStackTrace()[1].getMethodName()
-                     + "\n\t " + optionsStr(options)
-                     + "\n\t" + toJson(dto));
-        asyncResponse.resume(doUpdate(userID, id, dto));
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
+
+        /* Body */
+        Response doUpdate = doUpdate(userID, id, dto);
+
+        /* Log response */
+        logResponse(options, uriInfo, doUpdate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* return */
+        asyncResponse.resume(doUpdate);
     }
 
     public Response doUpdate(final Long userID, final Long id, final D dto) {
@@ -300,8 +253,22 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void delete(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
                        final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
-        asyncResponse.resume(doDelete(userID, id));
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
+
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* Body */
+        Response doDelete = doDelete(userID, id);
+
+        /* Log response */
+        logResponse(options, uriInfo, doDelete.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* return */
+        asyncResponse.resume(doDelete);
     }
 
     public Response doDelete(final Long userID, final Long id) {
@@ -360,7 +327,52 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
     }
 
-    private void logResponse(final Map<String, Object> options, final UriInfo uriInfo, Object response, String methodName) {
+    private Map<String, Object> buildOptions(final UriInfo uriInfo, final Long userID) {
+        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
+
+        options.put("request", UUID.randomUUID().toString());
+        options.put("startMillis", System.currentTimeMillis());
+
+        options.put("user", userID);
+
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        for (String key : queryParameters.keySet()) {
+            List<String> values = queryParameters.get(key);
+
+            if (values != null && !values.isEmpty() && values.size() == 1) {
+
+                if ("true".equalsIgnoreCase(values.get(0))) {
+                    options.put(key, Boolean.TRUE);
+
+                } else if ("false".equalsIgnoreCase(values.get(0))) {
+                    options.put(key, Boolean.FALSE);
+
+                } else {
+                    try {
+                        Long l = Long.valueOf(values.get(0));
+                        options.put(key, l);
+                    } catch (NumberFormatException ex) {
+                        options.put(key, values.get(0));
+                    }
+                }
+
+            }
+        }
+
+        return options;
+    }
+
+    private void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName) {
+        logRequest(uriInfo, options, methodName, null);
+    }
+
+    private void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final D dto) {
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\\n\tID: {}\n\tServide: {}#{}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+                     options.get("request"), uriInfo.getPath().substring(1), methodName, dto == null ? "" : toJson(dto)
+        );
+    }
+
+    private void logResponse(final Map<String, Object> options, final UriInfo uriInfo, final Object response, final String methodName) {
         String body;
 
         if (response instanceof List && ((List) response).size() > 3) {
@@ -369,13 +381,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             body = toJson(response);
         }
 
-        LOGGER.debug(
-                "\n↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘↘ RESPONSE ↘↘"
-                + "\n\tID: " + options.get("request")
-                + "\n\tServide: " + uriInfo.getPath().substring(1) + "#" + methodName
-                + "\n\t Duration: " + (System.currentTimeMillis() - (Long) options.get("startMillis"))
-                + "\n" + body
-                + "\n↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗↗"
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->\n\tID: {}\n\tServide: {}#{}\n\t Duration: {}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+                     options.get("request"), uriInfo.getPath().substring(1), methodName, (System.currentTimeMillis() - (Long) options.get("startMillis")), body
         );
     }
 
