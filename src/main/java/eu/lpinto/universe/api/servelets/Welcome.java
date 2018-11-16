@@ -67,7 +67,7 @@ public class Welcome extends HttpServlet {
             out.println("          <div class='site-header-header'>");
             out.println("            <div class='site-header-brand'>");
             out.println("              <a href='https://github.com/universe-framework'>");
-            out.println("                Universe Framwork");
+            out.println("                Universe Framework");
             out.println("              </a>");
             out.println("            </div>");
             out.println("            <a class='primary-nav-toggle' href='#'>");
@@ -102,7 +102,7 @@ public class Welcome extends HttpServlet {
             out.println("                        </div>");
             out.println("                      </div>");
             out.println("                    </div> <!-- .countdown -->");
-            out.println("                    <p>Project built using the <a href='https://github.com/universe-framework'>Universe Framwork</a>.</p>");
+            out.println("                    <p>Project built using the <a href='https://github.com/universe-framework'>Universe Framework</a>.</p>");
             out.println("                    <p>Running <b>" + UniverseFundamentals.ENV + "</b> enviroment.</p>");
             out.println("                  </div>");
             out.println("                </div>");
