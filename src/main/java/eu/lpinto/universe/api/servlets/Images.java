@@ -1,4 +1,4 @@
-package eu.lpinto.universe.api.servelets;
+package eu.lpinto.universe.api.servlets;
 
 import eu.lpinto.universe.controllers.CompanyController;
 import eu.lpinto.universe.controllers.ImageController;

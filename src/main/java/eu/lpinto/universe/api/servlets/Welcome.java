@@ -1,4 +1,4 @@
-package eu.lpinto.universe.api.servelets;
+package eu.lpinto.universe.api.servlets;
 
 /*
  * To change this license header, choose License Headers in Project Properties. To change this template file, choose
