@@ -17,6 +17,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
     private Calendar created;
     private Long updater;
     private Calendar updated;
+    private Calendar deleted;
 
     /*
      * Constructors
@@ -44,6 +45,16 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.created = created;
         this.updater = updater;
         this.updated = updated;
+    }
+
+    public AbstractDTO(String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted, Long id) {
+        super(id);
+        this.name = name;
+        this.creator = creator;
+        this.created = created;
+        this.updater = updater;
+        this.updated = updated;
+        this.deleted = deleted;
     }
 
     /*
@@ -87,5 +98,13 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
 
     public void setUpdated(Calendar updated) {
         this.updated = updated;
+    }
+
+    public Calendar getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Calendar deleted) {
+        this.deleted = deleted;
     }
 }

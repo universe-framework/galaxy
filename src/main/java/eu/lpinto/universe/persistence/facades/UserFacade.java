@@ -1,8 +1,6 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +45,7 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByName(final String name) {
         try {
             return (User) em.createNamedQuery("User.findByName").setParameter("name", name).getSingleResult();
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -56,8 +53,7 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByEmail(final String email) {
         try {
             return (User) em.createNamedQuery("User.findByEmail").setParameter("email", email).getSingleResult();
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -78,16 +74,14 @@ public class UserFacade extends AbstractFacade<User> {
                 users = getEntityManager().createQuery(
                         "SELECT u FROM User u WHERE (u.person.clinicJobs IS EMPTY AND u.person.shelters IS EMPTY)", User.class)
                         .getResultList();
-            }
-            else {
+            } else {
                 users = getEntityManager().createQuery(
                         "SELECT u FROM User u WHERE (u.person.clinicJobs IS NOT EMPTY AND u.person.shelters IS NOT EMPTY)", User.class)
                         .getResultList();
             }
 
             return users;
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
