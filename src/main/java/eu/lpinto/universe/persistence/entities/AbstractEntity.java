@@ -45,6 +45,13 @@ public abstract class AbstractEntity implements UniverseEntity {
     private boolean full = false;
 
     /*
+     * Public helpers
+     */
+    static public String buildCode(String part1, String part2) {
+        return part1.replaceAll("\\s+", "_").toLowerCase() + "-" + part2.replaceAll("\\s+", "_").toLowerCase();
+    }
+
+    /*
      * Constructors
      */
     public AbstractEntity() {
@@ -77,13 +84,6 @@ public abstract class AbstractEntity implements UniverseEntity {
         this.created = created;
         this.updater = updater;
         this.updated = updated;
-    }
-
-    /*
-     * Public helpers
-     */
-    public String buildCode(String part1, String part2) {
-        return part1.replaceAll("\\s+", "_").toLowerCase() + "-" + part2.replaceAll("\\s+", "_").toLowerCase();
     }
 
     /*
@@ -132,6 +132,16 @@ public abstract class AbstractEntity implements UniverseEntity {
         assertNotNull(name);
 
         this.name = name;
+    }
+
+    public void setName(final Object obj1, final Object obj2) {
+        String str1 = obj1 == null ? this.getClass().getSimpleName() : obj1.toString();
+        String str2 = obj2 == null ? this.getClass().getSimpleName() : obj2.toString();
+
+        String newName = buildCode(str1, str2);
+        assertNotNull(newName);
+
+        this.name = newName;
     }
 
     public Calendar getCreated() {

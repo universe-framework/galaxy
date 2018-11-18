@@ -1,18 +1,14 @@
 package eu.lpinto.universe.controllers;
 
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.OrganizationFacade;
-import eu.lpinto.universe.persistence.facades.WorkerFacade;
-import eu.lpinto.universe.controllers.AbstractControllerCRUD;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.*;
 import eu.lpinto.universe.persistence.facades.CompanyFacade;
+import eu.lpinto.universe.persistence.facades.OrganizationFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
+import eu.lpinto.universe.persistence.facades.WorkerFacade;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,9 +96,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         if (newOrganization instanceof UniverseEntity) {
             Organization organizationEntity = (Organization) newOrganization;
 
-            Calendar newNow = options == null || options.get("now") == null
-                              ? new GregorianCalendar()
-                              : (Calendar) options.get("now");
+            Calendar newNow = options.get("now") == null ? new GregorianCalendar() : (Calendar) options.get("now");
             organizationEntity.setCreated(newNow);
             organizationEntity.setUpdated(newNow);
         }
@@ -113,7 +107,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         super.doCreate(userID, options, newOrganization);
 
         Worker worker = new Worker();
-        worker.setName(newOrganization.getName() + "_" + currentEmployee.getUser().getName());
+        worker.setName(newOrganization.getName(), currentEmployee.getUser().getName());
         worker.setEmail(user.getEmail());
         worker.setRole(WorkerProfile.ADMIN);
         worker.setEnable(WORKER_ENABLE_DEFAULT);

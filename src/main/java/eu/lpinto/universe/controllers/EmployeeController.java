@@ -45,7 +45,7 @@ public class EmployeeController extends AbstractControllerCRUD<Employee> {
             if (savedCompany == null) {
                 throw new IllegalArgumentException("There is no Company with that id");
             }
-            entity.setName(savedCompany.getName() + "_" + savedUser.getName());
+            entity.setName(savedCompany.getName(), savedUser.getName());
 
             super.doCreate(userID, options, entity);
 
