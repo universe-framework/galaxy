@@ -28,6 +28,15 @@ public abstract class AbstractTypeDTO extends AbstractDTO implements Serializabl
         super(id);
     }
 
+    public AbstractTypeDTO(Long parent, Boolean enable, String code, String description, String name, Long creator,
+            Calendar created, Long updater, Calendar updated, Long id) {
+        super(name, creator, created, updater, updated, id);
+        this.parent = parent;
+        this.enable = enable;
+        this.code = code;
+        this.description = description;
+    }
+
     public AbstractTypeDTO(Long organization, Long parent, Boolean enable, String code, String description, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.organization = organization;
