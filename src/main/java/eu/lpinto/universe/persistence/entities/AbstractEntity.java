@@ -41,6 +41,10 @@ public abstract class AbstractEntity implements UniverseEntity {
     @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Calendar updated;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(updatable = false)
+    private Calendar deleted;
+
     @Transient
     private boolean full = false;
 
@@ -85,6 +89,16 @@ public abstract class AbstractEntity implements UniverseEntity {
         this.created = created;
         this.updater = updater;
         this.updated = updated;
+    }
+
+    public AbstractEntity(Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
+        this.id = id;
+        this.name = name;
+        this.creator = creator;
+        this.created = created;
+        this.updater = updater;
+        this.updated = updated;
+        this.deleted = deleted;
     }
 
     /*
@@ -187,6 +201,16 @@ public abstract class AbstractEntity implements UniverseEntity {
 
     public void setUpdater(final User updater) {
         this.updater = updater;
+    }
+
+    public Calendar getDeleted() {
+        return updated;
+    }
+
+    public void setDeleted(final Calendar deleted) {
+        assertNotNull(deleted);
+
+        this.deleted = deleted;
     }
 
     /*
