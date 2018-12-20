@@ -52,7 +52,8 @@ public abstract class AbstractEntity implements UniverseEntity {
      * Public helpers
      */
     static public String buildCode(String part1, String part2) {
-        return part1.replaceAll("\\s+", "_").toLowerCase() + "-" + part2.replaceAll("\\s+", "_").toLowerCase();
+        return part1 == null || part2 == null ? null
+               : part1.replaceAll("\\s+", "_").toLowerCase() + "-" + part2.replaceAll("\\s+", "_").toLowerCase();
     }
 
     /*
