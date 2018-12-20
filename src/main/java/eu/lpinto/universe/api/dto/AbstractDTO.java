@@ -47,7 +47,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.updated = updated;
     }
 
-    public AbstractDTO(String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted, Long id) {
+    public AbstractDTO(Long id, String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted) {
         super(id);
         this.name = name;
         this.creator = creator;
