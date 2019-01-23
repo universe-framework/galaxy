@@ -286,8 +286,8 @@ public class Organization extends AbstractEntity implements Serializable, Univer
             return false;
         }
 
-        List<PlanFeature> features = thisPlan.getFeatures();
+        List<PlanFeature> planFeatures = thisPlan.getFeatures();
 
-        return features.stream().anyMatch((pf) -> (moduleName.equals(pf.getFeature().getName())));
+        return planFeatures.stream().anyMatch((pf) -> (moduleName.equals(pf.getFeature().getName())));
     }
 }
