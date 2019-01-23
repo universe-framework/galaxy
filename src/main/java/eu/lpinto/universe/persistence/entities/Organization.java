@@ -273,8 +273,7 @@ public class Organization extends AbstractEntity implements Serializable, Univer
     /*
     * Helpers
     */
-    
-    public Boolean hasSalesModule() {
+    public Boolean hasModule(final String module) {
         Plan thisPlan;
         
         if(this.getPlan() != null || this.getPlan().getId() != null) {
@@ -289,6 +288,6 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
         List<PlanFeature> features = thisPlan.getFeatures();
 
-        return features.stream().anyMatch((pf) -> ("sales".equals(pf.getFeature().getName())));
+        return features.stream().anyMatch((pf) -> (module.equals(pf.getFeature().getName())));
     }
 }
