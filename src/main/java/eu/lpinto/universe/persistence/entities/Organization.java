@@ -269,4 +269,26 @@ public class Organization extends AbstractEntity implements Serializable, Univer
     public void setCustomField(String customField) {
         this.customField = customField;
     }
+    
+    /*
+    * Helpers
+    */
+    
+    public Boolean hasSalesModule() {
+        Plan thisPlan;
+        
+        if(this.getPlan() != null || this.getPlan().getId() != null) {
+            thisPlan = this.getPlan();
+            
+        } else if (this.getCompany().getPlan() != null || this.getCompany().getPlan().getId() != null) {
+            thisPlan = this.getPlan();
+            
+        } else {
+            return false;
+        }
+
+        List<PlanFeature> features = thisPlan.getFeatures();
+
+        return features.stream().anyMatch((pf) -> ("sales".equals(pf.getFeature().getName())));
+    }
 }
