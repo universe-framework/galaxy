@@ -21,7 +21,9 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
             return new eu.lpinto.universe.api.dto.Company(
                     entity.getPhone(), entity.getFacebook(), entity.getEmail(), entity.getVatNumber(), ImageDTS.id(entity.getSelectedAvatar()),
                     PlanDTS.id(entity.getPlan()), CompanyDTS.id(entity.getParent()),
-                    AbstractDTS.abstractIDs(entity.getChildren()), ImageDTS.T.ids(entity.getAvatars()),
+                    entity.getCustomField(),
+                    AbstractDTS.abstractIDs(entity.getChildren()),
+                    ImageDTS.T.ids(entity.getAvatars()),
                     entity.getName(),
                     AbstractDTS.id(entity.getCreator()),
                     entity.getCreated(),
@@ -32,7 +34,9 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
         } else {
             return new eu.lpinto.universe.api.dto.Company(
                     entity.getPhone(), entity.getFacebook(), entity.getEmail(), entity.getVatNumber(), ImageDTS.id(entity.getSelectedAvatar()),
-                    PlanDTS.id(entity.getPlan()), CompanyDTS.id(entity.getParent()),
+                    PlanDTS.id(entity.getPlan()),
+                    CompanyDTS.id(entity.getParent()),
+                    entity.getCustomField(),
                     null, null,
                     entity.getName(),
                     AbstractDTS.id(entity.getCreator()),
@@ -55,8 +59,9 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
     @Override
     public Company toDomain(eu.lpinto.universe.api.dto.Company dto) {
         return new Company(dto.getPhone(), dto.getFacebook(), dto.getEmail(), dto.getVatNumber(), ImageDTS.T.toDomain(dto.getAvatar()),
-                                PlanDTS.T.toDomain(dto.getPlan()), CompanyDTS.T.toDomain(dto.getParent()),
-                                null, null,
-                                dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());
+                           PlanDTS.T.toDomain(dto.getPlan()), CompanyDTS.T.toDomain(dto.getParent()),
+                           dto.getCustomField(),
+                           null, null,
+                           dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());
     }
 }
