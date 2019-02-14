@@ -102,7 +102,6 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         }
 
         newOrganization.setEnable(ENABLE_DEFAULT);
-        newOrganization.setPlan(new Plan(PLAN_DEFAULT));
         newOrganization.setCompany(currentEmployee.getCompany());
         super.doCreate(userID, options, newOrganization);
 
