@@ -24,6 +24,7 @@ public class Company extends AbstractEntity implements Serializable {
     private String facebook;
     private String email;
     private String vatNumber;
+    private String customField;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selectedAvatar_id")
@@ -62,8 +63,10 @@ public class Company extends AbstractEntity implements Serializable {
         super(id);
     }
 
-    public Company(final String phone, final String facebook, final String email, final String businessHours, final Image selectedAvatar, final Plan plan, final Company parent,
-                   final List<Company> children, final List<Image> avatars, final Long id, final String name, final Calendar created, final Calendar updated) {
+    public Company(final String phone, final String facebook, final String email, final String businessHours,
+                   final Image selectedAvatar, final Plan plan, final Company parent, String customField,
+                   final List<Company> children, final List<Image> avatars, final Long id, final String name, final Calendar created, final Calendar updated
+    ) {
         super(id, name, created, updated);
         this.phone = phone;
         this.facebook = facebook;
@@ -72,6 +75,7 @@ public class Company extends AbstractEntity implements Serializable {
         this.selectedAvatar = selectedAvatar;
         this.plan = plan;
         this.parent = parent;
+        this.customField = customField;
         this.children = children;
         this.avatars = avatars;
     }
@@ -113,6 +117,14 @@ public class Company extends AbstractEntity implements Serializable {
     public void setVatNumber(final String vatNumber) {
         assertNotNull(vatNumber);
         this.vatNumber = vatNumber;
+    }
+
+    public String getCustomField() {
+        return customField;
+    }
+
+    public void setCustomField(String customField) {
+        this.customField = customField;
     }
 
     public Image getSelectedAvatar() {

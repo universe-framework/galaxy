@@ -21,6 +21,7 @@ public class Company extends AbstractDTO implements Serializable {
     private String facebook;
     private String email;
     private String vatNumber;
+    private String customField;
 
     private List<Long> children;
     private List<Long> avatars;
@@ -35,7 +36,8 @@ public class Company extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public Company(String phone, String facebook, String email, String vatNumber, Long avatar, Long plan, Long parent, List<Long> children, List<Long> avatars, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
+    public Company(String phone, String facebook, String email, String vatNumber, Long avatar, Long plan, Long parent, String customField,
+                   List<Long> children, List<Long> avatars, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.phone = phone;
         this.facebook = facebook;
@@ -44,6 +46,7 @@ public class Company extends AbstractDTO implements Serializable {
         this.avatar = avatar;
         this.plan = plan;
         this.parent = parent;
+        this.customField = customField;
         this.children = children;
         this.avatars = avatars;
     }
@@ -105,6 +108,14 @@ public class Company extends AbstractDTO implements Serializable {
 
     public void setParent(final Long parent) {
         this.parent = parent;
+    }
+
+    public String getCustomField() {
+        return customField;
+    }
+
+    public void setCustomField(String customField) {
+        this.customField = customField;
     }
 
     public List<Long> getChildren() {
