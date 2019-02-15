@@ -23,7 +23,6 @@ import javax.ejb.Stateless;
 public class OrganizationController extends AbstractControllerCRUD<Organization> {
 
     private static final Boolean ENABLE_DEFAULT = true;
-    private static final Long PLAN_DEFAULT = 1l;
     private static final Boolean WORKER_ENABLE_DEFAULT = true;
 
     @EJB
