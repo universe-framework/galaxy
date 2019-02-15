@@ -191,4 +191,22 @@ public class Company extends AbstractEntity implements Serializable {
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
     }
+    
+    /*
+    * Helpers
+    */
+    public Boolean hasFeature(final String featureName) {
+        Plan thisPlan;
+        
+        if(this.getPlan() != null || this.getPlan().getId() != null) {
+            thisPlan = this.getPlan();
+            
+        } else {
+            return false;
+        }
+
+        List<PlanFeature> planFeatures = thisPlan.getFeatures();
+
+        return planFeatures.stream().anyMatch((pf) -> (featureName.equals(pf.getFeature().getName())));
+    }
 }

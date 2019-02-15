@@ -23,7 +23,6 @@ import javax.ejb.Stateless;
 public class OrganizationController extends AbstractControllerCRUD<Organization> {
 
     private static final Boolean ENABLE_DEFAULT = true;
-    private static final Long PLAN_DEFAULT = 1l;
     private static final Boolean WORKER_ENABLE_DEFAULT = true;
 
     @EJB
@@ -102,7 +101,6 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         }
 
         newOrganization.setEnable(ENABLE_DEFAULT);
-        newOrganization.setPlan(new Plan(PLAN_DEFAULT));
         newOrganization.setCompany(currentEmployee.getCompany());
         super.doCreate(userID, options, newOrganization);
 

@@ -21,7 +21,6 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
     private String fax;
     private String phone;
     private List<Long> staff;
-    private Long plan;
     private String street;
     private String town;
     private String zip;
@@ -47,7 +46,7 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
     }
 
     public OrganizationDTO(String country, String clientID, String clientSecret, Boolean enable,
-                           String email, String fax, String phone, Long plan, List<Long> staff, String street,
+                           String email, String fax, String phone, List<Long> staff, String street,
                            String town, String zip, String website, List<Long> workers,
                            Long company, Long externalID, String calendarID, Long selectedAvatar, List<Long> avatars, String billingID,
                            String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
@@ -59,7 +58,6 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
         this.email = email;
         this.fax = fax;
         this.phone = phone;
-        this.plan = plan;
         this.staff = staff;
         this.street = street;
         this.town = town;
@@ -84,14 +82,6 @@ public class OrganizationDTO extends AbstractDTO implements Serializable {
 
     public String getClientID() {
         return clientID;
-    }
-
-    public Long getPlan() {
-        return plan;
-    }
-
-    public void setPlan(Long plan) {
-        this.plan = plan;
     }
 
     public void setClientID(String clientID) {
