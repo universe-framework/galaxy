@@ -38,7 +38,7 @@ public class Company extends AbstractEntity implements Serializable {
     @JoinColumn(name = "parent_id")
     private Company parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Company> children;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -191,16 +191,16 @@ public class Company extends AbstractEntity implements Serializable {
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
     }
-    
+
     /*
-    * Helpers
-    */
+     * Helpers
+     */
     public Boolean hasFeature(final String featureName) {
         Plan thisPlan;
-        
-        if(this.getPlan() != null || this.getPlan().getId() != null) {
+
+        if (this.getPlan() != null || this.getPlan().getId() != null) {
             thisPlan = this.getPlan();
-            
+
         } else {
             return false;
         }

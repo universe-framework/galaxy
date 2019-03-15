@@ -47,6 +47,8 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/plans", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/features", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/planFeatures", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/companies", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/companies", HttpMethod.POST);
     }
 
     @Override
@@ -127,7 +129,6 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
         if (service[1].startsWith("/tokens/")
             || service[1].startsWith("/invites")
-            || service[1].startsWith("/companies/")
             || service[1].startsWith("/organizations/")) {
             return true;
         }
