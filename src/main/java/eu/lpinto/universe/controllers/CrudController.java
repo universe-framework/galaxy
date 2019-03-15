@@ -18,6 +18,8 @@ public interface CrudController<E extends UniverseEntity> {
 
     public E retrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 
+    public List<E> create(final Long userID, final Map<String, Object> options, final List<E> entities) throws UnknownIdException, PermissionDeniedException, PreConditionException;
+
     public E create(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException;
 
     public void update(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException;

@@ -62,6 +62,17 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     }
 
     @Override
+    public void create(final List<T> entities) throws PreConditionException {
+        if (entities == null || entities.isEmpty()) {
+            return;
+        }
+
+        for (T entity : entities) {
+            create(entity);
+        }
+    }
+
+    @Override
     public void create(final T entity) throws PreConditionException {
         create(entity, null);
     }

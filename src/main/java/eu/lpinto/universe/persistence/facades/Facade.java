@@ -16,6 +16,8 @@ public interface Facade<T> {
 
     public T retrieve(final Long id) throws PreConditionException;
 
+    public void create(final List<T> entities) throws PreConditionException;
+
     public void create(final T entity) throws PreConditionException;
 
     public void create(final T entity, Map<String, Object> options) throws PreConditionException;
