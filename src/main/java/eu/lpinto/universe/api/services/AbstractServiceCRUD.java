@@ -91,6 +91,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     @POST
+    @Path("list")
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

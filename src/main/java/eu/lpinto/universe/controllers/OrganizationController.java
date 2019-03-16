@@ -73,6 +73,11 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
          * Method Body
          */
         Company savedCompany = companyFacade.retrieve(newOrganization.getCompany().getId());
+
+        if (savedCompany == null) {
+            throw new PreConditionException("company", "unknown");
+        }
+
         List<Employee> employees = savedCompany.getEmployees();
 
         Employee currentEmployee = null;
