@@ -20,6 +20,8 @@ public class RootService {
     public Map<String, String> get() {
         Map<String, String> result = new HashMap<>(2);
         result.put("application", UniverseFundamentals.APP_NAME);
+        result.put("base-url", "/" + UniverseFundamentals.REST_BASE_URI);
+        result.put("version", UniverseFundamentals.VERSION);
 
         return result;
     }

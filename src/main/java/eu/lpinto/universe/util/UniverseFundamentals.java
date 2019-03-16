@@ -15,6 +15,7 @@ public final class UniverseFundamentals {
 
     static public final String ENV;
     static public final String HOST;
+    static public final String VERSION;
 
     /* Email */
     static public final String SENDER_ADDR;
@@ -78,6 +79,7 @@ public final class UniverseFundamentals {
             AVATAR_DEFAULT_FILE_NAME = defaultName;
 
             HOST = properties.getProperty("HOST");
+            VERSION = properties.getProperty("VERSION");
 
             /*
              * Erroes
