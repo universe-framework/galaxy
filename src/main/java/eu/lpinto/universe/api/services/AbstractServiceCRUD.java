@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
  * REST service interface for users.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
- * @param <E> Domain AbstractEntityDTO
- * @param <D> DTO
- * @param <C> Controller
+ * @param <E>   Domain AbstractEntityDTO
+ * @param <D>   DTO
+ * @param <C>   Controller
  * @param <DTS> DTS service
  */
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
@@ -57,8 +57,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Produces(value = MediaType.APPLICATION_JSON)
     public void find(@Suspended final AsyncResponse asyncResponse,
-            final @Context UriInfo uriInfo,
-            final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+                     final @Context UriInfo uriInfo,
+                     final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
 
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
@@ -91,33 +91,34 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     @POST
+    @Path("list")
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void create(@Suspended final AsyncResponse asyncResponse,
-            final @Context UriInfo uriInfo,
-            final @HeaderParam("userID") Long userID,
-            final @HeaderParam("Accept-Language") String locale,
-            final D dto) {
+    public void createList(@Suspended final AsyncResponse asyncResponse,
+                           final @Context UriInfo uriInfo,
+                           final @HeaderParam("userID") Long userID,
+                           final @HeaderParam("Accept-Language") String locale,
+                           final List<D> dto) {
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
 
         /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName() + "([" + dto.size() + " ])");
 
         /* Body */
-        Response asyncCreate = asyncCreate(userID, dto, options);
+        Response doCreate = doCreate(userID, dto, options);
 
         /* Log response */
-        logResponse(options, uriInfo, asyncCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        logResponse(options, uriInfo, doCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
 
         /* return */
-        asyncResponse.resume(asyncCreate);
+        asyncResponse.resume(doCreate);
     }
 
-    public Response asyncCreate(final Long userID, final D dto, final Map<String, Object> options) {
+    public Response doCreate(final Long userID, final List<D> dto, final Map<String, Object> options) {
         try {
-            return ok(doCreate(userID, dto, options));
+            return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
 
         } catch (PreConditionException ex) {
             return unprocessableEntity(new Errors(ex.getErrors()));
@@ -136,8 +137,50 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
     }
 
-    public D doCreate(final Long userID, final D dto, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
-        return dts.toAPI(getController().create(userID, options, dts.toDomain(dto)));
+    @POST
+    @Asynchronous
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void create(@Suspended final AsyncResponse asyncResponse,
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam("Accept-Language") String locale,
+                       final D dto) {
+        /* Setup */
+        Map<String, Object> options = buildOptions(uriInfo, userID);
+
+        /* Log request */
+        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
+
+        /* Body */
+        Response doCreate = doCreate(userID, dto, options);
+
+        /* Log response */
+        logResponse(options, uriInfo, doCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        /* return */
+        asyncResponse.resume(doCreate);
+    }
+
+    public Response doCreate(final Long userID, final D dto, final Map<String, Object> options) {
+        try {
+            return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
+
+        } catch (PreConditionException ex) {
+            return unprocessableEntity(new Errors(ex.getErrors()));
+
+        } catch (PermissionDeniedException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return forbidden(userID);
+
+        } catch (UnknownIdException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return badRequest("unknown id: [" + ex.getId() + "]");
+
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return internalError(ex);
+        }
     }
 
     @GET
@@ -145,9 +188,9 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void retrieve(@Suspended final AsyncResponse asyncResponse,
-            final @Context UriInfo uriInfo,
-            final @HeaderParam("userID") Long userID,
-            final @PathParam("id") Long id) throws PermissionDeniedException {
+                         final @Context UriInfo uriInfo,
+                         final @HeaderParam("userID") Long userID,
+                         final @PathParam("id") Long id) throws PermissionDeniedException {
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
 
@@ -194,10 +237,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void update(@Suspended final AsyncResponse asyncResponse,
-            final @Context UriInfo uriInfo,
-            final @HeaderParam("userID") Long userID,
-            final @PathParam("id") Long id,
-            final D dto) {
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID,
+                       final @PathParam("id") Long id,
+                       final D dto) {
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
 
@@ -253,8 +296,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public void delete(@Suspended final AsyncResponse asyncResponse,
-            final @Context UriInfo uriInfo,
-            final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
+                       final @Context UriInfo uriInfo,
+                       final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
 
@@ -368,7 +411,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final D dto) {
         LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\\n\tID: {}\n\tServide: {}#{}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                options.get("request"), uriInfo.getPath().substring(1), methodName, dto == null ? "" : toJson(dto)
+                     options.get("request"), uriInfo.getPath().substring(1), methodName, dto == null ? "" : toJson(dto)
         );
     }
 
@@ -382,7 +425,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
 
         LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->\n\tID: {}\n\tServide: {}#{}\n\t Duration: {}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                options.get("request"), uriInfo.getPath().substring(1), methodName, (System.currentTimeMillis() - (Long) options.get("startMillis")), body
+                     options.get("request"), uriInfo.getPath().substring(1), methodName, (System.currentTimeMillis() - (Long) options.get("startMillis")), body
         );
     }
 

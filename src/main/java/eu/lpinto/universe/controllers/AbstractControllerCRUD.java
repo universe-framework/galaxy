@@ -7,6 +7,7 @@ import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.Facade;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +77,21 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         E savedEntity;
         savedEntity = getFacade().retrieve(id);
         return savedEntity;
+    }
+
+    @Override
+    public List<E> create(final Long userID, final Map<String, Object> options, final List<E> entities) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        if (entities == null || entities.isEmpty()) {
+            return new ArrayList<>(0);
+        }
+
+        List<E> result = new ArrayList<>(entities.size());
+
+        for (E entity : entities) {
+            result.add(create(userID, options, entity));
+        }
+
+        return result;
     }
 
     @Override
