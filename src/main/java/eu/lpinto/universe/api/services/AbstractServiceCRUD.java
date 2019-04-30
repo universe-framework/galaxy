@@ -247,8 +247,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         /* Log request */
         logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
 
-        /* Body */
-        Response doUpdate = doUpdate(userID, id, dto);
+        /*
+         * Preconditions
+         */
+        if (dto.getId() == null) {
+            dto.setId(id);
+
+        } else if (!dto.getId().equals(id)) {
+            asyncResponse.resume(mismatchID(id, dto.getId()));
+        }
+
+        /*
+         * Body
+         */
+        Response doUpdate = doUpdate(userID, dto, options);
 
         /* Log response */
         logResponse(options, uriInfo, doUpdate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -257,27 +269,14 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         asyncResponse.resume(doUpdate);
     }
 
-    public Response doUpdate(final Long userID, final Long id, final D dto) {
+    public Response doUpdate(final Long userID, final D dto, final Map<String, Object> options) {
         try {
-            /*
-             * Preconditions
-             */
-            if (dto.getId() == null) {
-                dto.setId(id);
-
-            } else if (!dto.getId().equals(id)) {
-                return mismatchID(id, dto.getId());
-            }
-
-            /*
-             * Body
-             */
-            getController().update(userID, new HashMap<>(0), dts.toDomain(dto));
+            getController().update(userID, options, dts.toDomain(dto));
             return noContent();
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return unknown(id);
+            return unknown(dto.getId());
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
