@@ -110,7 +110,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         super.doCreate(userID, options, newOrganization);
 
         Worker worker = new Worker();
-        worker.setName(newOrganization.getName(), currentEmployee.getUser().getName());
+        worker.setName(currentEmployee.getUser().getName());
         worker.setEmail(user.getEmail());
         worker.setRole(WorkerProfile.ADMIN);
         worker.setEnable(WORKER_ENABLE_DEFAULT);
