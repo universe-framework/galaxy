@@ -56,6 +56,46 @@ public class UserController extends AbstractControllerCRUD<User> {
         }
     }
 
+    @Override
+    public void doUpdate(Long userID, Map<String, Object> options, User entity) throws PreConditionException {
+        Image newImage = null;
+
+        if (entity.getCurrentAvatar() != null) {
+            try {
+                User savedUser = doRetrieve(userID, options, userID);
+                if (savedUser.getCurrentAvatar() != null) {
+                    Image savedAvatar = savedUser.getCurrentAvatar();
+                    if (savedAvatar.getUrl().equals(entity.getCurrentAvatar().getUrl())) {
+                        entity.setCurrentAvatar(savedAvatar);
+
+                    } else {
+                        newImage = entity.getCurrentAvatar();
+                        entity.setCurrentAvatar(null);
+                    }
+                }
+
+            } catch (UnknownIdException ex) {
+                throw new PreConditionException("id", "Unknown");
+            }
+        }
+
+        super.doUpdate(userID, options, entity);
+
+        if (newImage != null) {
+            try {
+                newImage.setName("User_" + entity.getId() + "_Image#2");
+                imageController.create(entity.getId(), options, newImage);
+                entity.setCurrentAvatar(newImage);
+
+            } catch (UnknownIdException ex) {
+                throw new PreConditionException("id", "Unknown");
+
+            } catch (PermissionDeniedException ex) {
+                throw new PreConditionException("image", "missing create permissions");
+            }
+        }
+    }
+
     /*
      * Custom controller services
      */
