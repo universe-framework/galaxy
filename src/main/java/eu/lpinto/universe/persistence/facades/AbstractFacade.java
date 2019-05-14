@@ -89,8 +89,12 @@ public abstract class AbstractFacade<T> implements Facade<T> {
             Calendar newNow = options == null || options.get("now") == null
                               ? new GregorianCalendar()
                               : (Calendar) options.get("now");
-            abstractEntity.setCreated(newNow);
-            abstractEntity.setUpdated(newNow);
+            if (abstractEntity.getCreated() == null) {
+                abstractEntity.setCreated(newNow);
+            }
+            if (abstractEntity.getUpdated() == null) {
+                abstractEntity.setUpdated(newNow);
+            }
         }
 
         getEntityManager().persist(entity);

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -41,6 +42,8 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
         /* Other */
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+
+        mapper.registerModule(new JavaTimeModule());
     }
 
     @Override
