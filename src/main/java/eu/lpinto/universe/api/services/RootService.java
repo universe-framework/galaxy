@@ -1,6 +1,8 @@
 package eu.lpinto.universe.api.services;
 
 import eu.lpinto.universe.util.UniverseFundamentals;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -15,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 @Path("/")
 public class RootService {
 
+    static final private Date DEPLOY_TIME = new Date();
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, String> get() {
@@ -22,6 +26,7 @@ public class RootService {
         result.put("application", UniverseFundamentals.APP_NAME);
         result.put("base-url", "/" + UniverseFundamentals.REST_BASE_URI);
         result.put("version", UniverseFundamentals.VERSION);
+        result.put("deploy", new SimpleDateFormat("yyyy.MM.dd HH:mm zzz").format(DEPLOY_TIME));
 
         return result;
     }
