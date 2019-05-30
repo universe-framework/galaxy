@@ -409,7 +409,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final D dto) {
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\\n\tID: {}\n\tServide: {}#{}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\\n\tID: {}\n\tService: {}#{}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
                      options.get("request"), uriInfo.getPath().substring(1), methodName, dto == null ? "" : toJson(dto)
         );
     }
@@ -423,7 +423,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             body = toJson(response);
         }
 
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->\n\tID: {}\n\tServide: {}#{}\n\t Duration: {}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->\n\tID: {}\n\tService: {}#{}\n\t Duration: {}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
                      options.get("request"), uriInfo.getPath().substring(1), methodName, (System.currentTimeMillis() - (Long) options.get("startMillis")), body
         );
     }
