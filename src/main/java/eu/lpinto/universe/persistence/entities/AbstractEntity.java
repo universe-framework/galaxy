@@ -204,7 +204,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     }
 
     public Calendar getDeleted() {
-        return updated;
+        return deleted;
     }
 
     public void setDeleted(final Calendar deleted) {
