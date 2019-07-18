@@ -9,4 +9,5 @@ public enum WorkerProfile {
     ADMIN,
     DOCTOR,
     NURSE,
+    ASSISTANT
 }
