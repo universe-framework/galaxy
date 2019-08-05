@@ -35,6 +35,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <type>jar</type>
+        </dependency>
 
         <dependency>
             <groupId>javax.mail</groupId>
