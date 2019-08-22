@@ -48,6 +48,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public E retrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        if (options != null) {
+            options.put("controller.start", System.currentTimeMillis());
+        }
+
         /*
          * Preconditions
          */
@@ -68,6 +72,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         Boolean permission = assertPremissionsRead(userID, savedEntity);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
+        }
+
+        if (options != null) {
+            options.put("controller.end", System.currentTimeMillis());
         }
 
         return savedEntity;
