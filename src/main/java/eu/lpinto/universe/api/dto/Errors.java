@@ -1,7 +1,9 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,12 +14,16 @@ public class Errors implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, String[]> errors = new HashMap<>(1);
+    private List<Map<String, String[]>> errors = new ArrayList<>(1);
 
     public Errors() {
     }
 
     public Errors(final Map<String, String[]> errors) {
+        this.errors.add(errors);
+    }
+
+    public Errors(final List<Map<String, String[]>> errors) {
         this.errors = errors;
     }
 
@@ -26,7 +32,9 @@ public class Errors implements Serializable {
     }
 
     public Errors addError(final String field, final String... errors) {
-        this.errors.put(field, errors);
+        Map<String, String[]> newError = new HashMap<>(1);
+        newError.put(field, errors);
+        this.errors.add(newError);
 
         return this;
     }
@@ -34,11 +42,11 @@ public class Errors implements Serializable {
     /*
      * Getters/Setters
      */
-    public Map<String, String[]> getErrors() {
+    public List<Map<String, String[]>> getErrors() {
         return errors;
     }
 
-    public void setErrors(final Map<String, String[]> errors) {
+    public void setErrors(final List<Map<String, String[]>> errors) {
         this.errors = errors;
     }
 }
