@@ -191,29 +191,37 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                          final @Context UriInfo uriInfo,
                          final @HeaderParam("userID") Long userID,
                          final @PathParam("id") Long id) throws PermissionDeniedException {
+        Long start = System.currentTimeMillis();
+
         /* Setup */
         Map<String, Object> options = buildOptions(uriInfo, userID);
+        if (options != null) {
+            options.put("service.start", start);
+        }
 
         /* Log request */
         logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
 
         /* Body */
-        Response doRetrieve = doRetrieve(userID, id);
+        Response doRetrieve = doRetrieve(userID, id, options);
 
         /* Log response */
+        if (options != null) {
+            options.put("service.end", System.currentTimeMillis());
+        }
         logResponse(options, uriInfo, doRetrieve.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
 
         /* return */
         asyncResponse.resume(doRetrieve);
     }
 
-    public Response doRetrieve(final Long userID, Long id) throws PermissionDeniedException {
+    public Response doRetrieve(final Long userID, final Long id, final Map<String, Object> options) throws PermissionDeniedException {
         try {
             if (id == null) {
                 return unprocessableEntity(new Errors().addError("entity.id", "Missing id"));
             }
 
-            return ok(dts.toAPI(getController().retrieve(userID, new HashMap<>(0), id)));
+            return ok(dts.toAPI(getController().retrieve(userID, options, id)));
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -423,9 +431,30 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             body = toJson(response);
         }
 
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->\n\tID: {}\n\tService: {}#{}\n\t Duration: {}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                     options.get("request"), uriInfo.getPath().substring(1), methodName, (System.currentTimeMillis() - (Long) options.get("startMillis")), body
-        );
+        Long serviceDuration = null;
+        Long controllerDuration = null;
+        if (options != null) {
+            if (options.containsKey("service.start") && options.containsKey("service.end")) {
+                serviceDuration = ((Long) options.get("service.end")) - (Long) (options.get("service.start"));
+            }
+            if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
+                controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
+            }
+        }
+
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->"
+                     + "\n\tID: {}\n\tService: {}#{}"
+                     + "\n\t Duration: {}"
+                     + "\n\t\t Service: {}"
+                     + "\n\t\t Controller: {}"
+                     + "\n{}"
+                     + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+                     options.get("request"),
+                     uriInfo.getPath().substring(1),
+                     methodName,
+                     (System.currentTimeMillis() - (Long) options.get("startMillis")),
+                     serviceDuration, controllerDuration,
+                     body);
     }
 
     private static String toJson(final Object obj) {
