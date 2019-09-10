@@ -7,7 +7,6 @@ import eu.lpinto.universe.persistence.entities.WorkerProfile;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,9 +17,6 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class OrganizationFacade extends AbstractFacade<Organization> {
-
-    @EJB
-    private UserFacade userFacade;
 
     @PersistenceContext
     private EntityManager em;
@@ -89,7 +85,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
 
     private List<Organization> findByUser(final Long userID) {
         return getEntityManager()
-                .createQuery("select o from Organization o WHERE o.id IN (SELECT w.organization.id from Worker w WHERE w.employee.user.id = :userID)", Organization.class)
+                .createQuery("SELECT o FROM Organization o WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.employee.user.id = :userID) AND o.enable = true", Organization.class)
                 .setParameter("userID", userID)
                 .getResultList();
     }
