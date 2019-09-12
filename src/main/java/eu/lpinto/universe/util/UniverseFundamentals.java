@@ -18,6 +18,7 @@ public final class UniverseFundamentals {
     static public final String VERSION;
 
     /* Email */
+    static public final String SUPPORT_ADDR;
     static public final String SENDER_ADDR;
     static public final String SENDER_PASS;
     static public final String SMTP_ADDR;
@@ -57,6 +58,7 @@ public final class UniverseFundamentals {
             }
 
             /* Email */
+            SUPPORT_ADDR = properties.getProperty("support_addr");
             SENDER_ADDR = properties.getProperty("email_addr");
             SENDER_PASS = properties.getProperty("email_pass");
             SMTP_ADDR = properties.getProperty("smtp");

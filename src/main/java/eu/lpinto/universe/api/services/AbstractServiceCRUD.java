@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
 import eu.lpinto.universe.api.dts.AbstractDTS;
+import eu.lpinto.universe.api.util.StatusEmail;
 import eu.lpinto.universe.controllers.AbstractControllerCRUD;
 import eu.lpinto.universe.controllers.CrudController;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
@@ -17,6 +18,7 @@ import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,42 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceCRUD.class);
+
+    private static String optionsStr(final Map<String, Object> options) {
+        String result = "";
+        for (Map.Entry<String, Object> a : options.entrySet()) {
+            result += "\t" + a.getKey() + " : " + toJson(a.getValue()) + "\n";
+        }
+
+        return result;
+    }
+
+    private static String toJson(final Object obj) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        /*
+        * Serialization
+         */
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        try {
+            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Cannot serialize object: " + obj);
+            return "[cannot serialize]";
+        }
+    }
+
     private final DTS dts;
 
     /*
@@ -58,36 +96,42 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Produces(value = MediaType.APPLICATION_JSON)
     public void find(@Suspended final AsyncResponse asyncResponse,
                      final @Context UriInfo uriInfo,
+                     final @Context HttpHeaders headers,
                      final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
-
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* Body */
-        Response doFind = doFind(options);
-
-        /* Log response */
-        logResponse(options, uriInfo, doFind.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doFind);
-    }
-
-    public Response doFind(final Map<String, Object> options) throws PreConditionException {
         try {
-            return ok(dts.toAPI(getController().find((Long) options.get("user"), options)));
+
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod());
+
+            /* Body */
+            Response result = doFind(options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden((Long) options.get("user"));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(forbidden((Long) options.get("user")));
 
         } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doFind(final Map<String, Object> options) throws PreConditionException, PermissionDeniedException {
+        return ok(dts.toAPI(getController().find((Long) options.get("user"), options)));
     }
 
     @POST
@@ -97,44 +141,52 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Produces(MediaType.APPLICATION_JSON)
     public void createList(@Suspended final AsyncResponse asyncResponse,
                            final @Context UriInfo uriInfo,
+                           final @Context HttpHeaders headers,
                            final @HeaderParam("userID") Long userID,
                            final @HeaderParam("Accept-Language") String locale,
                            final List<D> dto) {
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName() + "([" + dto.size() + " ])");
-
-        /* Body */
-        Response doCreate = doCreate(userID, dto, options);
-
-        /* Log response */
-        logResponse(options, uriInfo, doCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doCreate);
-    }
-
-    public Response doCreate(final Long userID, final List<D> dto, final Map<String, Object> options) {
         try {
-            return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
+
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod(), dto.get(0).getClass().getSimpleName() + "([" + dto.size() + " ])");
+
+            /* Body */
+            Response result = doCreate(userID, dto, options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
 
         } catch (PreConditionException ex) {
-            return unprocessableEntity(new Errors(ex.getErrors()));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden(userID);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(forbidden(userID));
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return badRequest("unknown id: [" + ex.getId() + "]");
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
 
         } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doCreate(final Long userID, final List<D> dto, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
     }
 
     @POST
@@ -143,100 +195,110 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Produces(MediaType.APPLICATION_JSON)
     public void create(@Suspended final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
+                       final @Context HttpHeaders headers,
                        final @HeaderParam("userID") Long userID,
                        final @HeaderParam("Accept-Language") String locale,
                        final D dto) {
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
-
-        /* Body */
-        Response doCreate = doCreate(userID, dto, options);
-
-        /* Log response */
-        logResponse(options, uriInfo, doCreate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doCreate);
-    }
-
-    public Response doCreate(final Long userID, final D dto, final Map<String, Object> options) {
         try {
-            return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
+
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod(), dto);
+
+            /* Body */
+            Response result = doCreate(userID, dto, options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
 
         } catch (PreConditionException ex) {
-            return unprocessableEntity(new Errors(ex.getErrors()));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+            asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden(userID);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+            asyncResponse.resume(forbidden(userID));
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return badRequest("unknown id: [" + ex.getId() + "]");
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+            asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
 
         } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doCreate(final Long userID, final D dto, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        return ok(dts.toAPI(getController().create(userID, options, dts.toDomain(dto))));
     }
 
     @GET
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void retrieve(@Suspended final AsyncResponse asyncResponse,
+    public void retrieve(@Suspended
+            final AsyncResponse asyncResponse,
                          final @Context UriInfo uriInfo,
+                         final @Context HttpHeaders headers,
                          final @HeaderParam("userID") Long userID,
                          final @PathParam("id") Long id) throws PermissionDeniedException {
-        Long start = System.currentTimeMillis();
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
-        if (options != null) {
-            options.put("service.start", start);
-        }
-
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* Body */
-        Response doRetrieve = doRetrieve(userID, id, options);
-
-        /* Log response */
-        if (options != null) {
-            options.put("service.end", System.currentTimeMillis());
-        }
-        logResponse(options, uriInfo, doRetrieve.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doRetrieve);
-    }
-
-    public Response doRetrieve(final Long userID, final Long id, final Map<String, Object> options) throws PermissionDeniedException {
         try {
-            if (id == null) {
-                return unprocessableEntity(new Errors().addError("entity.id", "Missing id"));
-            }
 
-            return ok(dts.toAPI(getController().retrieve(userID, options, id)));
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod());
+
+            /* Body */
+            Response result = doRetrieve(userID, id, options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
+
+        } catch (PreConditionException ex) {
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return unknown(id);
-
-        } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(unknown(id));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden(userID);
-        } catch (PreConditionException ex) {
-            return unprocessableEntity(new Errors(ex.getErrors()));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(forbidden(userID));
+
+        } catch (RuntimeException ex) {
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doRetrieve(final Long userID, final Long id, final Map<String, Object> options) throws PermissionDeniedException, UnknownIdException, PreConditionException {
+        if (id == null) {
+            return unprocessableEntity(new Errors().addError("entity.id", "Missing id"));
+        }
+
+        return ok(dts.toAPI(getController().retrieve(userID, options, id)));
     }
 
     @PUT
@@ -244,99 +306,116 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     @Asynchronous
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void update(@Suspended final AsyncResponse asyncResponse,
+    public void update(@Suspended
+            final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
+                       final @Context HttpHeaders headers,
                        final @HeaderParam("userID") Long userID,
                        final @PathParam("id") Long id,
                        final D dto) {
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName(), dto);
-
-        /*
-         * Preconditions
-         */
-        if (dto.getId() == null) {
-            dto.setId(id);
-
-        } else if (!dto.getId().equals(id)) {
-            asyncResponse.resume(mismatchID(id, dto.getId()));
-        }
-
-        /*
-         * Body
-         */
-        Response doUpdate = doUpdate(userID, dto, options);
-
-        /* Log response */
-        logResponse(options, uriInfo, doUpdate.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doUpdate);
-    }
-
-    public Response doUpdate(final Long userID, final D dto, final Map<String, Object> options) {
         try {
-            getController().update(userID, options, dts.toDomain(dto));
-            return noContent();
+
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod(), dto);
+
+            /* Preconditions */
+            if (dto.getId() == null) {
+                dto.setId(id);
+
+            } else if (!dto.getId().equals(id)) {
+                asyncResponse.resume(mismatchID(id, dto.getId()));
+            }
+
+            /* Body */
+            Response result = doUpdate(userID, dto, options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
+
+        } catch (PreConditionException ex) {
+            asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return unknown(dto.getId());
+            asyncResponse.resume(unknown(dto.getId()));
 
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden(userID);
+            asyncResponse.resume(forbidden(userID));
 
         } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
-        } catch (PreConditionException ex) {
-            return unprocessableEntity(new Errors(ex.getErrors()));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doUpdate(final Long userID, final D dto, final Map<String, Object> options) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        getController().update(userID, options, dts.toDomain(dto));
+        return noContent();
     }
 
     @DELETE
     @Asynchronous
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void delete(@Suspended final AsyncResponse asyncResponse,
+    public void delete(@Suspended
+            final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
-                       final @HeaderParam("userID") Long userID, @PathParam("id") final Long id) {
-        /* Setup */
-        Map<String, Object> options = buildOptions(uriInfo, userID);
+                       final @Context HttpHeaders headers,
+                       final @HeaderParam("userID") Long userID, @PathParam("id")
+                       final Long id) {
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
-        /* Log request */
-        logRequest(uriInfo, options, Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* Body */
-        Response doDelete = doDelete(userID, id);
-
-        /* Log response */
-        logResponse(options, uriInfo, doDelete.getEntity(), Thread.currentThread().getStackTrace()[1].getMethodName());
-
-        /* return */
-        asyncResponse.resume(doDelete);
-    }
-
-    public Response doDelete(final Long userID, final Long id) {
         try {
-            getController().delete(userID, new HashMap<>(0), id);
-            return noContent();
+
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod());
+
+            /* Body */
+            Response result = doDelete(userID, id);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
+
+        } catch (PreConditionException ex) {
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
+
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return unknown(id);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(unknown(id));
+
         } catch (PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            return forbidden(userID);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(forbidden(userID));
+
         } catch (RuntimeException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return internalError(ex);
-        } catch (PreConditionException ex) {
-            return unprocessableEntity(new Errors(ex.getErrors()));
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(internalError(ex));
         }
+    }
+
+    public Response doDelete(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        getController().delete(userID, new HashMap<>(0), id);
+        return noContent();
     }
 
     /*
@@ -367,30 +446,16 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
     }
 
-    private static String optionsStr(final Map<String, Object> options) {
-        String result = "";
-        for (Map.Entry<String, Object> a : options.entrySet()) {
-            result += '\t' + a.getKey() + " : " + toJson(a.getValue()) + "\n";
-        }
-
-        return result;
-
-    }
-
-    protected Map<String, Object> buildOptions(final UriInfo uriInfo, final Long userID) {
-        Map<String, Object> options = new HashMap<>(uriInfo.getQueryParameters().size());
-
-        options.put("request", UUID.randomUUID().toString());
+    protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID) {
         options.put("startMillis", System.currentTimeMillis());
+        options.put("request", UUID.randomUUID().toString());
 
         options.put("user", userID);
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        for (String key : queryParameters.keySet()) {
+        queryParameters.keySet().forEach(key -> {
             List<String> values = queryParameters.get(key);
-
             if (values != null && !values.isEmpty() && values.size() == 1) {
-
                 if ("true".equalsIgnoreCase(values.get(0))) {
                     options.put(key, Boolean.TRUE);
 
@@ -405,9 +470,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                         options.put(key, values.get(0));
                     }
                 }
-
             }
-        }
+        });
+
+        options.put("service.start", System.currentTimeMillis());
 
         return options;
     }
@@ -416,16 +482,40 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         logRequest(uriInfo, options, methodName, null);
     }
 
-    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final D dto) {
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\\n\tID: {}\n\tService: {}#{}\n{}\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                     options.get("request"), uriInfo.getPath().substring(1), methodName, dto == null ? "" : toJson(dto)
+    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
+        String body;
+
+        if (dto == null) {
+            body = "'null'";
+
+        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
+            body = "Result: " + ((List) dto).size() + " objects.";
+
+        } else {
+            body = toJson(dto);
+        }
+
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\"
+                     + "\n\tID: {}"
+                     + "\n\t{}" // URL
+                     + "\n\t{}({})" // java function and service url
+                     + "\n{}"
+                     + "\n\t{}"
+                     + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+                     options.get("request"),
+                     uriInfo.getRequestUri(),
+                     uriInfo.getPath().substring(1), methodName,
+                     optionsStr(options), body
         );
     }
 
-    protected void logResponse(final Map<String, Object> options, final UriInfo uriInfo, final Object response, final String methodName) {
+    protected void logResponse(final UriInfo uriInfo, final Map<String, Object> options, final String methodName, final Object response) {
         String body;
 
-        if (response instanceof List && ((List) response).size() > 3) {
+        if (response == null) {
+            body = "'null'";
+
+        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
             body = "Result: " + ((List) response).size() + " objects.";
         } else {
             body = toJson(response);
@@ -443,44 +533,27 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         }
 
         LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->"
-                     + "\n\tID: {}\n\tService: {}#{}"
-                     + "\n\t Duration: {}"
-                     + "\n\t\t Service: {}"
-                     + "\n\t\t Controller: {}"
+                     + "\n\tID: {}"
+                     + "\n\t{}" // URL
+                     + "\n\t{}({})" // java function and service url
+                     + "\n\tDuration: {}"
+                     + "\n\tService: {}"
+                     + "\n\tController: {}"
                      + "\n{}"
+                     + "\n\t{}"
                      + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
                      options.get("request"),
-                     uriInfo.getPath().substring(1),
-                     methodName,
+                     uriInfo.getRequestUri(),
+                     uriInfo.getPath().substring(1), methodName,
                      (System.currentTimeMillis() - (Long) options.get("startMillis")),
-                     serviceDuration, controllerDuration,
+                     serviceDuration,
+                     controllerDuration,
+                     optionsStr(options),
                      body);
     }
 
-    private static String toJson(final Object obj) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        /*
-         * Serialization
-         */
-        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        try {
-            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
-        } catch (JsonProcessingException ex) {
-            LOGGER.error("Cannot serialize object: " + obj);
-            return "[cannot serialize]";
-        }
+    private String currentMethod() {
+        return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 
     /*
