@@ -16,6 +16,7 @@ import javax.mail.internet.MimeMessage;
 @Stateless
 public class EmailController {
 
+    private String systemEmail = UniverseFundamentals.SUPPORT_ADDR;
     private String senderEmail = UniverseFundamentals.SENDER_ADDR;
     private String senderPassword = UniverseFundamentals.SENDER_PASS;
     private String SMTP_SSL_TRUST = "*";
@@ -27,7 +28,7 @@ public class EmailController {
     private final Session session;
 
     public EmailController() {
-        if (SMTP_ADDR == null) {
+        if (SMTP_ADDR == null || SMTP_ADDR == null || SMTP_PORT == null) {
             session = null;
 
         } else {
@@ -42,25 +43,37 @@ public class EmailController {
                 session = Session.getInstance(props);
 
             } else {
-                props.put("mail.smtp.auth", "true");
-                session = Session.getInstance(props, new javax.mail.Authenticator() {
-                                          @Override
-                                          protected PasswordAuthentication getPasswordAuthentication() {
-                                              return new PasswordAuthentication(senderEmail, senderPassword);
-                                          }
-                                      });
+                if (senderEmail != null && senderPassword != null) {
+                    props.put("mail.smtp.auth", "true");
+                    session = Session.getInstance(props, new javax.mail.Authenticator() {
+                                              @Override
+                                              protected PasswordAuthentication getPasswordAuthentication() {
+                                                  return new PasswordAuthentication(senderEmail, senderPassword);
+                                              }
+                                          });
+                } else {
+                    session = null;
+                }
             }
         }
     }
 
-    public void sendEmail(final String receiverEmail, final String subject, final String emailMessage) {
-        sendEmail(senderEmail, senderPassword, receiverEmail, subject, emailMessage);
+    public void sendEmail(final String subject, final String emailMessage) {
+        sendEmail(senderEmail, systemEmail, subject, emailMessage);
     }
 
-    public void sendEmail(final String username, final String password, final String receiverEmail, final String subject, final String emailMessage) {
+    public void sendEmail(final String receiverEmail, final String subject, final String emailMessage) {
+        sendEmail(senderEmail, receiverEmail, subject, emailMessage);
+    }
+
+    public void sendEmail(final String from, final String receiverEmail, final String subject, final String emailMessage) {
+        if (session == null) {
+            return;
+        }
+
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
+            message.setFrom(new InternetAddress(from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiverEmail));
             message.setSubject(subject == null ? senderEmail.split("@")[1] : subject);
             message.setContent(emailMessage == null ? "" : emailMessage, "text/html; charset=UTF-8");

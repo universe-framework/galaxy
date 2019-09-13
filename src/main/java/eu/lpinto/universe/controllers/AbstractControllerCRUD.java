@@ -34,12 +34,17 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
      */
     @Override
     public List<E> find(final Long userID, final Map<String, Object> options) throws PermissionDeniedException, PreConditionException {
+        options.put("controller.start", System.currentTimeMillis());
+
         Boolean permission = assertPremissionsRead(userID, null);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
-        return doFind(userID, options);
+        List<E> result = doFind(userID, options);
+
+        options.put("controller.end", System.currentTimeMillis());
+        return result;
     }
 
     public List<E> doFind(final Long userID, final Map<String, Object> options) throws PreConditionException {
@@ -48,9 +53,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public E retrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
-        if (options != null) {
-            options.put("controller.start", System.currentTimeMillis());
-        }
+        options.put("controller.start", System.currentTimeMillis());
 
         /*
          * Preconditions
@@ -62,23 +65,19 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         /*
          * Body
          */
-        E savedEntity;
-        savedEntity = doRetrieve(userID, options, id);
+        E result = doRetrieve(userID, options, id);
 
-        if (savedEntity == null) {
+        if (result == null) {
             throw new UnknownIdException(entityName, id);
         }
 
-        Boolean permission = assertPremissionsRead(userID, savedEntity);
+        Boolean permission = assertPremissionsRead(userID, result);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
-        if (options != null) {
-            options.put("controller.end", System.currentTimeMillis());
-        }
-
-        return savedEntity;
+        options.put("controller.end", System.currentTimeMillis());
+        return result;
     }
 
     public E doRetrieve(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PreConditionException {
@@ -104,6 +103,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public E create(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        options.put("controller.start", System.currentTimeMillis());
+
         Boolean permission = assertPremissionsCreate(userID, entity);
         if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
@@ -115,6 +116,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         doCreate(userID, options, entity);
+
+        options.put("controller.end", System.currentTimeMillis());
         return entity;
     }
 
@@ -124,6 +127,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public void update(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PreConditionException, PermissionDeniedException {
+        options.put("controller.start", System.currentTimeMillis());
+
         Long id = entity.getId();
         if (id == null) {
             throw missingParameter("id");
@@ -151,6 +156,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         doUpdate(userID, options, entity);
+        options.put("controller.end", System.currentTimeMillis());
     }
 
     public void doUpdate(final Long userID, final Map<String, Object> options, final E entity) throws PreConditionException {
@@ -159,6 +165,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public void delete(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+        options.put("controller.start", System.currentTimeMillis());
+
         if (id == null) {
             throw missingParameter("id");
         }
@@ -180,6 +188,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         }
 
         doDelete(userID, options, savedEntity);
+        options.put("controller.end", System.currentTimeMillis());
     }
 
     public void doDelete(final Long userID, final Map<String, Object> options, E savedEntity) throws PreConditionException {
