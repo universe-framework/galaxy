@@ -83,4 +83,18 @@ public class WorkerFacade extends AbstractFacade<Worker> {
 
         return workers;
     }
+
+    public Worker getByOrganizationAndUser(final Long organizationID, final Long userID) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT w FROM Worker w WHERE w.organization.id = :organizationID AND w.enable = true AND w.employee.user.id = :userID", Worker.class)
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("userID", userID)
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
 }
