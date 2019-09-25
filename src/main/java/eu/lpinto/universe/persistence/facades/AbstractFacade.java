@@ -1,8 +1,15 @@
 package eu.lpinto.universe.persistence.facades;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +94,8 @@ public abstract class AbstractFacade<T> implements Facade<T> {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
 
             Calendar newNow = options == null || options.get("now") == null
-                              ? new GregorianCalendar()
-                              : (Calendar) options.get("now");
+                    ? new GregorianCalendar()
+                    : (Calendar) options.get("now");
             if (abstractEntity.getCreated() == null) {
                 abstractEntity.setCreated(newNow);
             }
@@ -120,4 +127,42 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     protected Class<T> getEntityClass() {
         return entityClass;
     }
+
+    /*
+    * Helpers
+     */
+    private LocalDate stringToLocalDate(String string) {
+        try {
+            ISO8601DateFormat df = new ISO8601DateFormat();
+            Date createdAfterAux = df.parse(string);
+            return Instant.ofEpochMilli(createdAfterAux.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+        } catch (ParseException ex) {
+            throw new AssertionError("Cannot parse String '" + string + "' to LocalDate. Please report this!");
+        }
+    }
+
+    private LocalDateTime stringToLocalDateTime(String string) {
+        try {
+            ISO8601DateFormat df = new ISO8601DateFormat();
+            Date createdAfterAux = df.parse(string);
+            return Instant.ofEpochMilli(createdAfterAux.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } catch (ParseException ex) {
+            throw new AssertionError("Cannot parse String '" + string + "' to LocalDateTime. Please report this!");
+        }
+    }
+
+    private Calendar stringToCalendar(String string) {
+        try {
+            ISO8601DateFormat df = new ISO8601DateFormat();
+            Calendar calendar = Calendar.getInstance();
+
+            Date startedAfterAux = df.parse(string);
+            calendar.setTime(startedAfterAux);
+
+            return calendar;
+        } catch (ParseException ex) {
+            throw new AssertionError("Cannot parse String '" + string + "' to Calendar. Please report this!");
+        }
+    }
+
 }
