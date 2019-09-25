@@ -134,8 +134,8 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     private LocalDate stringToLocalDate(String string) {
         try {
             ISO8601DateFormat df = new ISO8601DateFormat();
-            Date createdAfterAux = df.parse(string);
-            return Instant.ofEpochMilli(createdAfterAux.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+            Date date = df.parse(string);
+            return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
         } catch (ParseException ex) {
             throw new AssertionError("Cannot parse String '" + string + "' to LocalDate. Please report this!");
         }
@@ -144,8 +144,8 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     private LocalDateTime stringToLocalDateTime(String string) {
         try {
             ISO8601DateFormat df = new ISO8601DateFormat();
-            Date createdAfterAux = df.parse(string);
-            return Instant.ofEpochMilli(createdAfterAux.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            Date date = df.parse(string);
+            return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         } catch (ParseException ex) {
             throw new AssertionError("Cannot parse String '" + string + "' to LocalDateTime. Please report this!");
         }
@@ -156,8 +156,8 @@ public abstract class AbstractFacade<T> implements Facade<T> {
             ISO8601DateFormat df = new ISO8601DateFormat();
             Calendar calendar = Calendar.getInstance();
 
-            Date startedAfterAux = df.parse(string);
-            calendar.setTime(startedAfterAux);
+            Date date = df.parse(string);
+            calendar.setTime(date);
 
             return calendar;
         } catch (ParseException ex) {
