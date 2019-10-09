@@ -33,9 +33,6 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     private String phone;
 
-    @OneToMany
-    private List<Worker> staff;
-
     private String street;
 
     private String town;
@@ -78,7 +75,7 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     public Organization(String country, String clientID, String clientSecret,
                         Boolean enable, String email, Long externalID, String fax, String phone,
-                        List<Worker> staff, String street, String town, String zip, String website, List<Worker> workers,
+                        String street, String town, String zip, String website, List<Worker> workers,
                         Company company, String calendarID, Image selectedAvatar, List<Image> avatars, String billingID,
                         String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
@@ -90,7 +87,6 @@ public class Organization extends AbstractEntity implements Serializable, Univer
         this.externalID = externalID;
         this.fax = fax;
         this.phone = phone;
-        this.staff = staff;
         this.street = street;
         this.town = town;
         this.zip = zip;
@@ -168,14 +164,6 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<Worker> getStaff() {
-        return staff;
-    }
-
-    public void setStaff(List<Worker> staff) {
-        this.staff = staff;
     }
 
     public String getStreet() {
