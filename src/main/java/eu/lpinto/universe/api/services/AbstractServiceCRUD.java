@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.Asynchronous;
@@ -200,6 +201,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                        final @HeaderParam("Accept-Language") String locale,
                        final D dto) {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
+        options.put("locale", new Locale(locale));
 
         try {
 
