@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import eu.lpinto.universe.persistence.facades.EmailFacade;
+import eu.lpinto.universe.controllers.EmailController;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class StatusEmail implements Runnable {
 
     static private final Logger LOGGER = LoggerFactory.getLogger(StatusEmail.class);
-    static private EmailFacade EMAIL_CONTROLLER = new EmailFacade();
+    static private EmailController EMAIL_CONTROLLER = new EmailController();
 
     /*
      * Exception
