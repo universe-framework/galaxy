@@ -3,8 +3,6 @@ package eu.lpinto.universe.persistence.facades;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -55,11 +53,10 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     public Organization retrieve(Long id) throws PreConditionException {
         Organization savedOrganization = super.retrieve(id);
 
-        savedOrganization.setStaff(getEntityManager()
-                .createQuery("select e from Worker e left join fetch e.organization"
-                             + " where e.organization.id = :organizationID AND e.role in :role", Worker.class)
+        savedOrganization.setWorkers(getEntityManager()
+                .createQuery("select w from Worker w left join fetch w.organization"
+                             + " where w.organization.id = :organizationID", Worker.class)
                 .setParameter("organizationID", id)
-                .setParameter("role", Arrays.asList(WorkerProfile.ADMIN, WorkerProfile.DOCTOR, WorkerProfile.NURSE))
                 .getResultList());
 
 //        savedClinic.setClients(getEntityManager()
