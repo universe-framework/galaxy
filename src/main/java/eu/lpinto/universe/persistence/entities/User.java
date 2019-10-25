@@ -36,12 +36,6 @@ public class User extends AbstractEntity implements Serializable {
                    @JoinColumn(name = "image_id", referencedColumnName = "id")})
     private List<Image> avatars;
 
-    @Basic(optional = false)
-    @Column(nullable = false,
-            unique = true, // sed only in DDL generation
-            updatable = false,
-            length = 128)
-    @Size(min = 1, max = 128, message = "Invalid email size")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Token> tokens;
 
