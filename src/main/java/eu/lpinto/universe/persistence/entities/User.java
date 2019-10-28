@@ -22,6 +22,9 @@ public class User extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Transient
+    private String baseUrl;
+
     /*
      * Relations
      */
@@ -54,6 +57,8 @@ public class User extends AbstractEntity implements Serializable {
              message = "Invalid email")
     @Size(min = 1, max = 50, message = "Invalid email size")
     private String email;
+
+    private Boolean emailValidated;
 
     @Basic(optional = false)
     @Column(nullable = false,
@@ -97,6 +102,14 @@ public class User extends AbstractEntity implements Serializable {
     /*
      * Getters/Setters
      */
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     public Image getCurrentAvatar() {
         return currentAvatar;
     }
@@ -135,6 +148,14 @@ public class User extends AbstractEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getEmailValidated() {
+        return emailValidated;
+    }
+
+    public void setEmailValidated(Boolean emailValidated) {
+        this.emailValidated = emailValidated;
     }
 
     public String getPassword() {

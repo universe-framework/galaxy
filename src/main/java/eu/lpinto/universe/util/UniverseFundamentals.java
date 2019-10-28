@@ -17,6 +17,8 @@ public final class UniverseFundamentals {
     static public final String HOST;
     static public final String VERSION;
 
+    static public final Integer DEFAULT_PLAN;
+
     /* Email */
     static public final String SUPPORT_ADDR;
     static public final String SENDER_ADDR;
@@ -56,6 +58,8 @@ public final class UniverseFundamentals {
             if (APP_NAME == null) {
                 throw new AssertionError("Missing property: APP_NAME");
             }
+
+            DEFAULT_PLAN = properties.getProperty("default_plan") == null ? 1 : Integer.valueOf(properties.getProperty("default_plan"));
 
             /* Email */
             SUPPORT_ADDR = properties.getProperty("support_addr");

@@ -7,8 +7,8 @@ import java.util.List;
 import javax.persistence.*;
 
 /**
- * A Company is a Legal Entity which contains a group of employees. This has
- * hierarchy capabilities, meaning a company can have a parent company.
+ * A Company is a Legal Entity which contains a group of employees. This has hierarchy capabilities, meaning a company
+ * can have a parent company.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
@@ -25,6 +25,11 @@ public class Company extends AbstractEntity implements Serializable {
     private String email;
     private String vatNumber;
     private String customField;
+
+    private String street;
+    private String zip;
+    private String town;
+    private String country;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selectedAvatar_id")
@@ -63,22 +68,29 @@ public class Company extends AbstractEntity implements Serializable {
         super(id);
     }
 
-    public Company(final String phone, final String facebook, final String email, final String businessHours,
-                   final Image selectedAvatar, final Plan plan, final Company parent, String customField,
-                   final List<Company> children, final List<Image> avatars, final Long id, final String name, final Calendar created, final Calendar updated
-    ) {
-        super(id, name, created, updated);
+    public Company(String phone, String facebook, String email, String vatNumber, String customField,
+                   String street, String zip, String town, String country,
+                   Image selectedAvatar, Plan plan, Company parent,
+                   List<Company> children, List<Image> avatars, List<Employee> employees,
+                   Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
+        super(id, name, creator, created, updater, updated, deleted);
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
-        this.vatNumber = businessHours;
+        this.vatNumber = vatNumber;
+        this.customField = customField;
+        this.street = street;
+        this.zip = zip;
+        this.town = town;
+        this.country = country;
         this.selectedAvatar = selectedAvatar;
         this.plan = plan;
         this.parent = parent;
-        this.customField = customField;
         this.children = children;
         this.avatars = avatars;
+        this.employees = employees;
     }
+
 
     /*
      * Getters/Setters
@@ -127,6 +139,38 @@ public class Company extends AbstractEntity implements Serializable {
         this.customField = customField;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public Image getSelectedAvatar() {
         return selectedAvatar;
     }
@@ -159,7 +203,7 @@ public class Company extends AbstractEntity implements Serializable {
     }
 
     public List<Company> getChildren() {
-        return this.children == null ? new ArrayList<Company>(0) : this.children;
+        return this.children == null ? new ArrayList<>(0) : this.children;
     }
 
     public void setChildren(final List<Company> children) {
@@ -178,7 +222,7 @@ public class Company extends AbstractEntity implements Serializable {
 
     public void addAvatar(final Image avatar) {
         if (this.getAvatars() == null) {
-            this.setAvatars(new ArrayList<Image>(1));
+            this.setAvatars(new ArrayList<>(1));
         }
 
         this.avatars.add(avatar);

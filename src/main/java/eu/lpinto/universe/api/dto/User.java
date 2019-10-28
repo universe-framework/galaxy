@@ -21,6 +21,7 @@ public class User extends AbstractDTO implements Serializable {
      */
     private String email;
     private String password;
+    private String baseUrl;
 
     /*
      * Constructors
@@ -66,5 +67,13 @@ public class User extends AbstractDTO implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

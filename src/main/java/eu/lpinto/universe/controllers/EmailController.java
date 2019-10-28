@@ -1,85 +1,162 @@
 package eu.lpinto.universe.controllers;
 
-import eu.lpinto.universe.util.UniverseFundamentals;
-import java.util.Properties;
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
+import eu.lpinto.universe.persistence.facades.EmailFacade;
+import eu.lpinto.universe.persistence.facades.UserFacade;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 /**
  *
- * Controller for Emails.
+ * Controller for E-mails.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
 @Stateless
 public class EmailController {
 
-    private String systemEmail = UniverseFundamentals.SUPPORT_ADDR;
-    private String senderEmail = UniverseFundamentals.SENDER_ADDR;
-    private String senderPassword = UniverseFundamentals.SENDER_PASS;
-    private String SMTP_SSL_TRUST = "*";
-    private String IMAP_SSL_TRUST = "*";
-    private Boolean SMTP_TLS = true;
-    private String SMTP_ADDR = UniverseFundamentals.SMTP_ADDR;
-    private Integer SMTP_PORT = UniverseFundamentals.SMTP_PORT;
+    private final String passwordRestStrPT;
+    private final String passwordRestStrES;
+    private final String passwordRestStrEN;
+    private final String inviteStrPT;
+    private final String inviteStrES;
+    private final String inviteStrEN;
+    private final String validationStrPT;
+    private final String validationStrES;
+    private final String validationStrEN;
 
-    private final Session session;
+    @EJB
+    private EmailFacade facade;
+
+    @EJB
+    private UserFacade userFacade;
 
     public EmailController() {
-        if (SMTP_ADDR == null || SMTP_ADDR == null || SMTP_PORT == null) {
-            session = null;
+        passwordRestStrPT = setDefaultBody("password_recovery", "pt", "A sua nova password é: ${password}");
+        passwordRestStrES = setDefaultBody("password_recovery", "es", "La nueva contraseña es: ${password}");
+        passwordRestStrEN = setDefaultBody("password_recovery", "en", "Your new password is: ${password}");
 
+        inviteStrPT = setDefaultBody("invite", "pt", "Para aceitar o convite aceda a: ${inviteUrl}");
+        inviteStrES = setDefaultBody("invite", "es", "El enlace de invitación es: ${inviteUrl}");
+        inviteStrEN = setDefaultBody("invite", "en", "You invitation link is: ${inviteUrl}");
+
+        validationStrPT = setDefaultBody("validation", "pt", "Para validar o email aceda a: ${inviteUrl}");
+        validationStrES = setDefaultBody("validation", "es", "El enlace de validacion es: ${inviteUrl}");
+        validationStrEN = setDefaultBody("validation", "en", "Your email validation link is: ${inviteUrl}");
+    }
+
+    private String setDefaultBody(final String fileName, final String lang, final String defaultBody) {
+        InputStream inputStreamEN = EmailController.class.getClassLoader().getResourceAsStream(fileName + "-" + lang + ".html");
+        if (inputStreamEN != null) {
+            return streamToString(inputStreamEN);
         } else {
-            Properties props = new Properties();
-            props.put("mail.smtp.ssl.trust", SMTP_SSL_TRUST);
-            props.put("mail.imaps.ssl.trust", IMAP_SSL_TRUST);
-            props.put("mail.smtp.starttls.enable", SMTP_TLS);
-            props.put("mail.smtp.host", SMTP_ADDR);
-            props.put("mail.smtp.port", SMTP_PORT);
-
-            if (senderEmail == null) {
-                session = Session.getInstance(props);
-
+            inputStreamEN = EmailController.class.getClassLoader().getResourceAsStream("default_" + fileName + "-" + lang + ".html");
+            if (inputStreamEN != null) {
+                return streamToString(inputStreamEN);
             } else {
-                if (senderEmail != null && senderPassword != null) {
-                    props.put("mail.smtp.auth", "true");
-                    session = Session.getInstance(props, new javax.mail.Authenticator() {
-                                              @Override
-                                              protected PasswordAuthentication getPasswordAuthentication() {
-                                                  return new PasswordAuthentication(senderEmail, senderPassword);
-                                              }
-                                          });
-                } else {
-                    session = null;
-                }
+                return defaultBody;
             }
         }
     }
 
-    public void sendEmail(final String subject, final String emailMessage) {
-        sendEmail(senderEmail, systemEmail, subject, emailMessage);
-    }
+    public void recoverPassword(final String lang, final String email, String newPassword) throws PreConditionException {
+        String content;
+        String subject;
 
-    public void sendEmail(final String receiverEmail, final String subject, final String emailMessage) {
-        sendEmail(senderEmail, receiverEmail, subject, emailMessage);
-    }
+        if (lang != null && (lang.contains("pt-PT")
+                             || lang.contains("pt-BR")
+                             || lang.contains("pt"))) {
+            subject = "Recuperar password";
+            content = passwordRestStrPT;
 
-    public void sendEmail(final String from, final String receiverEmail, final String subject, final String emailMessage) {
-        if (session == null) {
-            return;
+        } else if (lang != null && (lang.contains("es-ES")
+                                    || lang.contains("es-MX")
+                                    || lang.contains("es"))) {
+            subject = "Recuperación de contraseña";
+            content = passwordRestStrES;
+
+        } else {
+            subject = "Password recovery";
+            content = passwordRestStrEN;
         }
 
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiverEmail));
-            message.setSubject(subject == null ? senderEmail.split("@")[1] : subject);
-            message.setContent(emailMessage == null ? "" : emailMessage, "text/html; charset=UTF-8");
-            Transport.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+        content = content.replaceAll("\\$\\{userName\\}", userFacade.findByEmail(email).getName());
+        content = content.replaceAll("\\$\\{email\\}", email);
+        content = content.replaceAll("\\$\\{password\\}", newPassword);
+
+        facade.sendEmail(email, subject, content);
+
+    }
+
+    public void sendValidation(final String lang, final String destinationEmail, final String userName, final String url) {
+        String content;
+        String subject;
+
+        if (lang != null && (lang.contains("pt-PT")
+                             || lang.contains("pt-BR")
+                             || lang.contains("pt"))) {
+            subject = "Convite";
+            content = validationStrPT;
+
+        } else if (lang != null && (lang.contains("es-ES")
+                                    || lang.contains("es-MX")
+                                    || lang.contains("es"))) {
+            subject = "Invitación";
+            content = validationStrES;
+
+        } else {
+            subject = "Invite";
+            content = validationStrEN;
+        }
+
+        content = content.replaceAll("\\$\\{userName\\}", userName);
+        content = content.replaceAll("\\$\\{url\\}", url);
+
+        facade.sendEmail(destinationEmail, subject, content);
+    }
+
+    public void sendInvite(final String lang, final String destinationEmail, final String userName,
+                           final String creatorName, final String organizationName, final String inviteUrl) {
+        String content;
+        String subject;
+
+        if (lang != null && (lang.contains("pt-PT")
+                             || lang.contains("pt-BR")
+                             || lang.contains("pt"))) {
+            subject = "Convite";
+            content = inviteStrPT;
+
+        } else if (lang != null && (lang.contains("es-ES")
+                                    || lang.contains("es-MX")
+                                    || lang.contains("es"))) {
+            subject = "Invitación";
+            content = inviteStrES;
+
+        } else {
+            subject = "Invite";
+            content = inviteStrEN;
+        }
+
+        content = content.replaceAll("\\$\\{userName\\}", userName);
+        content = content.replaceAll("\\$\\{creatorName\\}", creatorName);
+        content = content.replaceAll("\\$\\{organizationName\\}", organizationName);
+        content = content.replaceAll("\\$\\{inviteUrl\\}", inviteUrl);
+
+        facade.sendEmail(destinationEmail, subject, content);
+    }
+
+    public static String streamToString(final InputStream inputStream) {
+        try (
+                final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            return br.lines().parallel().collect(Collectors.joining("\n"));
+
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 }
