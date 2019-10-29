@@ -1,6 +1,7 @@
 package eu.lpinto.universe.persistence.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.persistence.*;
@@ -232,6 +233,14 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     public List<Image> getAvatars() {
         return avatars;
+    }
+
+    public void addAvatar(final Image avatar) {
+        if (this.avatars == null) {
+            this.avatars = new ArrayList<>(1);
+        }
+
+        this.avatars.add(avatar);
     }
 
     public void setAvatars(List<Image> avatars) {
