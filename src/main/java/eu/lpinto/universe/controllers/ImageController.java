@@ -10,8 +10,6 @@ import java.io.File;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,7 +22,6 @@ public class ImageController extends AbstractControllerCRUD<Image> {
 
     private static final String IMAGES_LOCAL_FOLDER = UniverseFundamentals.AVATAR_FOLDER;
     private static final String IMAGE_URL_PREFIX = UniverseFundamentals.AVATAR_URL_PREFIX;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 
     @EJB
     private ImageFacade facade;
@@ -41,8 +38,12 @@ public class ImageController extends AbstractControllerCRUD<Image> {
             return Company.DEFAULT_IMG;
         }
 
-        String[] subpath = filePath.split("/");
-        return IMAGE_URL_PREFIX + "/" + subpath[subpath.length - 3] + "/" + subpath[subpath.length - 2] + "/" + subpath[subpath.length - 1];
+        String filePathAux = filePath.replaceAll("\\\\", "/");
+        String[] filePathFolders = filePathAux.split("/");
+        return IMAGE_URL_PREFIX
+               + "/" + filePathFolders[filePathFolders.length - 3]
+               + "/" + filePathFolders[filePathFolders.length - 2]
+               + "/" + filePathFolders[filePathFolders.length - 1];
     }
 
     /*

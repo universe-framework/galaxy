@@ -40,6 +40,12 @@
             <artifactId>jackson-jaxrs-json-provider</artifactId>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-multipart-provider</artifactId>
+            <version>4.3.1.Final</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>javax.mail</groupId>

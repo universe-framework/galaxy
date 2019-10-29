@@ -27,7 +27,6 @@ public final class UniverseFundamentals {
     /* Images (upload) */
     static public final String AVATAR_FOLDER;
     static public final String AVATAR_URL_PREFIX;
-    static public final String AVATAR_DEFAULT_FILE_NAME;
 
     /* REST api */
     static public final String APP_NAME;
@@ -69,16 +68,14 @@ public final class UniverseFundamentals {
              */
             String folder = properties.getProperty("DATA_STORE_FOLDER");
             String prefix = properties.getProperty("IMAGES_URL");
-            String defaultName = properties.getProperty("AVATAR_FILE_NAME");
 
-            if (folder != null || prefix != null || defaultName != null) {
-                if (folder == null || prefix == null || defaultName == null) {
-                    throw new AssertionError("Bad configuration for avatar properties: DATA_STORE_FOLDER | IMAGES_URL | AVATAR_FILE_NAME");
+            if (folder != null || prefix != null) {
+                if (folder == null || prefix == null) {
+                    throw new AssertionError("Bad configuration for avatar properties: DATA_STORE_FOLDER | IMAGES_URL");
                 }
             }
             AVATAR_FOLDER = folder;
             AVATAR_URL_PREFIX = prefix;
-            AVATAR_DEFAULT_FILE_NAME = defaultName;
 
             HOST = properties.getProperty("HOST");
             VERSION = properties.getProperty("VERSION");
@@ -99,6 +96,7 @@ public final class UniverseFundamentals {
 
     public interface Enviroments {
 
+        static public final String LOCAL = "local";
         static public final String DEV = "dev";
         static public final String QA = "qa";
         static public final String PROD = "prod";
