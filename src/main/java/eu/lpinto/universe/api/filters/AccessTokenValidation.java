@@ -3,6 +3,8 @@ package eu.lpinto.universe.api.filters;
 import eu.lpinto.universe.api.dto.FaultDTO;
 import eu.lpinto.universe.controllers.TokenController;
 import eu.lpinto.universe.persistence.entities.User;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/tokens", HttpMethod.POST);
         DMZ_ENDPOINTS.put("/people", HttpMethod.POST);
         DMZ_ENDPOINTS.put("/users", HttpMethod.POST);
+        DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
 
         DMZ_ENDPOINTS.put("", HttpMethod.GET);
@@ -90,7 +93,15 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
                                 .entity(new FaultDTO("Unknown access token")).build());
 
                     } else {
-                        requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
+                        Calendar c = new GregorianCalendar();
+                        if (user.getEmailValidated() == false && user.getCreated().before(c)) {
+                            requestContext.abortWith(Response
+                                    .status(Response.Status.UNAUTHORIZED)
+                                    .entity(new FaultDTO("Email not validated yet")).build());
+
+                        } else {
+                            requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
+                        }
                     }
                 }
 
@@ -125,8 +136,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true; // root endpoint without '/'
         }
 
-        if (service[1].startsWith("/tokens/")
-            || service[1].startsWith("/invites")) {
+        if (service[1].startsWith("/tokens/")) {
             return true;
         }
 

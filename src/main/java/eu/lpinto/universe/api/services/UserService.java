@@ -6,6 +6,7 @@ import eu.lpinto.universe.api.dts.UserDTS;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -38,20 +39,19 @@ public class UserService extends AbstractServiceCRUD<eu.lpinto.universe.persiste
     @Path("passwordRecovery")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response recoverPassword(final String email) {
+    public Response recoverPassword(final @HeaderParam("Accept-Language") String locale,
+                                    final String email) {
         if (email == null || email.isEmpty()) {
             return unprocessableEntity(new Errors().addError("token.email", "Missing email"));
         }
 
         try {
-            controller.recoverPassword(email);
+            controller.recoverPassword(locale, email);
             return noContent();
 
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             return internalError(ex);
-        }
-        catch (PreConditionException ex) {
+        } catch (PreConditionException ex) {
             return unprocessableEntity(new Errors(ex.getErrors()));
         }
     }

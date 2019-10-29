@@ -5,6 +5,7 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.Image;
+import eu.lpinto.universe.persistence.entities.Invite;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
@@ -31,6 +32,9 @@ public class UserController extends AbstractControllerCRUD<User> {
     @EJB
     private ImageController imageController;
 
+    @EJB
+    private InviteController inviteController;
+
     public UserController() {
         super(User.class.getCanonicalName());
     }
@@ -54,6 +58,15 @@ public class UserController extends AbstractControllerCRUD<User> {
             imageController.create(entity.getId(), options, newImage);
             entity.setCurrentAvatar(newImage);
         }
+
+        /*
+         * Create invite for worker
+         */
+        Invite newInvite = new Invite(null, entity.getEmail(), entity.getBaseUrl(), entity.getName());
+        newInvite.setCode();
+        inviteController.doCreate(userID, options, newInvite);
+
+        emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
     }
 
     @Override
@@ -167,45 +180,15 @@ public class UserController extends AbstractControllerCRUD<User> {
         return savedUser;
     }
 
-    public void recoverPassword(final String email) throws PreConditionException {
+    public void recoverPassword(final String lang, final String email) throws PreConditionException {
         try {
             User user = retrieveByEmailINTERNAL(email);
             String newPassword = "" + Calendar.getInstance().getTimeInMillis();
             user.setPassword(Digest.getSHA(newPassword));
             facade.edit(user);
 
-            String emailMessage = "<p>Boa tarde,</p>"
-                                  + "<p>Procedemos à alocação de uma nova password para a sua conta.</p>"
-                                  + "<p>Proceda à alteração da password após o primeiro login com os seguintes dados:</p>"
-                                  + "<p>email: " + email + "</p>"
-                                  + "<p>password: " + newPassword + "</p>"
-                                  + "<p>Para alterar a password deve aceder através do menu superior (canto direito) a:</p>"
-                                  + "<p>Nome > Conta > Segurança</p>"
-                                  + "<p>Qualquer questão não hesite em contactar-nos.</p>"
-                                  + "<p>Proceda à alteração da password após o primeiro login</p>"
-                                  + "<p>Cumprimentos,</p>"
-                                  + "</p>"
-                                  + "<p>"
-                                  + "A equipa Pet universal"
-                                  + "</p>"
-                                  + "<p>"
-                                  + "<a href=\"http://petuniversal.com/\" target=\"_blank\" style=\"color:#8d8d8d;text-decoration: none;\">www.petuniversal.com</a>"
-                                  + "</p>"
-                                  + "<p>"
-                                  + "    <a href='https://www.facebook.com/petuniversal' target='_blank'>"
-                                  + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/facebook.png'/>"
-                                  + "    </a>"
-                                  + "    &nbsp;"
-                                  + "    <a href='https://www.linkedin.com/company/pet-universal' target='_blank'>"
-                                  + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/linkedin.png'/>"
-                                  + "    </a>"
-                                  + "    &nbsp;"
-                                  + "    <a href='http://twitter.com/Pet_universal' target='_blank'>"
-                                  + "        <img moz-do-not-send=\"true\" style='border-radius:0;moz-border-radius:0;khtml-border-radius:0;o-border-radius:0;webkit-border-radius:0;ms-border-radius:0;border: 0;width:16px; height:16px;' width='16' height='16' src='https://s3.amazonaws.com/images.wisestamp.com/icons_32/twitter.png'/>"
-                                  + "    </a>"
-                                  + "</p>";
+            emailController.recoverPassword(lang, email, newPassword);
 
-            emailController.sendEmail(user.getEmail(), "password", emailMessage);
         } catch (UnknownIdException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         }

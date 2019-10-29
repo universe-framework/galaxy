@@ -1,7 +1,7 @@
 package eu.lpinto.universe.api.services;
 
 import eu.lpinto.universe.api.dto.Contact;
-import eu.lpinto.universe.controllers.EmailController;
+import eu.lpinto.universe.persistence.facades.EmailFacade;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 public class CommunicationService extends AbstractService {
 
     @EJB
-    private EmailController emailController;
+    private EmailFacade facade;
 
     @POST
     @Asynchronous
@@ -41,7 +41,7 @@ public class CommunicationService extends AbstractService {
         try {
             switch (contact.getType()) {
                 case "email":
-                    emailController.sendEmail(contact.getTo(), contact.getSubject(), contact.getMessage());
+                    facade.sendEmail(contact.getTo(), contact.getSubject(), contact.getMessage());
                     break;
                 default:
                     return badRequest("Contact type cannot  be empty");

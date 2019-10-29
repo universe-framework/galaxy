@@ -34,17 +34,10 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     @EJB
     private UserFacade userFacade;
 
-    //Not Used
-    /* @EJB
-     * private EmployeeFacade employeeFacade; */
     @EJB
     private WorkerFacade workerFacade;
 
-    //Not Used
-    /* @EJB
-     * private PMSClinicFacade pmsFacade; */
-
- /*
+    /*
      * Controllers
      */
     public OrganizationController() {
@@ -95,7 +88,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         User user = userFacade.retrieve(userID);
 
         /*
-         * Creates a new Hopi Organization
+         * Creates a new Organization
          */
         if (newOrganization instanceof UniverseEntity) {
             Organization organizationEntity = (Organization) newOrganization;
@@ -120,23 +113,19 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     }
 
     @Override
-    public void doUpdate(final Long userID, final Map<String, Object> options, Organization newClinic) {
+    public void doUpdate(final Long userID, final Map<String, Object> options, Organization newOrganization) {
 
         try {
-            Organization savedClinic = super.doRetrieve(userID, options, newClinic.getId());
+            Organization organization = super.doRetrieve(userID, options, newOrganization.getId());
 
-            if (savedClinic.getWorkers() != null && !savedClinic.getWorkers().isEmpty()) {
-                newClinic.setWorkers(savedClinic.getWorkers());
+            if (organization.getWorkers() != null && !organization.getWorkers().isEmpty()) {
+                newOrganization.setWorkers(organization.getWorkers());
             }
-//            if (savedClinic.getPatients() != null && !savedClinic.getPatients().isEmpty()) {
-//                newClinic.setPatients(savedClinic.getPatients());
-//            }
 
-            //Hopi
-            newClinic.setExternalID(savedClinic.getExternalID());
-            newClinic.setEnable(true);
-            newClinic.setCompany(savedClinic.getCompany());
-            super.doUpdate(userID, options, newClinic);
+            newOrganization.setExternalID(organization.getExternalID());
+            newOrganization.setEnable(true);
+            newOrganization.setCompany(organization.getCompany());
+            super.doUpdate(userID, options, newOrganization);
 
         } catch (UnknownIdException | PreConditionException ex) {
             Logger.getLogger(OrganizationController.class.getName()).log(Level.SEVERE, null, ex);
@@ -144,13 +133,13 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     }
 
     @Override
-    public void doDelete(final Long userID, final Map<String, Object> options, Organization savedClinic) throws PreConditionException {
+    public void doDelete(final Long userID, final Map<String, Object> options, Organization savedOrganization) throws PreConditionException {
         try {
-            Organization newClinic = super.doRetrieve(userID, options, savedClinic.getId());
-            savedClinic.setExternalID(newClinic.getExternalID());
-            savedClinic.setEnable(false);
-            savedClinic.setCompany(newClinic.getCompany());
-            super.doUpdate(userID, options, savedClinic);
+            Organization organization = super.doRetrieve(userID, options, savedOrganization.getId());
+            savedOrganization.setExternalID(organization.getExternalID());
+            savedOrganization.setEnable(false);
+            savedOrganization.setCompany(organization.getCompany());
+            super.doUpdate(userID, options, savedOrganization);
         } catch (UnknownIdException ex) {
             Logger.getLogger(OrganizationController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -175,8 +164,8 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     @Override
     public Boolean assertPremissionsUpdateDelete(Long userID, Organization entity) throws PermissionDeniedException {
         try {
-            Organization savedClinic = super.doRetrieve(userID, new HashMap<>(0), entity.getId());
-            if (savedClinic.getEnable() == true) {
+            Organization savedOrganization = super.doRetrieve(userID, new HashMap<>(0), entity.getId());
+            if (savedOrganization.getEnable() == true) {
                 return true;
             } else {
                 throw new PermissionDeniedException();

@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * REST service interface for users.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
- * @param <E>   Domain AbstractEntityDTO
- * @param <D>   DTO
- * @param <C>   Controller
+ * @param <E> Domain AbstractEntityDTO
+ * @param <D> DTO
+ * @param <C> Controller
  * @param <DTS> DTS service
  */
 public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
@@ -152,6 +152,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Setup */
             buildOptions(options, uriInfo, userID);
+            options.put("locale", locale);
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod(), dto.get(0).getClass().getSimpleName() + "([" + dto.size() + " ])");
@@ -207,6 +208,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Setup */
             buildOptions(options, uriInfo, userID);
+            options.put("locale", locale);
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod(), dto);

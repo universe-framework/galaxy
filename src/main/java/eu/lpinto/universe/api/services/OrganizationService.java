@@ -1,10 +1,9 @@
 package eu.lpinto.universe.api.services;
 
-import eu.lpinto.universe.controllers.OrganizationController;
-import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.api.dto.OrganizationDTO;
 import eu.lpinto.universe.api.dts.OrganizationDTS;
-import eu.lpinto.universe.api.services.AbstractServiceCRUD;
+import eu.lpinto.universe.controllers.OrganizationController;
+import eu.lpinto.universe.persistence.entities.Organization;
 import javax.ejb.EJB;
 import javax.ws.rs.Path;
 

@@ -13,15 +13,20 @@ public class Company extends AbstractDTO implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private Long avatar;
-    private Long plan;
-    private Long parent;
-
     private String phone;
     private String facebook;
     private String email;
     private String vatNumber;
     private String customField;
+
+    private String street;
+    private String zip;
+    private String town;
+    private String country;
+
+    private Long avatar;
+    private Long plan;
+    private Long parent;
 
     private List<Long> children;
     private List<Long> avatars;
@@ -36,17 +41,24 @@ public class Company extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public Company(String phone, String facebook, String email, String vatNumber, Long avatar, Long plan, Long parent, String customField,
-                   List<Long> children, List<Long> avatars, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Company(String phone, String facebook, String email, String vatNumber, String customField,
+                   String street, String zip, String town, String country,
+                   Long avatar, Long plan, Long parent,
+                   List<Long> children, List<Long> avatars,
+                   Long id, String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted) {
+        super(id, name, creator, created, updater, updated, deleted);
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
         this.vatNumber = vatNumber;
+        this.customField = customField;
+        this.street = street;
+        this.zip = zip;
+        this.town = town;
+        this.country = country;
         this.avatar = avatar;
         this.plan = plan;
         this.parent = parent;
-        this.customField = customField;
         this.children = children;
         this.avatars = avatars;
     }
@@ -58,7 +70,7 @@ public class Company extends AbstractDTO implements Serializable {
         return phone;
     }
 
-    public void setPhone(final String phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
@@ -66,7 +78,7 @@ public class Company extends AbstractDTO implements Serializable {
         return facebook;
     }
 
-    public void setFacebook(final String facebook) {
+    public void setFacebook(String facebook) {
         this.facebook = facebook;
     }
 
@@ -74,7 +86,7 @@ public class Company extends AbstractDTO implements Serializable {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -82,32 +94,8 @@ public class Company extends AbstractDTO implements Serializable {
         return vatNumber;
     }
 
-    public void setVatNumber(final String vatNumber) {
+    public void setVatNumber(String vatNumber) {
         this.vatNumber = vatNumber;
-    }
-
-    public Long getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(final Long avatar) {
-        this.avatar = avatar;
-    }
-
-    public Long getPlan() {
-        return plan;
-    }
-
-    public void setPlan(final Long plan) {
-        this.plan = plan;
-    }
-
-    public Long getParent() {
-        return parent;
-    }
-
-    public void setParent(final Long parent) {
-        this.parent = parent;
     }
 
     public String getCustomField() {
@@ -118,11 +106,67 @@ public class Company extends AbstractDTO implements Serializable {
         this.customField = customField;
     }
 
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
+
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Long getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Long avatar) {
+        this.avatar = avatar;
+    }
+
+    public Long getPlan() {
+        return plan;
+    }
+
+    public void setPlan(Long plan) {
+        this.plan = plan;
+    }
+
+    public Long getParent() {
+        return parent;
+    }
+
+    public void setParent(Long parent) {
+        this.parent = parent;
+    }
+
     public List<Long> getChildren() {
         return children;
     }
 
-    public void setChildren(final List<Long> children) {
+    public void setChildren(List<Long> children) {
         this.children = children;
     }
 
@@ -130,7 +174,7 @@ public class Company extends AbstractDTO implements Serializable {
         return avatars;
     }
 
-    public void setAvatars(final List<Long> avatars) {
+    public void setAvatars(List<Long> avatars) {
         this.avatars = avatars;
     }
 }
