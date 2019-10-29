@@ -48,11 +48,11 @@ public class TokenController {
         if (!savedUser.getPassword().equals(Digest.getSHA(user.getPassword()))) {
             throw new PreConditionException("user.password", "invalidPassword");
         }
-
+/*
         if (user.getEmailValidated() == null || user.getEmailValidated() == false) {
             throw new PreConditionException("user.email", "notValidated");
         }
-
+*/
         Token newToken = new Token(accessToken, savedUser);
         facade.create(newToken);
 
