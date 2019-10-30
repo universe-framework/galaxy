@@ -45,6 +45,7 @@ public class UserController extends AbstractControllerCRUD<User> {
      */
     @Override
     public void doCreate(Long userID, Map<String, Object> options, User entity) throws UnknownIdException, PermissionDeniedException, PreConditionException {
+
         Image newImage = null;
 
         if (entity.getCurrentAvatar() != null) {
@@ -54,22 +55,26 @@ public class UserController extends AbstractControllerCRUD<User> {
 
         super.doCreate(userID, options, entity);
 
-        if (newImage != null) {
-            newImage.setName("User_" + entity.getId() + "_Image#1");
-            imageController.create(entity.getId(), options, newImage);
-            entity.setCurrentAvatar(newImage);
+        try {
+            if (newImage != null) {
+                newImage.setName("User_" + entity.getId() + "_Image#1");
+                imageController.create(entity.getId(), options, newImage);
+                entity.setCurrentAvatar(newImage);
+            }
+
+            /*
+             * Create invite for worker
+             */
+            EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
+            emailValidationFacade.create(newInvite);
+            newInvite.setCode();
+            emailValidationFacade.edit(newInvite);
+
+            emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+        } catch (RuntimeException ex) {
+            super.delete(userID, options, entity.getId());
+            throw ex;
         }
-
-        /*
-         * Create invite for worker
-         */
-        EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
-        emailValidationFacade.create(newInvite);
-        newInvite.setCode();
-        emailValidationFacade.edit(newInvite);
-
-        emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
-        */
     }
 
     @Override
