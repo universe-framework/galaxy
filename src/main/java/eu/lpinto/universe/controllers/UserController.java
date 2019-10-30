@@ -61,12 +61,13 @@ public class UserController extends AbstractControllerCRUD<User> {
 
         /*
          * Create invite for worker
-         */
+         *
         Invite newInvite = new Invite(null, entity.getEmail(), entity.getBaseUrl(), entity.getName());
         newInvite.setCode();
         inviteController.doCreate(userID, options, newInvite);
 
         emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+        */
     }
 
     @Override
