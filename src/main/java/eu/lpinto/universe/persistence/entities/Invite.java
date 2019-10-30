@@ -40,7 +40,6 @@ public class Invite extends AbstractEntity implements Serializable {
         this.organization = organization;
         this.email = email;
         this.baseUrl = baseUrl;
-        setCode();
     }
 
     public Invite(final Organization organization, final String email, final String name, final String baseUrl, final WorkerProfile role,
@@ -51,6 +50,7 @@ public class Invite extends AbstractEntity implements Serializable {
         this.baseUrl = baseUrl;
         this.code = null;
         this.role = role;
+        setCode();
     }
 
     /*

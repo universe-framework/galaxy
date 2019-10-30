@@ -5,6 +5,7 @@ import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.Invite;
 import eu.lpinto.universe.persistence.entities.Organization;
+import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.InviteFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Map;
@@ -39,12 +40,15 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
     public void doCreate(final Long userID, final Map<String, Object> options, Invite invite) throws PreConditionException, UnknownIdException, PermissionDeniedException {
         String invitedEmail = invite.getEmail();
 
-        invite.setName(invite.getOrganization().getName(), invite.getName());
+        if (invite.getName() == null) {
+            invite.setName(invite.getOrganization().getName(), invite.getName());
+        }
 
         /*
          * Preconditions
          */
-        if (userFacade.findByEmail(invitedEmail) != null) {
+        User savedUser = userFacade.findByEmail(invitedEmail);
+        if (savedUser != null && savedUser.getEmailValidated() != null && savedUser.getEmailValidated()) {
             throw new PreConditionException("email", "The email address already has a account");
         }
 
@@ -56,18 +60,19 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         /*
          * Body
          */
-        Organization savedOrganization = organizationController.retrieve(userID, options, invite.getOrganization().getId());
-
         super.doCreate(userID, options, invite);
         invite.setCode();
         super.doUpdate(userID, options, invite);
 
-        emailController.sendInvite((String) options.get("lang"),
-                                   invite.getEmail(),
-                                   invite.getName(),
-                                   userFacade.retrieve(userID).getName(),
-                                   savedOrganization.getName(),
-                                   invite.getUrl());
+        if (invite.getOrganization() != null) {
+            Organization savedOrganization = organizationController.retrieve(userID, options, invite.getOrganization().getId());
+            emailController.sendInvite((String) options.get("lang"),
+                                       invite.getEmail(),
+                                       invite.getName(),
+                                       userFacade.retrieve(userID).getName(),
+                                       savedOrganization.getName(),
+                                       invite.getUrl());
+        }
     }
 
     @Override

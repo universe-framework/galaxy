@@ -4,9 +4,10 @@ import eu.lpinto.universe.api.util.Digest;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
+import eu.lpinto.universe.persistence.entities.EmailValidation;
 import eu.lpinto.universe.persistence.entities.Image;
-import eu.lpinto.universe.persistence.entities.Invite;
 import eu.lpinto.universe.persistence.entities.User;
+import eu.lpinto.universe.persistence.facades.EmailValidationFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class UserController extends AbstractControllerCRUD<User> {
     private ImageController imageController;
 
     @EJB
-    private InviteController inviteController;
+    private EmailValidationFacade emailValidationFacade;
 
     public UserController() {
         super(User.class.getCanonicalName());
@@ -62,9 +63,10 @@ public class UserController extends AbstractControllerCRUD<User> {
         /*
          * Create invite for worker
          */
-        Invite newInvite = new Invite(null, entity.getEmail(), entity.getBaseUrl(), entity.getName());
+        EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
+        emailValidationFacade.create(newInvite);
         newInvite.setCode();
-        inviteController.doCreate(userID, options, newInvite);
+        emailValidationFacade.edit(newInvite);
 
         emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
     }
