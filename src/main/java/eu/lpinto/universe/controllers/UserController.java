@@ -69,6 +69,7 @@ public class UserController extends AbstractControllerCRUD<User> {
         emailValidationFacade.edit(newInvite);
 
         emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+        */
     }
 
     @Override
