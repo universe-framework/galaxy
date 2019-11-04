@@ -20,6 +20,16 @@ import javax.ejb.Stateless;
 @Stateless
 public class EmailController {
 
+    public static String streamToString(final InputStream inputStream) {
+        try (
+                final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            return br.lines().parallel().collect(Collectors.joining("\n"));
+
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private final String passwordRestStrPT;
     private final String passwordRestStrES;
     private final String passwordRestStrEN;
@@ -43,7 +53,7 @@ public class EmailController {
 
         inviteStrPT = setDefaultBody("invite", "pt", "Para aceitar o convite aceda a: ${inviteUrl}");
         inviteStrES = setDefaultBody("invite", "es", "El enlace de invitación es: ${inviteUrl}");
-        inviteStrEN = setDefaultBody("invite", "en", "You invitation link is: ${inviteUrl}");
+        inviteStrEN = setDefaultBody("invite", "en", "Your invitation link is: ${inviteUrl}");
 
         validationStrPT = setDefaultBody("validation", "pt", "Para validar o email aceda a: ${url}");
         validationStrES = setDefaultBody("validation", "es", "El enlace de validacion es: ${url}");
@@ -150,13 +160,4 @@ public class EmailController {
         facade.sendEmail(destinationEmail, subject, content);
     }
 
-    public static String streamToString(final InputStream inputStream) {
-        try (
-                final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            return br.lines().parallel().collect(Collectors.joining("\n"));
-
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 }

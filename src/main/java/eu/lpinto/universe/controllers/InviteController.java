@@ -66,7 +66,7 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
 
         if (invite.getOrganization() != null) {
             Organization savedOrganization = organizationController.retrieve(userID, options, invite.getOrganization().getId());
-            emailController.sendInvite((String) options.get("lang"),
+            emailController.sendInvite((String) options.get("locale"),
                                        invite.getEmail(),
                                        invite.getName(),
                                        userFacade.retrieve(userID).getName(),

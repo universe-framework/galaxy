@@ -63,14 +63,16 @@ public class UserController extends AbstractControllerCRUD<User> {
             }
 
             /*
-             * Create invite for worker
+             * Email validation
              */
-            EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
-            emailValidationFacade.create(newInvite);
-            newInvite.setCode();
-            emailValidationFacade.edit(newInvite);
+            if (entity.getBaseUrl() != null) {
+                EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
+                emailValidationFacade.create(newInvite);
+                newInvite.setCode();
+                emailValidationFacade.edit(newInvite);
 
-            emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+                emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+            }
         } catch (RuntimeException ex) {
             super.delete(userID, options, entity.getId());
             throw ex;
@@ -81,23 +83,26 @@ public class UserController extends AbstractControllerCRUD<User> {
     public void doUpdate(Long userID, Map<String, Object> options, User entity) throws PreConditionException {
         Image newImage = null;
 
-        if (entity.getCurrentAvatar() != null) {
-            try {
-                User savedUser = doRetrieve(userID, options, userID);
+        try {
+            User savedUser = doRetrieve(userID, options, userID);
+
+            if (entity.getCurrentAvatar() != null) {
                 if (savedUser.getCurrentAvatar() != null) {
                     Image savedAvatar = savedUser.getCurrentAvatar();
                     if (savedAvatar.getUrl().equals(entity.getCurrentAvatar().getUrl())) {
                         entity.setCurrentAvatar(savedAvatar);
-
                     } else {
                         newImage = entity.getCurrentAvatar();
                         entity.setCurrentAvatar(null);
                     }
                 }
 
-            } catch (UnknownIdException ex) {
-                throw new PreConditionException("id", "Unknown");
             }
+
+            entity.setPassword(savedUser.getPassword());
+
+        } catch (UnknownIdException ex) {
+            throw new PreConditionException("id", "Unknown");
         }
 
         super.doUpdate(userID, options, entity);
