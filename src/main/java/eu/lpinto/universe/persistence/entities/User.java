@@ -99,6 +99,19 @@ public class User extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
+    public User(String baseUrl, Image currentAvatar, List<Image> avatars, List<Token> tokens, List<Employee> employees,
+                String email, String password,
+                String name, User creator, Calendar created, User updater, Calendar updated, Long id, Calendar deleted) {
+        super(id, name, creator, created, updater, updated, deleted);
+        this.baseUrl = baseUrl;
+        this.currentAvatar = currentAvatar;
+        this.avatars = avatars;
+        this.tokens = tokens;
+        this.employees = employees;
+        this.email = email;
+        this.password = password;
+    }
+
     /*
      * Getters/Setters
      */

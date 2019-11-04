@@ -46,7 +46,8 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
 
     @Override
     public User toDomain(eu.lpinto.universe.api.dto.User dto) {
-        return new User(dto.getCurrentAvatar() == null ? null : new Image(dto.getCurrentAvatar()),
+        return new User(dto.getBaseUrl(),
+                        dto.getCurrentAvatar() == null ? null : new Image(dto.getCurrentAvatar()),
                         null, // avatars
                         null, // tokens
                         null, // employees
@@ -57,6 +58,7 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
                         dto.getCreated(),
                         UserDTS.T.toDomain(dto.getUpdater()),
                         dto.getUpdated(),
-                        dto.getId());
+                        dto.getId(),
+                        dto.getDeleted());
     }
 }

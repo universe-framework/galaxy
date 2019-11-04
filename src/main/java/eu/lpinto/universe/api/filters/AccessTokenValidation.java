@@ -90,14 +90,15 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
                     if (user == null) {
                         requestContext.abortWith(Response
                                 .status(Response.Status.UNAUTHORIZED)
-                                .entity(new FaultDTO("Unknown access token")).build());
+                                .entity(new FaultDTO("104", "Unknown access token")).build());
 
                     } else {
                         Calendar c = new GregorianCalendar();
-                        if (user.getEmailValidated() == false && user.getCreated().before(c)) {
+                        c.add(Calendar.DAY_OF_MONTH, 1);
+                        if (user.getEmailValidated() == null && user.getCreated().after(c)) {
                             requestContext.abortWith(Response
                                     .status(Response.Status.UNAUTHORIZED)
-                                    .entity(new FaultDTO("Email not validated yet")).build());
+                                    .entity(new FaultDTO("105", "Email not validated yet")).build());
 
                         } else {
                             requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
@@ -108,7 +109,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             } catch (RuntimeException ex) {
                 requestContext.abortWith(Response
                         .status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(new FaultDTO("Cannot validate token. Error: " + ex.getLocalizedMessage())).build());
+                        .entity(new FaultDTO("100", "Cannot validate token. Error: " + ex.getLocalizedMessage())).build());
             }
         }
     }

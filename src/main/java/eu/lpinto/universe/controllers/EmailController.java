@@ -45,9 +45,9 @@ public class EmailController {
         inviteStrES = setDefaultBody("invite", "es", "El enlace de invitación es: ${inviteUrl}");
         inviteStrEN = setDefaultBody("invite", "en", "You invitation link is: ${inviteUrl}");
 
-        validationStrPT = setDefaultBody("validation", "pt", "Para validar o email aceda a: ${inviteUrl}");
-        validationStrES = setDefaultBody("validation", "es", "El enlace de validacion es: ${inviteUrl}");
-        validationStrEN = setDefaultBody("validation", "en", "Your email validation link is: ${inviteUrl}");
+        validationStrPT = setDefaultBody("validation", "pt", "Para validar o email aceda a: ${url}");
+        validationStrES = setDefaultBody("validation", "es", "El enlace de validacion es: ${url}");
+        validationStrEN = setDefaultBody("validation", "en", "Your email validation link is: ${url}");
     }
 
     private String setDefaultBody(final String fileName, final String lang, final String defaultBody) {
