@@ -66,12 +66,12 @@ public class UserController extends AbstractControllerCRUD<User> {
              * Email validation
              */
             if (entity.getBaseUrl() != null) {
-                EmailValidation newInvite = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
-                emailValidationFacade.create(newInvite);
-                newInvite.setCode();
-                emailValidationFacade.edit(newInvite);
+                EmailValidation newEmailValidation = new EmailValidation(entity.getEmail(), entity.getBaseUrl(), entity.getName());
+                emailValidationFacade.create(newEmailValidation);
+                newEmailValidation.setCode();
+                emailValidationFacade.edit(newEmailValidation);
 
-                emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newInvite.getUrl());
+                emailController.sendValidation((String) options.get("locale"), entity.getEmail(), entity.getName(), newEmailValidation.getUrl());
             }
         } catch (RuntimeException ex) {
             super.delete(userID, options, entity.getId());
