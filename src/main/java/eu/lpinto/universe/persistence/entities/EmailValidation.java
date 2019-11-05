@@ -2,7 +2,8 @@ package eu.lpinto.universe.persistence.entities;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
@@ -35,12 +36,21 @@ public class EmailValidation extends AbstractEntity implements Serializable {
     }
 
     public EmailValidation(final String email, final String name, final String baseUrl,
-                             final User creator, final Calendar created, final User updater, final Calendar updated, final Long id) {
+                           final User creator, final Calendar created, final User updater, final Calendar updated, final Long id) {
         super(name, creator, created, updater, updated, id);
         this.email = email;
         this.baseUrl = baseUrl;
         this.code = null;
         setCode();
+    }
+
+    public EmailValidation(final String email, final String code, final String baseUrl, final Long id, final String name,
+                           final User creator, final Calendar created, final User updater, final Calendar updated,
+                           final Calendar deleted) {
+        super(id, name, creator, created, updater, updated, deleted);
+        this.email = email;
+        this.code = code;
+        this.baseUrl = baseUrl;
     }
 
     /*

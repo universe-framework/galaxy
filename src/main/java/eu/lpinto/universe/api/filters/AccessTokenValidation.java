@@ -3,11 +3,7 @@ package eu.lpinto.universe.api.filters;
 import eu.lpinto.universe.api.dto.FaultDTO;
 import eu.lpinto.universe.controllers.TokenController;
 import eu.lpinto.universe.persistence.entities.User;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Priority;
 import javax.ejb.EJB;
 import javax.ws.rs.HttpMethod;
@@ -43,6 +39,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/people", HttpMethod.POST);
         DMZ_ENDPOINTS.put("/users", HttpMethod.POST);
         DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
 
         DMZ_ENDPOINTS.put("", HttpMethod.GET);
