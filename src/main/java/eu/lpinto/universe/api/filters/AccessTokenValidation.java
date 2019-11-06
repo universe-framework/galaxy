@@ -40,6 +40,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/users", HttpMethod.POST);
         DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("emailValidations", HttpMethod.PUT);
         DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
 
         DMZ_ENDPOINTS.put("", HttpMethod.GET);
@@ -129,6 +130,10 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         }
 
         String[] service = absolutePath.split("/api");
+
+        if (method.equals("PUT")) {
+            service[1] = service[1].replace("/", "").split("\\d{1,}")[0];
+        }
 
         if (service.length == 1) {
             return true; // root endpoint without '/'

@@ -49,14 +49,6 @@ public class EmailValidationFacade extends AbstractFacade<EmailValidation> {
     }
 
     @Override
-    public EmailValidation retrieve(Long id) {
-        return getEntityManager()
-                .createQuery("SELECT i FROM EmailValidation i WHERE i.code = :codeID", EmailValidation.class)
-                .setParameter("codeID", id.toString())
-                .getSingleResult();
-    }
-
-    @Override
     protected EntityManager getEntityManager() {
         return em;
     }

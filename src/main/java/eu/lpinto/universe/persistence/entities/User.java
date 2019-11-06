@@ -167,7 +167,7 @@ public class User extends AbstractEntity implements Serializable {
         return emailValidated;
     }
 
-    public void setEmailValidated(Boolean emailValidated) {
+    public void setEmailValidated(final Boolean emailValidated) {
         this.emailValidated = emailValidated;
     }
 

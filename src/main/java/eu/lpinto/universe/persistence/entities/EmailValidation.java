@@ -2,8 +2,7 @@ package eu.lpinto.universe.persistence.entities;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  *
@@ -18,6 +17,10 @@ public class EmailValidation extends AbstractEntity implements Serializable {
     private String email;
     private String code;
     private String baseUrl;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(updatable = true, nullable = true)
+    private Calendar doneDate;
 
     /*
      * Contructors
@@ -44,13 +47,14 @@ public class EmailValidation extends AbstractEntity implements Serializable {
         setCode();
     }
 
-    public EmailValidation(final String email, final String code, final String baseUrl, final Long id, final String name,
-                           final User creator, final Calendar created, final User updater, final Calendar updated,
-                           final Calendar deleted) {
+    public EmailValidation(final String email, final String code, final String baseUrl, final Calendar doneDate,
+                           final Long id, final String name, final User creator, final Calendar created,
+                           final User updater, final Calendar updated, final Calendar deleted) {
         super(id, name, creator, created, updater, updated, deleted);
         this.email = email;
         this.code = code;
         this.baseUrl = baseUrl;
+        this.doneDate = doneDate;
     }
 
     /*
@@ -86,5 +90,13 @@ public class EmailValidation extends AbstractEntity implements Serializable {
 
     public String getUrl() {
         return baseUrl + code;
+    }
+
+    public Calendar getDoneDate() {
+        return doneDate;
+    }
+
+    public void setDoneDate(final Calendar doneDate) {
+        this.doneDate = doneDate;
     }
 }
