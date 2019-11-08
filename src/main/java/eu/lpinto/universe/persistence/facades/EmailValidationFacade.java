@@ -10,7 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- * EJB facade for shelter-people relation.
+ * EJB facade for email validation.
  *
  * @author Luis Pinto <code>- mail@lpinto.eu</code>
  */
@@ -31,7 +31,7 @@ public class EmailValidationFacade extends AbstractFacade<EmailValidation> {
     public List<EmailValidation> find(Map<String, Object> options) {
         if (options.containsKey("code")) {
             return getEntityManager()
-                    .createQuery("SELECT i FROM EmailValidation i WHERE i.code = :codeID", EmailValidation.class)
+                    .createQuery("SELECT ev FROM EmailValidation ev WHERE ev.code = :codeID", EmailValidation.class)
                     .setParameter("codeID", "" + options.get("code"))
                     .getResultList();
 
@@ -46,14 +46,6 @@ public class EmailValidationFacade extends AbstractFacade<EmailValidation> {
         } catch (NoResultException ex) {
             return null;
         }
-    }
-
-    @Override
-    public EmailValidation retrieve(Long id) {
-        return getEntityManager()
-                .createQuery("SELECT i FROM EmailValidation i WHERE i.code = :codeID", EmailValidation.class)
-                .setParameter("codeID", id.toString())
-                .getSingleResult();
     }
 
     @Override

@@ -110,17 +110,17 @@ public class EmailController {
         if (lang != null && (lang.contains("pt-PT")
                              || lang.contains("pt-BR")
                              || lang.contains("pt"))) {
-            subject = "Convite";
+            subject = "Validar endereço de email";
             content = validationStrPT;
 
         } else if (lang != null && (lang.contains("es-ES")
                                     || lang.contains("es-MX")
                                     || lang.contains("es"))) {
-            subject = "Invitación";
+            subject = "Validar correo electrónico";
             content = validationStrES;
 
         } else {
-            subject = "Invite";
+            subject = "Validate email";
             content = validationStrEN;
         }
 
