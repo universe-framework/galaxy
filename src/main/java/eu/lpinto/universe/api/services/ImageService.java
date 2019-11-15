@@ -3,34 +3,19 @@ package eu.lpinto.universe.api.services;
 import eu.lpinto.universe.api.dto.Image;
 import eu.lpinto.universe.api.dts.ImageDTS;
 import eu.lpinto.universe.controllers.ImageController;
-import eu.lpinto.universe.controllers.OrganizationController;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.util.UniverseFundamentals;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -49,9 +34,6 @@ public class ImageService extends AbstractServiceCRUD<eu.lpinto.universe.persist
 
     @EJB
     private ImageController imageController;
-
-    @EJB
-    private OrganizationController organizationController;
 
     public ImageService() {
         super(ImageDTS.T);
@@ -129,29 +111,12 @@ public class ImageService extends AbstractServiceCRUD<eu.lpinto.universe.persist
                 }
 
                 try {
-                    eu.lpinto.universe.persistence.entities.Image savedImage;
+                    eu.lpinto.universe.persistence.entities.Image savedImage = createImage(imageUrl, fileName, userID);
+                    asyncResponse.resume(savedImage);
 
-                    Map<String, Object> options = new HashMap<>(0);
-
-                    switch (entityName) {
-                        case "organizations":
-                            savedImage = createImage(imageUrl, fileName, userID);
-                            Organization savedOrganization = organizationController.retrieve(userID, options, entityID);
-                            savedOrganization.addAvatar(savedImage);
-                            savedOrganization.setSelectedAvatar(savedImage);
-
-                            organizationController.update(userID, options, savedOrganization);
-                            break;
-
-                        default:
-                            asyncResponse.resume(unprocessableEntity("Image", "unknown entity"));
-                            return;
-                    }
                 } catch (UnknownIdException | PermissionDeniedException | PreConditionException ex) {
                     throw new RuntimeException(ex);
                 }
-
-                asyncResponse.resume(ok("Uploaded file name : " + fileName));
 
             } catch (RuntimeException ex) {
                 asyncResponse.resume(internalError(ex));
