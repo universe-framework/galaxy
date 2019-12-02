@@ -32,11 +32,11 @@ public class TokenController {
         String accessToken = Digest.getSHA(user.getId() + "." + String.valueOf(System.currentTimeMillis()), SALT);
 
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            throw new PreConditionException("token.email", "Missing email");
+            throw new PreConditionException("user", "Missing email");
         }
 
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new PreConditionException("token.password", "Missing password");
+            throw new PreConditionException("password", "Missing password");
         }
 
         User savedUser = userFacade.findByEmail(user.getEmail());
@@ -46,13 +46,13 @@ public class TokenController {
         }
 
         if (!savedUser.getPassword().equals(Digest.getSHA(user.getPassword()))) {
-            throw new PreConditionException("user.password", "invalidPassword");
+            throw new PreConditionException("password", "invalidPassword");
         }
-/*
+        /*
         if (user.getEmailValidated() == null || user.getEmailValidated() == false) {
             throw new PreConditionException("user.email", "notValidated");
         }
-*/
+         */
         Token newToken = new Token(accessToken, savedUser);
         facade.create(newToken);
 
