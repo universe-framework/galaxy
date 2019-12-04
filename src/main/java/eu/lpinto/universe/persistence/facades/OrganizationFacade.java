@@ -36,12 +36,14 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     }
 
     @Override
-    public List<Organization> find(final Map<String, Object> options) {
+    public List<Organization> find(final Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("company")) {
             return findByCompany((Long) options.get("company"));
         }
+        if (options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
+            return findBySiblings((Long) options.get("organization"));
+        }
 
-        Long userID = (Long) options.get("user");
         return findByUser((Long) options.get("user"));
     }
 
@@ -59,22 +61,6 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .setParameter("organizationID", id)
                 .getResultList());
 
-//        savedClinic.setClients(getEntityManager()
-//                .createQuery("select e from Customer e left join fetch e.clinic"
-//                             + " where e.clinic.id = :clinicID AND e.profile in :profiles", Customer.class)
-//                .setParameter("clinicID", id)
-//                .setParameter("profiles", Arrays.asList(WorkerProfile.UNKNOWN))
-//                .getResultList());
-//        savedClinic.setPatients(getEntityManager()
-//                .createQuery("select e from Patients e left join fetch e.clinic"
-//                             + " where e.clinic.id = :clinicID", Patient.class).setParameter("clinicID", id).getResultList());
-//        savedClinic.setConsumables(getEntityManager()
-//                .createQuery("select e from Consumable e left join fetch e.clinic"
-//                             + " where e.clinic.id = :clinicID", Consumable.class).setParameter("clinicID", id).getResultList());
-//
-//        savedClinic.setConsumableTypes(getEntityManager()
-//                .createQuery("select e from ConsumableType e left join fetch e.clinic"
-//                             + " where e.clinic.id = :clinicID", ConsumableType.class).setParameter("clinicID", id).getResultList());
         savedOrganization.setFull(true);
 
         return savedOrganization;
@@ -94,4 +80,13 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .getResultList();
     }
 
+    private List<Organization> findBySiblings(Long organizationID) throws PreConditionException {
+        Organization savedOrganization = super.retrieve(organizationID);
+
+        return getEntityManager()
+                .createQuery("SELECT o FROM Organization o WHERE o.company.id = :companyID AND o.enable=1 AND o.id <> :organizationID", Organization.class)
+                .setParameter("companyID", savedOrganization.getCompany().getId())
+                .setParameter("organizationID", organizationID)
+                .getResultList();
+    }
 }
