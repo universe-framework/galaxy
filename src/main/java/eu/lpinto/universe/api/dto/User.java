@@ -38,7 +38,7 @@ public class User extends AbstractDTO implements Serializable {
                 String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.currentAvatar = currentAvatar;
-        this.email = email;
+        this.email = (email == null ? null : email.isEmpty() ? null : email.trim().toLowerCase());
         this.password = password;
     }
 
@@ -58,7 +58,7 @@ public class User extends AbstractDTO implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = (email == null ? null : email.isEmpty() ? null : email.trim().toLowerCase());
     }
 
     public String getPassword() {
