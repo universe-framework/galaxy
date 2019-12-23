@@ -49,7 +49,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                 } else if (options.containsKey("profile")) {
                     return getByCompanyAndProfiles((Long) options.get("company"), options.get("profile").toString());
 
-                } else if (options.containsKey("user")) {
+                } else if (options.containsKey("me") && (Boolean) options.get("me")) {
                     return getByCompanyAndUser((Long) options.get("company"), (Long) options.get("user"));
 
                 } else {
