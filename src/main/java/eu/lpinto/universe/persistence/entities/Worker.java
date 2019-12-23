@@ -1,8 +1,5 @@
 package eu.lpinto.universe.persistence.entities;
 
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.User;
 import java.io.Serializable;
 import java.util.Calendar;
 import javax.persistence.*;
@@ -69,6 +66,15 @@ public class Worker extends AbstractEntity implements Serializable {
 
     public Worker(Long id) {
         super(id);
+    }
+
+    public Worker(Organization organization, Employee employee, Boolean enable, String email, WorkerProfile role, String name) {
+        super(name);
+        this.organization = organization;
+        this.employee = employee;
+        this.enable = enable;
+        this.email = email;
+        this.role = role;
     }
 
     public Worker(Integer professionalLetterNumber, Calendar birthdate, Organization organization, Employee employee,

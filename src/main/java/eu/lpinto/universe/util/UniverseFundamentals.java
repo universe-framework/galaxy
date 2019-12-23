@@ -18,6 +18,7 @@ public final class UniverseFundamentals {
     static public final String VERSION;
 
     static public final Integer DEFAULT_PLAN;
+    static public final String IMPORTS_FOLDER;
 
     /* Email */
     static public final String SUPPORT_ADDR;
@@ -57,6 +58,8 @@ public final class UniverseFundamentals {
             if (APP_NAME == null) {
                 throw new AssertionError("Missing property: APP_NAME");
             }
+
+            IMPORTS_FOLDER = properties.getProperty("IMPORTS_FOLDER");
 
             DEFAULT_PLAN = properties.getProperty("default_plan") == null ? 1 : Integer.valueOf(properties.getProperty("default_plan"));
 
