@@ -1,7 +1,11 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Base entity, encapsulates the common data between all entities.
@@ -81,7 +85,27 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
     }
 
     public void setCreated(Calendar created) {
-        this.created = created;
+        this.created = created == null ? null : (Calendar) created.clone();
+    }
+
+    public void setCreated(final LocalDate localDate) {
+        if (localDate == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(java.sql.Date.valueOf(localDate));
+        this.created = aux;
+    }
+
+    public void setCreated(final Instant instant) {
+        if (instant == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(Date.from(instant));
+        this.created = aux;
     }
 
     public Long getUpdater() {
@@ -97,7 +121,27 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
     }
 
     public void setUpdated(Calendar updated) {
-        this.updated = updated;
+        this.updated = updated == null ? null : (Calendar) updated.clone();
+    }
+
+    public void setUpdated(final LocalDate localDate) {
+        if (localDate == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(java.sql.Date.valueOf(localDate));
+        this.updated = aux;
+    }
+
+    public void setUpdated(final Instant instant) {
+        if (instant == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(Date.from(instant));
+        this.updated = aux;
     }
 
     public Calendar getDeleted() {
@@ -105,6 +149,26 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
     }
 
     public void setDeleted(Calendar deleted) {
-        this.deleted = deleted;
+        this.deleted = deleted == null ? null : (Calendar) deleted.clone();
+    }
+
+    public void setDeleted(final LocalDate localDate) {
+        if (localDate == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(java.sql.Date.valueOf(localDate));
+        this.deleted = aux;
+    }
+
+    public void setDeleted(final Instant instant) {
+        if (instant == null) {
+            return;
+        }
+
+        Calendar aux = new GregorianCalendar();
+        aux.setTime(Date.from(instant));
+        this.deleted = aux;
     }
 }
