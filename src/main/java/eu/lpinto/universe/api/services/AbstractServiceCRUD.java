@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
-import eu.lpinto.universe.api.dts.AbstractDTS;
+import eu.lpinto.universe.api.dts.UniverseDTS;
 import eu.lpinto.universe.api.util.StatusEmail;
 import eu.lpinto.universe.controllers.AbstractControllerCRUD;
 import eu.lpinto.universe.controllers.CrudController;
@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * @param <C> Controller
  * @param <DTS> DTS service
  */
-public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends AbstractDTS<E, D>> extends AbstractService {
+public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends UniverseDTO, C extends AbstractControllerCRUD<E>, DTS extends UniverseDTS<E, D>>
+        extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceCRUD.class);
 

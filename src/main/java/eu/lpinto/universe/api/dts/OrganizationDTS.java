@@ -14,7 +14,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
     public static final OrganizationDTS T = new OrganizationDTS();
 
     @Override
-    public OrganizationDTO toAPI(Organization entity) {
+    public OrganizationDTO buildDTO(Organization entity) {
         if (entity == null) {
             return null;
         } else if (entity.isFull()) {
@@ -30,17 +30,17 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getTown(),
                     entity.getZip(),
                     entity.getWebsite(),
-                    AbstractDTS.abstractIDs(entity.getWorkers()),
-                    AbstractDTS.id(entity.getCompany()),
+                    AbstractDTS.toApiID(entity.getWorkers()),
+                    AbstractDTS.toApiID(entity.getCompany()),
                     entity.getExternalID(),
                     entity.getCalendarID(),
-                    AbstractDTS.id(entity.getSelectedAvatar()),
-                    AbstractDTS.abstractIDs(entity.getAvatars()),
+                    AbstractDTS.toApiID(entity.getSelectedAvatar()),
+                    AbstractDTS.toApiID(entity.getAvatars()),
                     entity.getCustomField(),
                     entity.getName(),
-                    AbstractDTS.id(entity.getCreator()),
+                    AbstractDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    AbstractDTS.id(entity.getUpdater()),
+                    AbstractDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
 
@@ -58,16 +58,16 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getZip(),
                     entity.getWebsite(),
                     null,
-                    AbstractDTS.id(entity.getCompany()),
+                    AbstractDTS.toApiID(entity.getCompany()),
                     entity.getExternalID(),
                     entity.getCalendarID(),
-                    AbstractDTS.id(entity.getSelectedAvatar()),
+                    AbstractDTS.toApiID(entity.getSelectedAvatar()),
                     null,
                     entity.getCustomField(),
                     entity.getName(),
-                    UserDTS.id(entity.getCreator()),
+                    UserDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    UserDTS.id(entity.getUpdater()),
+                    UserDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
         }
@@ -83,7 +83,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
     }
 
     @Override
-    public Organization toDomain(OrganizationDTO dto) {
+    public Organization buildEntity(OrganizationDTO dto) {
         return new Organization(
                 dto.getCountry(),
                 dto.getClientID(),
@@ -97,11 +97,11 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                 dto.getTown(),
                 dto.getZip(),
                 dto.getWebsite(),
-                WorkerDTS.T.toDomainIDs(dto.getWorkers()),
+                WorkerDTS.T.toEntitiesID(dto.getWorkers()),
                 dto.getCompany() == null ? null : new Company(dto.getCompany()),
                 dto.getCalendarID(),
                 ImageDTS.T.toDomain(dto.getSelectedAvatar()),
-                ImageDTS.T.toDomainIDs(dto.getAvatars()),
+                ImageDTS.T.toEntitiesID(dto.getAvatars()),
                 dto.getCustomField(),
                 dto.getName(),
                 UserDTS.T.toDomain(dto.getCreator()),

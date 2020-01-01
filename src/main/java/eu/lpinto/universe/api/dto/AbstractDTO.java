@@ -22,6 +22,8 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
     private Long updater;
     private Calendar updated;
     private Calendar deleted;
+    private String migrationCode;
+    private Long migrationId;
 
     /*
      * Constructors
@@ -170,5 +172,21 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         Calendar aux = new GregorianCalendar();
         aux.setTime(Date.from(instant));
         this.deleted = aux;
+    }
+
+    public String getMigrationCode() {
+        return migrationCode;
+    }
+
+    public void setMigrationCode(String migrationCode) {
+        this.migrationCode = migrationCode;
+    }
+
+    public Long getMigrationId() {
+        return migrationId;
+    }
+
+    public void setMigrationId(Long migrationId) {
+        this.migrationId = migrationId;
     }
 }

@@ -8,8 +8,6 @@ import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.EmployeeFacade;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -40,20 +38,13 @@ public class EmployeeController extends AbstractControllerCRUD<Employee> {
         User savedUser = userComtroller.retrieve(userID, options, userID);
 
         Company savedCompany;
-        try {
-            savedCompany = companyComtroller.retrieve(userID, options, companyID);
-            if (savedCompany == null) {
-                throw new IllegalArgumentException("There is no Company with that id");
-            }
-            entity.setName(savedCompany.getName(), savedUser.getName());
-
-            super.doCreate(userID, options, entity);
-
-        } catch (UnknownIdException ex) {
-            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PermissionDeniedException ex) {
-            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+        savedCompany = companyComtroller.retrieve(userID, options, companyID);
+        if (savedCompany == null) {
+            throw new IllegalArgumentException("There is no Company with that id");
         }
+        entity.setName(savedCompany.getName(), savedUser.getName());
+
+        super.doCreate(userID, options, entity);
     }
 
     @Override

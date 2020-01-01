@@ -1,8 +1,8 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.persistence.entities.Token;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Token DTS - Data Transformation Service
@@ -14,17 +14,8 @@ public class TokenDTS {
     public static final TokenDTS T = new TokenDTS();
 
     public List<String> ids(final List<Token> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return null;
-        }
-
-        List<String> result = new ArrayList<>(entities.size());
-
-        for (Token entity : entities) {
-            result.add(entity.getToken());
-        }
-
-        return result;
+        return entities == null || entities.isEmpty() ? null
+               : entities.parallelStream().map(entity -> entity.getToken()).collect(Collectors.toList());
     }
 
     public Token toDomain(String token) {
@@ -36,17 +27,8 @@ public class TokenDTS {
     }
 
     public List<Token> toDomainIDs(final List<String> dtoIDs) {
-        if (dtoIDs == null) {
-            return null;
-        }
-
-        List<Token> result = new ArrayList<>(dtoIDs.size());
-
-        for (String token : dtoIDs) {
-            result.add(toDomain(token));
-        }
-
-        return result;
+        return dtoIDs == null || dtoIDs.isEmpty() ? null
+               : dtoIDs.parallelStream().map(dto -> toDomain(dto)).collect(Collectors.toList());
     }
 
     public eu.lpinto.universe.api.dto.Token toAPI(Token entity) {

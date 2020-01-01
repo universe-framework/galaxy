@@ -48,6 +48,12 @@ public abstract class AbstractEntity implements UniverseEntity {
     @Transient
     private boolean full = false;
 
+    @Transient
+    private String migrationCode;
+
+    @Transient
+    private Long migrationId;
+
     /*
      * Public helpers
      */
@@ -232,5 +238,21 @@ public abstract class AbstractEntity implements UniverseEntity {
         if (field == null) {
             throw new IllegalArgumentException("Cannot set field with null");
         }
+    }
+
+    public String getMigrationCode() {
+        return migrationCode;
+    }
+
+    public void setMigrationCode(String migrationCode) {
+        this.migrationCode = migrationCode;
+    }
+
+    public Long getMigrationId() {
+        return migrationId;
+    }
+
+    public void setMigrationId(Long migrationId) {
+        this.migrationId = migrationId;
     }
 }

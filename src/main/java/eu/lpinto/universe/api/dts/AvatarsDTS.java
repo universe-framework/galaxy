@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.persistence.entities.Image;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -16,15 +11,7 @@ import java.util.List;
 public class AvatarsDTS {
 
     public static List<String> urls(final List<Image> images) {
-        if (images == null) {
-            return null;
-        }
-
-        List<String> result = new ArrayList<>(images.size());
-        for (Image image : images) {
-            result.add(image.getUrl());
-        }
-
-        return result;
+        return images == null ? null
+               : images.parallelStream().map(image -> image.getUrl()).collect(Collectors.toList());
     }
 }

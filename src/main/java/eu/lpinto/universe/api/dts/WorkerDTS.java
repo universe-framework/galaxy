@@ -16,15 +16,15 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
     public static final WorkerDTS T = new WorkerDTS();
 
     @Override
-    public WorkerDTO toAPI(Worker entity) {
+    public WorkerDTO buildDTO(Worker entity) {
         if (entity == null) {
             return null;
         } else if (entity.isFull()) {
             return new WorkerDTO(
                     entity.getProfessionalLetterNumber(),
                     entity.getBirthdate(),
-                    AbstractDTS.id(entity.getOrganization()),
-                    AbstractDTS.id(entity.getEmployee()),
+                    AbstractDTS.toApiID(entity.getOrganization()),
+                    AbstractDTS.toApiID(entity.getEmployee()),
                     entity.getEnable(),
                     entity.getExternalID(),
                     entity.getAddress(),
@@ -33,9 +33,9 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getEmail(),
                     entity.getRole() == null ? null : entity.getRole().ordinal(),
                     entity.getName(),
-                    UserDTS.id(entity.getCreator()),
+                    UserDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    UserDTS.id(entity.getUpdater()),
+                    UserDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
 
@@ -43,8 +43,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
             return new WorkerDTO(
                     entity.getProfessionalLetterNumber(),
                     entity.getBirthdate(),
-                    AbstractDTS.id(entity.getOrganization()),
-                    AbstractDTS.id(entity.getEmployee()),
+                    AbstractDTS.toApiID(entity.getOrganization()),
+                    AbstractDTS.toApiID(entity.getEmployee()),
                     entity.getEnable(),
                     entity.getExternalID(),
                     entity.getAddress(),
@@ -53,9 +53,9 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getEmail(),
                     entity.getRole() == null ? null : entity.getRole().ordinal(),
                     entity.getName(),
-                    UserDTS.id(entity.getCreator()),
+                    UserDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    UserDTS.id(entity.getUpdater()),
+                    UserDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
         }
@@ -71,7 +71,7 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
     }
 
     @Override
-    public Worker toDomain(WorkerDTO dto) {
+    public Worker buildEntity(WorkerDTO dto) {
         return new Worker(
                 dto.getProfessionalLetterNumber(),
                 dto.getBirthdate(),

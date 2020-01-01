@@ -12,13 +12,13 @@ public class ImageDTS extends AbstractDTS<Image, eu.lpinto.universe.api.dto.Imag
     public static final ImageDTS T = new ImageDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Image toAPI(Image entity) {
+    public eu.lpinto.universe.api.dto.Image buildDTO(Image entity) {
         return new eu.lpinto.universe.api.dto.Image(
                 entity.getUrl(),
                 entity.getName(),
-                AbstractDTS.id(entity.getCreator()),
+                AbstractDTS.toApiID(entity.getCreator()),
                 entity.getCreated(),
-                AbstractDTS.id(entity.getUpdater()),
+                AbstractDTS.toApiID(entity.getUpdater()),
                 entity.getUpdated(),
                 entity.getId());
     }
@@ -33,7 +33,7 @@ public class ImageDTS extends AbstractDTS<Image, eu.lpinto.universe.api.dto.Imag
     }
 
     @Override
-    public Image toDomain(eu.lpinto.universe.api.dto.Image dto) {
+    public Image buildEntity(eu.lpinto.universe.api.dto.Image dto) {
         return new Image(
                 dto.getUrl(),
                 dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());

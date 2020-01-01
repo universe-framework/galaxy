@@ -12,7 +12,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
     public static final CompanyDTS T = new CompanyDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Company toAPI(Company entity) {
+    public eu.lpinto.universe.api.dto.Company buildDTO(Company entity) {
         if (entity == null) {
             return null;
         }
@@ -28,16 +28,16 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getZip(),
                     entity.getTown(),
                     entity.getCountry(),
-                    ImageDTS.id(entity.getSelectedAvatar()),
-                    PlanDTS.id(entity.getPlan()),
-                    CompanyDTS.id(entity.getParent()),
-                    AbstractDTS.abstractIDs(entity.getChildren()),
-                    ImageDTS.T.ids(entity.getAvatars()),
+                    ImageDTS.toApiID(entity.getSelectedAvatar()),
+                    PlanDTS.toApiID(entity.getPlan()),
+                    CompanyDTS.toApiID(entity.getParent()),
+                    AbstractDTS.toApiID(entity.getChildren()),
+                    ImageDTS.toApiID(entity.getAvatars()),
                     entity.getId(),
                     entity.getName(),
-                    AbstractDTS.id(entity.getCreator()),
+                    AbstractDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    AbstractDTS.id(entity.getUpdater()),
+                    AbstractDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getDeleted()
             );
@@ -54,7 +54,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getTown(),
                     entity.getCountry(),
                     null,
-                    PlanDTS.id(entity.getPlan()),
+                    PlanDTS.toApiID(entity.getPlan()),
                     null,
                     null,
                     null,
@@ -79,7 +79,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
     }
 
     @Override
-    public Company toDomain(eu.lpinto.universe.api.dto.Company dto) {
+    public Company buildEntity(eu.lpinto.universe.api.dto.Company dto) {
         return new Company(dto.getPhone(),
                            dto.getFacebook(),
                            dto.getEmail(),

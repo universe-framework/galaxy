@@ -2,6 +2,7 @@ package eu.lpinto.universe.controllers;
 
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
+import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
@@ -94,9 +95,13 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         List<E> result = new ArrayList<>(entities.size());
 
-        for (E entity : entities) {
-            result.add(create(userID, options, entity));
-        }
+        entities.parallelStream().forEach(entity -> {
+            try {
+                result.add(create(userID, options, entity));
+            } catch (UnknownIdException | PermissionDeniedException | PreConditionException ex) {
+                throw new UnexpectedException(ex.getMessage());
+            }
+        });
 
         return result;
     }

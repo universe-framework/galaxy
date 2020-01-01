@@ -12,17 +12,17 @@ public class PlanDTS extends AbstractDTS<Plan, eu.lpinto.universe.api.dto.Plan> 
     public static final PlanDTS T = new PlanDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Plan toAPI(Plan entity) {
+    public eu.lpinto.universe.api.dto.Plan buildDTO(Plan entity) {
         if (entity == null) {
             return null;
 
         } else if (entity.isFull()) {
             return new eu.lpinto.universe.api.dto.Plan(
-                    PlanFeatureDTS.T.ids(entity.getFeatures()),
+                    PlanFeatureDTS.toApiID(entity.getFeatures()),
                     entity.getName(),
-                    AbstractDTS.id(entity.getCreator()),
+                    AbstractDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    AbstractDTS.id(entity.getUpdater()),
+                    AbstractDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
 
@@ -30,9 +30,9 @@ public class PlanDTS extends AbstractDTS<Plan, eu.lpinto.universe.api.dto.Plan> 
             return new eu.lpinto.universe.api.dto.Plan(
                     null,
                     entity.getName(),
-                    AbstractDTS.id(entity.getCreator()),
+                    AbstractDTS.toApiID(entity.getCreator()),
                     entity.getCreated(),
-                    AbstractDTS.id(entity.getUpdater()),
+                    AbstractDTS.toApiID(entity.getUpdater()),
                     entity.getUpdated(),
                     entity.getId());
         }
@@ -48,9 +48,9 @@ public class PlanDTS extends AbstractDTS<Plan, eu.lpinto.universe.api.dto.Plan> 
     }
 
     @Override
-    public Plan toDomain(eu.lpinto.universe.api.dto.Plan dto) {
+    public Plan buildEntity(eu.lpinto.universe.api.dto.Plan dto) {
         return new Plan(
-                PlanFeatureDTS.T.toDomainIDs(dto.getFeatures()),
+                PlanFeatureDTS.T.toEntitiesID(dto.getFeatures()),
                 dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());
     }
 }
