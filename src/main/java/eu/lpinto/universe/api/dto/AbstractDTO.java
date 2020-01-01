@@ -1,5 +1,7 @@
 package eu.lpinto.universe.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -44,25 +46,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.name = name;
     }
 
-    public AbstractDTO(String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(id);
-        this.name = name;
-        this.creator = creator;
-        this.created = created;
-        this.updater = updater;
-        this.updated = updated;
-    }
-
-    public AbstractDTO(Long id, String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted) {
-        super(id);
-        this.name = name;
-        this.creator = creator;
-        this.created = created;
-        this.updater = updater;
-        this.updated = updated;
-        this.deleted = deleted;
-    }
-
     /*
      * Getters/Setters
      */
@@ -86,10 +69,12 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         return created;
     }
 
+    @JsonSetter
     public void setCreated(Calendar created) {
         this.created = created == null ? null : (Calendar) created.clone();
     }
 
+    @JsonIgnore
     public void setCreated(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -100,6 +85,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.created = aux;
     }
 
+    @JsonIgnore
     public void setCreated(final Instant instant) {
         if (instant == null) {
             return;
@@ -122,10 +108,12 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         return updated;
     }
 
+    @JsonSetter
     public void setUpdated(Calendar updated) {
         this.updated = updated == null ? null : (Calendar) updated.clone();
     }
 
+    @JsonIgnore
     public void setUpdated(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -136,6 +124,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.updated = aux;
     }
 
+    @JsonIgnore
     public void setUpdated(final Instant instant) {
         if (instant == null) {
             return;
@@ -150,10 +139,12 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         return deleted;
     }
 
+    @JsonSetter
     public void setDeleted(Calendar deleted) {
         this.deleted = deleted == null ? null : (Calendar) deleted.clone();
     }
 
+    @JsonIgnore
     public void setDeleted(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -164,6 +155,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.deleted = aux;
     }
 
+    @JsonIgnore
     public void setDeleted(final Instant instant) {
         if (instant == null) {
             return;
