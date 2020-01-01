@@ -114,7 +114,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         return updater;
     }
 
-    @JsonSetter
     public void setUpdater(Long updater) {
         this.updater = updater;
     }
@@ -123,6 +122,7 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         return updated;
     }
 
+    @JsonSetter
     public void setUpdated(Calendar updated) {
         this.updated = updated == null ? null : (Calendar) updated.clone();
     }
