@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -26,8 +25,7 @@ public class Feature extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public Feature(List<Long> plans, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Feature(List<Long> plans) {
         this.plans = plans;
     }
 

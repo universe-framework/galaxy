@@ -1,7 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import java.util.Calendar;
-
 /**
  * Represents the relation between an feature and a owner.
  *
@@ -26,8 +24,7 @@ public class PlanFeature extends AbstractDTO {
         super(id);
     }
 
-    public PlanFeature(Integer value, Long plan, Long feature, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public PlanFeature(Integer value, Long plan, Long feature) {
         this.value = value;
         this.plan = plan;
         this.feature = feature;

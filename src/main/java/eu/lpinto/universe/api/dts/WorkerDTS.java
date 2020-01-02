@@ -1,11 +1,9 @@
 package eu.lpinto.universe.api.dts;
 
+import eu.lpinto.universe.api.dto.WorkerDTO;
+import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.api.dto.WorkerDTO;
-import eu.lpinto.universe.api.dts.AbstractDTS;
-import eu.lpinto.universe.api.dts.UserDTS;
-import eu.lpinto.universe.persistence.entities.Employee;
 
 /**
  *
@@ -16,7 +14,7 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
     public static final WorkerDTS T = new WorkerDTS();
 
     @Override
-    public WorkerDTO buildDTO(Worker entity) {
+    protected WorkerDTO buildDTO(Worker entity) {
         if (entity == null) {
             return null;
         } else if (entity.isFull()) {
@@ -31,13 +29,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getPhone(),
                     entity.getMobilePhone(),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getName(),
-                    UserDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    UserDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getRole() == null ? null : entity.getRole().ordinal()
+            );
 
         } else {
             return new WorkerDTO(
@@ -51,13 +44,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getPhone(),
                     entity.getMobilePhone(),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getName(),
-                    UserDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    UserDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getRole() == null ? null : entity.getRole().ordinal()
+            );
         }
     }
 
@@ -71,7 +59,7 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
     }
 
     @Override
-    public Worker buildEntity(WorkerDTO dto) {
+    protected Worker buildEntity(WorkerDTO dto) {
         return new Worker(
                 dto.getProfessionalLetterNumber(),
                 dto.getBirthdate(),

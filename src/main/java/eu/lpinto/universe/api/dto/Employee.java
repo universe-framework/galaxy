@@ -1,7 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import java.util.Calendar;
-
 /**
  * Represents the relation between and company and a person.
  *
@@ -33,8 +31,7 @@ public class Employee extends AbstractDTO {
         this.profile = profile;
     }
 
-    public Employee(Long externalID, Long company, Integer profile, Long user, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Employee(Long externalID, Long company, Integer profile, Long user) {
         this.externalID = externalID;
         this.company = company;
         this.profile = profile;

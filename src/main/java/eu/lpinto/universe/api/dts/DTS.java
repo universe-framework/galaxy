@@ -25,12 +25,12 @@ public abstract class DTS<E extends UniverseEntity, D> {
                : entities.getId();
     }
 
-    final public List<D> toAPI(final List<E> entities) {
+    public List<D> toAPI(final List<E> entities) {
         return entities == null ? null
                : entities.parallelStream().map(entity -> DTS.this.toAPI(entity)).collect(Collectors.toList());
     }
 
-    final public D toAPI(final E entity) {
+    public D toAPI(final E entity) {
         return buildDTO(entity);
     }
 
@@ -39,12 +39,12 @@ public abstract class DTS<E extends UniverseEntity, D> {
     /*
      * To Entity
      */
-    final public List<E> toDomain(final List<D> dtos) {
+    public List<E> toDomain(final List<D> dtos) {
         return dtos == null ? null
                : dtos.parallelStream().map(entity -> DTS.this.toDomain(entity)).collect(Collectors.toList());
     }
 
-    final public E toDomain(final D dto) {
+    public E toDomain(final D dto) {
         E result = buildEntity(dto);
 
         return result;

@@ -1,6 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import eu.lpinto.universe.api.dto.AbstractDTO;
 import java.io.Serializable;
 import java.util.Calendar;
 
@@ -30,9 +29,7 @@ public class WorkerDTO extends AbstractDTO implements Serializable {
 
     public WorkerDTO(Integer professionalLetterNumber, Calendar birthdate,
                      Long organization, Long employee, Boolean enable, Long externalID, String address, String phone,
-                     String mobilePhone, String email, Integer role,
-                     String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+                     String mobilePhone, String email, Integer role) {
         this.professionalLetterNumber = professionalLetterNumber;
         this.birthdate = birthdate;
         this.organization = organization;

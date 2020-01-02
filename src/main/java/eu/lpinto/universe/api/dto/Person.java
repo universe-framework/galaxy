@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  *
@@ -30,8 +29,7 @@ public class Person extends AbstractDTO implements Serializable {
         super(name, id);
     }
 
-    public Person(String email, String phone, String mobilePhone, String nif, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Person(String email, String phone, String mobilePhone, String nif) {
         this.email = email;
         this.phone = phone;
         this.mobilePhone = mobilePhone;

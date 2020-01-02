@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  * User DTO - Data Transformation Object
@@ -34,9 +33,7 @@ public class User extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public User(String currentAvatar, String email, String password,
-                String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public User(String currentAvatar, String email, String password) {
         this.currentAvatar = currentAvatar;
         this.email = (email == null ? null : email.isEmpty() ? null : email.trim().toLowerCase());
         this.password = password;

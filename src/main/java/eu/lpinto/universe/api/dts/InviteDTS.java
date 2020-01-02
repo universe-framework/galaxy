@@ -1,10 +1,6 @@
 package eu.lpinto.universe.api.dts;
 
-import eu.lpinto.universe.api.dts.OrganizationDTS;
 import eu.lpinto.universe.persistence.entities.Invite;
-import eu.lpinto.universe.api.dts.AbstractDTS;
-import eu.lpinto.universe.api.dts.CompanyDTS;
-import eu.lpinto.universe.api.dts.UserDTS;
 
 /**
  *
@@ -15,7 +11,7 @@ public class InviteDTS extends AbstractDTS<Invite, eu.lpinto.universe.api.dto.In
     public static final InviteDTS T = new InviteDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Invite buildDTO(Invite entity) {
+    protected eu.lpinto.universe.api.dto.Invite buildDTO(Invite entity) {
         if (entity == null) {
             return null;
 
@@ -24,26 +20,16 @@ public class InviteDTS extends AbstractDTS<Invite, eu.lpinto.universe.api.dto.In
                     CompanyDTS.toApiID(entity.getOrganization().getCompany()),
                     OrganizationDTS.toApiID(entity.getOrganization()),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getRole() == null ? null : entity.getRole().ordinal()
+            );
 
         } else {
             return new eu.lpinto.universe.api.dto.Invite(
                     CompanyDTS.toApiID(entity.getOrganization().getCompany()),
                     OrganizationDTS.toApiID(entity.getOrganization()),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getRole() == null ? null : entity.getRole().ordinal()
+            );
         }
     }
 
@@ -57,7 +43,7 @@ public class InviteDTS extends AbstractDTS<Invite, eu.lpinto.universe.api.dto.In
     }
 
     @Override
-    public Invite buildEntity(eu.lpinto.universe.api.dto.Invite dto) {
+    protected Invite buildEntity(eu.lpinto.universe.api.dto.Invite dto) {
         return new Invite(
                 OrganizationDTS.T.toDomain(dto.getOrganization()),
                 dto.getEmail(),

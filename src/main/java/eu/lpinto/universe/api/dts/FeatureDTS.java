@@ -12,29 +12,17 @@ public class FeatureDTS extends AbstractDTS<Feature, eu.lpinto.universe.api.dto.
     public static final FeatureDTS T = new FeatureDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Feature buildDTO(Feature entity) {
+    protected eu.lpinto.universe.api.dto.Feature buildDTO(Feature entity) {
         if (entity == null) {
             return null;
 
         } else if (entity.isFull()) {
             return new eu.lpinto.universe.api.dto.Feature(
-                    PlanFeatureDTS.toApiID(entity.getPlans()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    PlanFeatureDTS.toApiID(entity.getPlans())
+            );
 
         } else {
-            return new eu.lpinto.universe.api.dto.Feature(
-                    null,
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+            return new eu.lpinto.universe.api.dto.Feature();
         }
     }
 
@@ -48,7 +36,7 @@ public class FeatureDTS extends AbstractDTS<Feature, eu.lpinto.universe.api.dto.
     }
 
     @Override
-    public Feature buildEntity(eu.lpinto.universe.api.dto.Feature dto) {
+    protected Feature buildEntity(eu.lpinto.universe.api.dto.Feature dto) {
         return new Feature(
                 PlanFeatureDTS.T.toEntitiesID(dto.getPlans()),
                 dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());

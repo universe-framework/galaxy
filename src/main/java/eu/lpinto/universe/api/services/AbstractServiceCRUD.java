@@ -239,6 +239,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
 
         } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(internalError(ex));
         }

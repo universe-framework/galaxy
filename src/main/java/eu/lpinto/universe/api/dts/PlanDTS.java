@@ -12,29 +12,17 @@ public class PlanDTS extends AbstractDTS<Plan, eu.lpinto.universe.api.dto.Plan> 
     public static final PlanDTS T = new PlanDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Plan buildDTO(Plan entity) {
+    protected eu.lpinto.universe.api.dto.Plan buildDTO(Plan entity) {
         if (entity == null) {
             return null;
 
         } else if (entity.isFull()) {
             return new eu.lpinto.universe.api.dto.Plan(
-                    PlanFeatureDTS.toApiID(entity.getFeatures()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    PlanFeatureDTS.toApiID(entity.getFeatures())
+            );
 
         } else {
-            return new eu.lpinto.universe.api.dto.Plan(
-                    null,
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+            return new eu.lpinto.universe.api.dto.Plan();
         }
     }
 
@@ -48,7 +36,7 @@ public class PlanDTS extends AbstractDTS<Plan, eu.lpinto.universe.api.dto.Plan> 
     }
 
     @Override
-    public Plan buildEntity(eu.lpinto.universe.api.dto.Plan dto) {
+    protected Plan buildEntity(eu.lpinto.universe.api.dto.Plan dto) {
         return new Plan(
                 PlanFeatureDTS.T.toEntitiesID(dto.getFeatures()),
                 dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());

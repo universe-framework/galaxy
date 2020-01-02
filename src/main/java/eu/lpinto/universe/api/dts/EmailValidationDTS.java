@@ -12,7 +12,7 @@ public class EmailValidationDTS extends AbstractDTS<EmailValidation, EmailValida
     public static final EmailValidationDTS T = new EmailValidationDTS();
 
     @Override
-    public EmailValidationDTO buildDTO(EmailValidation entity) {
+    protected EmailValidationDTO buildDTO(EmailValidation entity) {
         if (entity == null) {
             return null;
 
@@ -21,28 +21,16 @@ public class EmailValidationDTS extends AbstractDTS<EmailValidation, EmailValida
                     entity.getEmail(),
                     entity.getCode(),
                     entity.getBaseUrl(),
-                    entity.getDoneDate(),
-                    entity.getId(),
-                    entity.getName(),
-                    UserDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    UserDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getDeleted());
+                    entity.getDoneDate()
+            );
 
         } else {
             return new EmailValidationDTO(
                     entity.getEmail(),
                     entity.getCode(),
                     entity.getBaseUrl(),
-                    entity.getDoneDate(),
-                    entity.getId(),
-                    entity.getName(),
-                    UserDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    UserDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getDeleted());
+                    entity.getDoneDate()
+            );
         }
     }
 
@@ -56,7 +44,7 @@ public class EmailValidationDTS extends AbstractDTS<EmailValidation, EmailValida
     }
 
     @Override
-    public EmailValidation buildEntity(EmailValidationDTO dto) {
+    protected EmailValidation buildEntity(EmailValidationDTO dto) {
         return new EmailValidation(
                 dto.getEmail(),
                 dto.getCode(),

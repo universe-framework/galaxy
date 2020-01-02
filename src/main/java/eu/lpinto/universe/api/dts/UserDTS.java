@@ -14,17 +14,12 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
     public static final UserDTS T = new UserDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.User buildDTO(User entity) {
+    protected eu.lpinto.universe.api.dto.User buildDTO(User entity) {
         return new eu.lpinto.universe.api.dto.User(
                 entity.getCurrentAvatar() == null ? null : entity.getCurrentAvatar().getUrl(),
                 entity.getEmail(),
-                null, // passowrd is never released
-                entity.getName(),
-                AbstractDTS.toApiID(entity.getCreator()),
-                entity.getCreated(),
-                AbstractDTS.toApiID(entity.getUpdater()),
-                entity.getUpdated(),
-                entity.getId());
+                null // passowrd is never released
+        );
     }
 
     @Override
@@ -45,7 +40,7 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
     }
 
     @Override
-    public User buildEntity(eu.lpinto.universe.api.dto.User dto) {
+    protected User buildEntity(eu.lpinto.universe.api.dto.User dto) {
         return new User(dto.getBaseUrl(),
                         dto.getCurrentAvatar() == null ? null : new Image(dto.getCurrentAvatar()),
                         null, // avatars

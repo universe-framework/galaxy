@@ -12,7 +12,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
     public static final CompanyDTS T = new CompanyDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Company buildDTO(Company entity) {
+    protected eu.lpinto.universe.api.dto.Company buildDTO(Company entity) {
         if (entity == null) {
             return null;
         }
@@ -32,14 +32,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     PlanDTS.toApiID(entity.getPlan()),
                     CompanyDTS.toApiID(entity.getParent()),
                     AbstractDTS.toApiID(entity.getChildren()),
-                    ImageDTS.toApiID(entity.getAvatars()),
-                    entity.getId(),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getDeleted()
+                    ImageDTS.toApiID(entity.getAvatars())
             );
 
         } else {
@@ -57,14 +50,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     PlanDTS.toApiID(entity.getPlan()),
                     null,
                     null,
-                    null,
-                    entity.getId(),
-                    entity.getName(),
-                    null,
-                    entity.getCreated(),
-                    null,
-                    entity.getUpdated(),
-                    entity.getDeleted()
+                    null
             );
         }
     }
@@ -79,7 +65,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
     }
 
     @Override
-    public Company buildEntity(eu.lpinto.universe.api.dto.Company dto) {
+    protected Company buildEntity(eu.lpinto.universe.api.dto.Company dto) {
         return new Company(dto.getPhone(),
                            dto.getFacebook(),
                            dto.getEmail(),

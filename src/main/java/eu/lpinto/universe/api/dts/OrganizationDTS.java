@@ -14,7 +14,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
     public static final OrganizationDTS T = new OrganizationDTS();
 
     @Override
-    public OrganizationDTO buildDTO(Organization entity) {
+    protected OrganizationDTO buildDTO(Organization entity) {
         if (entity == null) {
             return null;
         } else if (entity.isFull()) {
@@ -36,13 +36,8 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getCalendarID(),
                     AbstractDTS.toApiID(entity.getSelectedAvatar()),
                     AbstractDTS.toApiID(entity.getAvatars()),
-                    entity.getCustomField(),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getCustomField()
+            );
 
         } else {
             return new OrganizationDTO(
@@ -63,13 +58,8 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
                     entity.getCalendarID(),
                     AbstractDTS.toApiID(entity.getSelectedAvatar()),
                     null,
-                    entity.getCustomField(),
-                    entity.getName(),
-                    UserDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    UserDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    entity.getCustomField()
+            );
         }
     }
 
@@ -83,7 +73,7 @@ public class OrganizationDTS extends AbstractDTS<Organization, OrganizationDTO> 
     }
 
     @Override
-    public Organization buildEntity(OrganizationDTO dto) {
+    protected Organization buildEntity(OrganizationDTO dto) {
         return new Organization(
                 dto.getCountry(),
                 dto.getClientID(),

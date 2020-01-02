@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  * Image DTO - Data Transformation Object
@@ -25,8 +24,7 @@ public class Image extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public Image(String url, String name, Long creator, Calendar created, Long updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Image(String url) {
         this.url = url;
     }
 

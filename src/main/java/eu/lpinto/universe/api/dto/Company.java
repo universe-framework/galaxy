@@ -1,7 +1,6 @@
 package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -44,9 +43,7 @@ public class Company extends AbstractDTO implements Serializable {
     public Company(String phone, String facebook, String email, String vatNumber, String customField,
                    String street, String zip, String town, String country,
                    Long avatar, Long plan, Long parent,
-                   List<Long> children, List<Long> avatars,
-                   Long id, String name, Long creator, Calendar created, Long updater, Calendar updated, Calendar deleted) {
-        super(id, name, creator, created, updater, updated, deleted);
+                   List<Long> children, List<Long> avatars) {
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;

@@ -12,7 +12,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
     public static final EmployeeDTS T = new EmployeeDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.Employee buildDTO(Employee entity) {
+    protected eu.lpinto.universe.api.dto.Employee buildDTO(Employee entity) {
         if (entity == null) {
             return null;
 
@@ -21,26 +21,16 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
                     entity.getExternalID(),
                     CompanyDTS.toApiID(entity.getCompany()),
                     entity.getProfile() == null ? null : entity.getProfile().ordinal(),
-                    UserDTS.toApiID(entity.getUser()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    UserDTS.toApiID(entity.getUser())
+            );
 
         } else {
             return new eu.lpinto.universe.api.dto.Employee(
                     entity.getExternalID(),
                     CompanyDTS.toApiID(entity.getCompany()),
                     entity.getProfile() == null ? null : entity.getProfile().ordinal(),
-                    UserDTS.toApiID(entity.getUser()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    UserDTS.toApiID(entity.getUser())
+            );
         }
     }
 
@@ -54,7 +44,7 @@ public class EmployeeDTS extends AbstractDTS<Employee, eu.lpinto.universe.api.dt
     }
 
     @Override
-    public Employee buildEntity(eu.lpinto.universe.api.dto.Employee entity) {
+    protected Employee buildEntity(eu.lpinto.universe.api.dto.Employee entity) {
         return new Employee(
                 entity.getExternalID(),
                 CompanyDTS.T.toDomain(entity.getCompany()),

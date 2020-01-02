@@ -1,6 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 import java.time.Instant;
@@ -74,7 +73,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.created = created == null ? null : (Calendar) created.clone();
     }
 
-    @JsonIgnore
     public void setCreated(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -85,7 +83,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.created = aux;
     }
 
-    @JsonIgnore
     public void setCreated(final Instant instant) {
         if (instant == null) {
             return;
@@ -113,7 +110,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.updated = updated == null ? null : (Calendar) updated.clone();
     }
 
-    @JsonIgnore
     public void setUpdated(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -124,7 +120,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.updated = aux;
     }
 
-    @JsonIgnore
     public void setUpdated(final Instant instant) {
         if (instant == null) {
             return;
@@ -144,7 +139,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.deleted = deleted == null ? null : (Calendar) deleted.clone();
     }
 
-    @JsonIgnore
     public void setDeleted(final LocalDate localDate) {
         if (localDate == null) {
             return;
@@ -155,7 +149,6 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.deleted = aux;
     }
 
-    @JsonIgnore
     public void setDeleted(final Instant instant) {
         if (instant == null) {
             return;

@@ -26,10 +26,7 @@ public class EmailValidationDTO extends AbstractDTO {
         super(id);
     }
 
-    public EmailValidationDTO(final String email, final String code, final String baseUrl, final Calendar doneDate,
-                              final Long id, final String name, final Long creator, final Calendar created,
-                              final Long updater, final Calendar updated, final Calendar deleted) {
-        super(id, name, creator, created, updater, updated, deleted);
+    public EmailValidationDTO(final String email, final String code, final String baseUrl, final Calendar doneDate) {
         this.email = email;
         this.code = code;
         this.baseUrl = baseUrl;

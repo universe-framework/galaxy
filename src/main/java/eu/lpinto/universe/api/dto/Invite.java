@@ -1,8 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import eu.lpinto.universe.api.dto.AbstractDTO;
-import java.util.Calendar;
-
 /**
  * Represents a new employee invited to join a organization.
  *
@@ -28,8 +25,7 @@ public class Invite extends AbstractDTO {
         super(id);
     }
 
-    public Invite(final Long company, final Long organization, final String email, final Integer role, final String name, final Long creator, final Calendar created, final Long updater, final Calendar updated, final Long id) {
-        super(name, creator, created, updater, updated, id);
+    public Invite(final Long company, final Long organization, final String email, final Integer role) {
         this.company = company;
         this.organization = organization;
         this.email = email;

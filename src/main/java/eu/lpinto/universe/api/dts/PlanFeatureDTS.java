@@ -11,7 +11,7 @@ public class PlanFeatureDTS extends AbstractDTS<PlanFeature, eu.lpinto.universe.
     public static final PlanFeatureDTS T = new PlanFeatureDTS();
 
     @Override
-    public eu.lpinto.universe.api.dto.PlanFeature buildDTO(PlanFeature entity) {
+    protected eu.lpinto.universe.api.dto.PlanFeature buildDTO(PlanFeature entity) {
         if (entity == null) {
             return null;
 
@@ -19,25 +19,15 @@ public class PlanFeatureDTS extends AbstractDTS<PlanFeature, eu.lpinto.universe.
             return new eu.lpinto.universe.api.dto.PlanFeature(
                     entity.getValue(),
                     PlanDTS.toApiID(entity.getPlan()),
-                    FeatureDTS.toApiID(entity.getFeature()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    FeatureDTS.toApiID(entity.getFeature())
+            );
 
         } else {
             return new eu.lpinto.universe.api.dto.PlanFeature(
                     entity.getValue(),
                     PlanDTS.toApiID(entity.getPlan()),
-                    FeatureDTS.toApiID(entity.getFeature()),
-                    entity.getName(),
-                    AbstractDTS.toApiID(entity.getCreator()),
-                    entity.getCreated(),
-                    AbstractDTS.toApiID(entity.getUpdater()),
-                    entity.getUpdated(),
-                    entity.getId());
+                    FeatureDTS.toApiID(entity.getFeature())
+            );
         }
     }
 
@@ -51,7 +41,7 @@ public class PlanFeatureDTS extends AbstractDTS<PlanFeature, eu.lpinto.universe.
     }
 
     @Override
-    public PlanFeature buildEntity(eu.lpinto.universe.api.dto.PlanFeature dto) {
+    protected PlanFeature buildEntity(eu.lpinto.universe.api.dto.PlanFeature dto) {
         return new PlanFeature(dto.getValue(),
                                PlanDTS.T.toDomain(dto.getPlan()),
                                FeatureDTS.T.toDomain(dto.getFeature()),
