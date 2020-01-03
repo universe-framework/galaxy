@@ -8,6 +8,7 @@ import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
 import eu.lpinto.universe.persistence.entities.WorkerProfile;
 import eu.lpinto.universe.persistence.facades.Facade;
+import eu.lpinto.universe.persistence.facades.OrganizationFacade;
 import eu.lpinto.universe.persistence.facades.WorkerFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
@@ -35,6 +36,9 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
     @EJB
     private WorkerFacade facade;
 
+    @EJB
+    private OrganizationFacade organizationFacade;
+
     public WorkerController() {
         super(Worker.class.getCanonicalName());
     }
@@ -61,7 +65,8 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
             String baseDir = UniverseFundamentals.IMPORTS_FOLDER;
 
-            File src = new File(baseDir + "/companies/" + newWorker.getOrganization().getCompany().getId() + "/employees.xls");
+            Organization savedOrganization = organizationFacade.retrieve(newWorker.getOrganization().getId());
+            File src = new File(baseDir + "/companies/" + savedOrganization.getCompany().getId() + "/employees.xls");
 
             if (src.exists()) {
                 try (FileInputStream inputFile = new FileInputStream(src)) {
