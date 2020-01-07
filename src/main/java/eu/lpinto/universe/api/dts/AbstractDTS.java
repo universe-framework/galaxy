@@ -21,11 +21,12 @@ public abstract class AbstractDTS<E extends AbstractEntity, D extends AbstractDT
         dto.setMigrationCode(entity.getMigrationCode());
         dto.setMigrationId(entity.getMigrationId());
 
+        dto.setCreated(entity.getCreated() == null ? null : entity.getCreated());
+        dto.setDeleted(entity.getDeleted() == null ? null : entity.getDeleted());
+        dto.setUpdated(entity.getUpdated() == null ? null : entity.getUpdated());
+
         if (entity.isFull()) {
-            dto.setCreated(entity.getCreated() == null ? null : entity.getCreated());
             dto.setCreator(UserDTS.toApiID(entity.getCreator()));
-            dto.setDeleted(entity.getDeleted() == null ? null : entity.getDeleted());
-            dto.setUpdated(entity.getUpdated() == null ? null : entity.getUpdated());
             dto.setUpdater(UserDTS.toApiID(entity.getUpdater()));
         }
 
