@@ -8,6 +8,7 @@ import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
 import eu.lpinto.universe.persistence.entities.WorkerProfile;
 import eu.lpinto.universe.persistence.facades.Facade;
+import eu.lpinto.universe.persistence.facades.OrganizationFacade;
 import eu.lpinto.universe.persistence.facades.WorkerFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
@@ -35,6 +36,9 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
     @EJB
     private WorkerFacade facade;
 
+    @EJB
+    private OrganizationFacade organizationFacade;
+
     public WorkerController() {
         super(Worker.class.getCanonicalName());
     }
@@ -47,12 +51,14 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
     @Override
     public void doCreate(final Long userID, final Map<String, Object> options, Worker newWorker) throws PreConditionException, UnknownIdException, PermissionDeniedException {
 
-        if (newWorker.getOrganization() == null && newWorker.getRole() == null) {
-            throw new UnexpectedException("The Worker doesn't have organization and role");
+        if (newWorker.getOrganization() == null || newWorker.getRole() == null) {
+            throw new UnexpectedException("The Worker doesn't have organization or role");
         }
 
         //Hopi
-        newWorker.setEnable(true);   //DEFAULT (Enable = true)
+        if (newWorker.getEnable() == null) {
+            newWorker.setEnable(true);   //DEFAULT (Enable = true)
+        }
         newWorker.setExternalID(newWorker.getId());
 
         super.doCreate(userID, options, newWorker);
@@ -61,7 +67,10 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
             String baseDir = UniverseFundamentals.IMPORTS_FOLDER;
 
-            File src = new File(baseDir + "/companies/" + newWorker.getOrganization().getCompany().getId() + "/employees.xls");
+            Organization savedOrganization = organizationFacade.retrieve(newWorker.getOrganization().getId());
+
+            File src = new File(baseDir + File.separator + "companies" + File.separator
+                                + savedOrganization.getCompany().getId() + File.separator + "employees.xls");
 
             if (src.exists()) {
                 try (FileInputStream inputFile = new FileInputStream(src)) {
@@ -78,6 +87,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
                         if (newWorker.getEmail().equals(auxEmail) && !newWorker.getOrganization().getId().equals(organizationID)) {
                             Worker w = new Worker(new Organization(organizationID), newWorker.getEmployee(), true, auxEmail, WorkerProfile.values()[role], newWorker.getName());
+                            facade.create(w);
                         }
                     }
 
