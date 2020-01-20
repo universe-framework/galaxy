@@ -71,6 +71,15 @@ public class StatusEmail implements Runnable {
         t.start();
     }
 
+    static public void sendExceptionEmail(final Exception ex,
+                                          final Map<String, String> uriInfo,
+                                          final Map<String, String> headers,
+                                          final Map<String, Object> options,
+                                          final Object dto) {
+        Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options, dto));
+        t.start();
+    }
+
     static private String sendExceptionEmailAux(final Exception ex,
                                                 final Map<String, String> uriInfo,
                                                 final Map<String, String> headers,
@@ -143,7 +152,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12 col-md-6\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Options: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        options.entrySet().forEach((e) -> {
+        options.entrySet().stream().sorted().forEachOrdered((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
@@ -155,7 +164,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12 col-md-6\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Query params: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        uriInfo.entrySet().forEach((e) -> {
+        uriInfo.entrySet().stream().sorted().forEachOrdered((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
@@ -167,7 +176,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Headers: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        headers.entrySet().forEach((e) -> {
+        headers.entrySet().stream().sorted().forEachOrdered((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
@@ -266,6 +275,18 @@ public class StatusEmail implements Runnable {
         this.ex = ex;
         this.uriInfo = uriInfoAux;
         this.headers = headersAux;
+        this.options = options;
+        this.dto = dto;
+    }
+
+    public StatusEmail(final Exception ex,
+                       final Map<String, String> uriInfo,
+                       final Map<String, String> headers,
+                       final Map<String, Object> options,
+                       final Object dto) {
+        this.ex = ex;
+        this.uriInfo = uriInfo;
+        this.headers = headers;
         this.options = options;
         this.dto = dto;
     }

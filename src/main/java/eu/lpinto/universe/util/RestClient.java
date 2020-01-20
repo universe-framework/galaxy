@@ -108,8 +108,7 @@ public class RestClient<DTO extends AbstractDTO> {
      *
      * @param dtoClass Service's Data Transportation Object class
      * @param dtoList Service's Data Transportation Object List class
-     * @param endpoint Service endpoint, if ending with '/' the slash will be
-     * removed
+     * @param endpoint Service endpoint, if ending with '/' the slash will be removed
      * @param bearer An oAuth bearer token
      */
     public RestClient(final Class<DTO> dtoClass, final GenericType<Collection<DTO>> dtoList, final String endpoint, final String bearer) {
@@ -147,8 +146,7 @@ public class RestClient<DTO extends AbstractDTO> {
     /**
      * Queries the server's API for all the objects for this endpoint.
      *
-     * @param subPath a sub path to be appended to the endpoint. If provided
-     * must start with '/'
+     * @param subPath a sub path to be appended to the endpoint. If provided must start with '/'
      *
      * @return A list containing the founded objects.
      */
@@ -158,7 +156,7 @@ public class RestClient<DTO extends AbstractDTO> {
             target = client.target(endpoint);
         } else {
             target = client.target(endpoint
-                    + (subPath.endsWith("/") ? subPath.substring(0, subPath.length() - 1) : subPath));
+                                   + (subPath.endsWith("/") ? subPath.substring(0, subPath.length() - 1) : subPath));
         }
 
         Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
@@ -187,8 +185,7 @@ public class RestClient<DTO extends AbstractDTO> {
     }
 
     /**
-     * Queries the server's API for a subset of this endpoint's objects using
-     * the provided parameters.
+     * Queries the server's API for a subset of this endpoint's objects using the provided parameters.
      *
      * @param params
      *
@@ -328,15 +325,15 @@ public class RestClient<DTO extends AbstractDTO> {
      */
     private void logResponseError(Response response, WebTarget target, Object dto) throws InternalError {
         System.out.println("\nServer responded with code " + response.getStatus()
-                + "\nRequest to: " + target.getUri().toString()
-                + "\nResponse: \n" + response.readEntity(String.class)
-                + (dto == null ? ""
-                        : "\n----------------------------------------------------------------------------------------"
-                        + "\nRequest was:\n" + toJson(dto))
+                           + "\nRequest to: " + target.getUri().toString()
+                           + "\nResponse: \n" + response.readEntity(String.class)
+                           + (dto == null ? ""
+                              : "\n----------------------------------------------------------------------------------------"
+                                + "\nRequest was:\n" + toJson(dto))
         );
     }
 
-    static private String toJson(final Object obj) {
+    static public String toJson(final Object obj) {
         try {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException ex) {
