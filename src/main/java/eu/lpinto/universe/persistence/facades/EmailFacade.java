@@ -50,7 +50,9 @@ public class EmailFacade {
                     session = Session.getInstance(props, new javax.mail.Authenticator() {
                                               @Override
                                               protected PasswordAuthentication getPasswordAuthentication() {
-                                                  return new PasswordAuthentication(senderEmail, senderPassword);
+                                                  String userName = senderEmail.contains(">")
+                                                                    ? senderEmail.split(">")[1] : senderEmail;
+                                                  return new PasswordAuthentication(userName, senderPassword);
                                               }
                                           });
                 } else {
