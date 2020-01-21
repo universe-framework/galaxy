@@ -152,7 +152,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12 col-md-6\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Options: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        options.entrySet().stream().sorted().forEachOrdered((e) -> {
+        options.entrySet().forEach((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
@@ -164,7 +164,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12 col-md-6\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Query params: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        uriInfo.entrySet().stream().sorted().forEachOrdered((e) -> {
+        uriInfo.entrySet().forEach((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
@@ -176,7 +176,7 @@ public class StatusEmail implements Runnable {
         sb.append("<div class=\"col-xs-12\">\n");
         sb.append("\n<div class=\"panel panel-primary\">\n<div class=\"panel-heading\">Headers: </div>\n<div class=\"panel-body\">\n");
         sb.append("<ul class=\"list-group\">\n");
-        headers.entrySet().stream().sorted().forEachOrdered((e) -> {
+        headers.entrySet().forEach((e) -> {
             sb.append("\t<li class=\"list-group-item\"><b>").append(e.getKey()).append("</b> : ").append(e.getValue()).append("</li><br>\n");
         });
         sb.append("</ul></div></div>\n");
