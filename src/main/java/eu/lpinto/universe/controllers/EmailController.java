@@ -138,17 +138,17 @@ public class EmailController {
         if (lang != null && (lang.contains("pt-PT")
                              || lang.contains("pt-BR")
                              || lang.contains("pt"))) {
-            subject = "Convite";
+            subject = "Pet Universal - Convite";
             content = inviteStrPT;
 
         } else if (lang != null && (lang.contains("es-ES")
                                     || lang.contains("es-MX")
                                     || lang.contains("es"))) {
-            subject = "Invitación";
+            subject = "Pet Universal - Invitación";
             content = inviteStrES;
 
         } else {
-            subject = "Invite";
+            subject = "Pet Universal - Invite";
             content = inviteStrEN;
         }
 
