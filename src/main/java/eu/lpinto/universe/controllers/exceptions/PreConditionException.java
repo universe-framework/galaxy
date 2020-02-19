@@ -20,7 +20,11 @@ public class PreConditionException extends Exception {
     }
 
     public PreConditionException(final String field, final String... errors) {
-        addError(field, errors);
+        super(field);
+
+        if (errors != null && errors.length != 0) {
+            addError(field, errors);
+        }
     }
 
     public PreConditionException addError(final String field, final String... errors) {
