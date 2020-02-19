@@ -42,7 +42,6 @@ public abstract class AbstractEntity implements UniverseEntity {
     private Calendar updated;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
     private Calendar deleted;
 
     @Transient
