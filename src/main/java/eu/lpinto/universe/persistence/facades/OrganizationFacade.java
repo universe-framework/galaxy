@@ -88,8 +88,9 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         Organization savedOrganization = super.retrieve(organizationID);
 
         return getEntityManager()
-                .createQuery("SELECT o FROM Organization o WHERE o.company.id = :companyID AND o.enable=1 AND o.id <> :organizationID"
-                             + " INNER JOIN Worker w ON w.organization.id = o.id AND w.employee.user.id = :userID", Organization.class)
+                .createQuery("SELECT o FROM Organization o INNER JOIN Worker w ON w.organization.id = o.id"
+                             + " WHERE o.company.id = :companyID AND o.enable=1 AND o.id <> :organizationID"
+                             + "  AND w.employee.user.id = :userID", Organization.class)
                 .setParameter("companyID", savedOrganization.getCompany().getId())
                 .setParameter("organizationID", organizationID)
                 .setParameter("userID", userID)
