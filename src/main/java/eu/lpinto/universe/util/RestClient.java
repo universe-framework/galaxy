@@ -2,7 +2,6 @@ package eu.lpinto.universe.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -329,16 +328,7 @@ public class RestClient<DTO extends AbstractDTO> {
                            + "\nResponse: \n" + response.readEntity(String.class)
                            + (dto == null ? ""
                               : "\n----------------------------------------------------------------------------------------"
-                                + "\nRequest was:\n" + toJson(dto))
+                                + "\nRequest was:\n" + StringUtil.toJson(dto))
         );
-    }
-
-    static public String toJson(final Object obj) {
-        try {
-            return mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException ex) {
-            System.out.println("Cannot serialize object: " + obj);
-            return "[cannot serialize]";
-        }
     }
 }

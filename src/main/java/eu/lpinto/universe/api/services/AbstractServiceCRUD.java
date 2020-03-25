@@ -1,10 +1,5 @@
 package eu.lpinto.universe.api.services;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
@@ -16,6 +11,7 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
+import eu.lpinto.universe.util.StringUtil;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -45,41 +41,6 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceCRUD.class);
-
-    private static String optionsStr(final Map<String, Object> options) {
-        String result = "";
-        for (Map.Entry<String, Object> a : options.entrySet()) {
-            result += "\t" + a.getKey() + " : " + toJson(a.getValue()) + "\n";
-        }
-
-        return result;
-    }
-
-    private static String toJson(final Object obj) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        /*
-        * Serialization
-         */
-        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        try {
-            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
-        } catch (JsonProcessingException ex) {
-            LOGGER.error("Cannot serialize object: " + obj);
-            return "[cannot serialize]";
-        }
-    }
 
     private final DTS dts;
 
@@ -183,6 +144,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
 
         } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
         }
@@ -294,6 +256,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(forbidden(userID));
 
         } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
         }
@@ -359,6 +322,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(forbidden(userID));
 
         } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(internalError(ex));
         }
@@ -414,6 +378,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(forbidden(userID));
 
         } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
         }
@@ -498,20 +463,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             body = "Result: " + ((List) dto).size() + " objects.";
 
         } else {
-            body = toJson(dto);
+            body = StringUtil.toJson(dto);
         }
 
         LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\"
                      + "\n\tID: {}"
-                     + "\n\t{}" // URL
-                     + "\n\t{}({})" // java function and service url
-                     + "\n{}"
+                     + "\n\t{} ({})" // java function and service url
+                     + "\n\t{}"
                      + "\n\t{}"
                      + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                     options.get("request"),
-                     uriInfo.getRequestUri(),
-                     uriInfo.getPath().substring(1), methodName,
-                     optionsStr(options), body
+                     options.get("request"), // ID
+                     uriInfo.getRequestUri(), // URL
+                     methodName,
+                     StringUtil.buildString(options),
+                     body
         );
     }
 
@@ -524,7 +489,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         } else if (response instanceof Collection && ((Collection) response).size() > 3) {
             body = "Result: " + ((List) response).size() + " objects.";
         } else {
-            body = toJson(response);
+            body = StringUtil.toJson(response);
         }
 
         Long serviceDuration = null;
@@ -540,21 +505,19 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->"
                      + "\n\tID: {}"
-                     + "\n\t{}" // URL
                      + "\n\t{}({})" // java function and service url
                      + "\n\tDuration: {}"
                      + "\n\tService: {}"
                      + "\n\tController: {}"
-                     + "\n{}"
+                     + "\n\n\t{}"
                      + "\n\t{}"
                      + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
                      options.get("request"),
-                     uriInfo.getRequestUri(),
-                     uriInfo.getPath().substring(1), methodName,
+                     uriInfo.getRequestUri(), methodName,
                      (System.currentTimeMillis() - (Long) options.get("startMillis")),
                      serviceDuration,
                      controllerDuration,
-                     optionsStr(options),
+                     StringUtil.buildString(options),
                      body);
     }
 
