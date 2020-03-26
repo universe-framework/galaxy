@@ -89,6 +89,8 @@ public final class StringUtil {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         try {
