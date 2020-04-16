@@ -141,7 +141,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
-            asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
+            asyncResponse.resume(unknown(ex.getId()));
 
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -198,7 +198,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         } catch (UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
-            asyncResponse.resume(badRequest("unknown id: [" + ex.getId() + "]"));
+            asyncResponse.resume(unknown(ex.getId()));
 
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);

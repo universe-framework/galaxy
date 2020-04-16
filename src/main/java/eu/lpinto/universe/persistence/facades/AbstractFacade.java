@@ -117,6 +117,13 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     }
 
     /*
+     * Helpers
+     */
+    protected static PreConditionException missingParameter(final String paramName, final String... errors) {
+        return new PreConditionException(paramName, "' cannot be null!", errors);
+    }
+
+    /*
      * Getters / Setters
      */
     protected abstract EntityManager getEntityManager();

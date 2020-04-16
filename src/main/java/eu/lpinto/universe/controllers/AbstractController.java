@@ -35,8 +35,8 @@ public abstract class AbstractController {
         return userID == 0;
     }
 
-    protected static PreConditionException missingParameter(final String paramName) {
-        return new PreConditionException(paramName, "' cannot be null!");
+    protected static PreConditionException missingParameter(final String paramName, final String... errors) {
+        return new PreConditionException(paramName, "' cannot be null.", errors);
     }
 
     protected AbstractController() {

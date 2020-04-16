@@ -21,10 +21,6 @@ public class FaultDTO implements Serializable {
         super();
     }
 
-    public FaultDTO(final String message) {
-        this.error = message;
-    }
-
     public FaultDTO(final String code, final String error) {
         this.error = error;
         this.code = code;
@@ -35,7 +31,7 @@ public class FaultDTO implements Serializable {
      */
     @Override
     public String toString() {
-        return "Faulty usage of the system [" + this.error + "].";
+        return "System failed on error: " + this.code + " - " + this.error;
     }
 
     /*

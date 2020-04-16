@@ -2,6 +2,7 @@ package eu.lpinto.universe.api.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +28,24 @@ public class Errors implements Serializable {
         this.errors = errors;
     }
 
-    public Errors(final String field, final String... errors) {
-        addError(field, errors);
+    public Errors(final String field, final String message, final String... errors) {
+        addError(field, message, errors);
     }
 
-    public Errors addError(final String field, final String... errors) {
+    public Errors addError(final String field, final String message, final String... errors) {
         Map<String, String[]> newError = new HashMap<>(1);
-        newError.put(field, errors);
+        if (errors == null || errors.length == 0) {
+            newError.put(field, (String[]) Arrays.asList(message).toArray());
+
+        } else {
+            String[] aux = new String[errors.length + 1];
+            aux[0] = message;
+            for (int i = 0; i < aux.length; i++) {
+                aux[i] = errors[i - 1];
+            }
+            newError.put(field, aux);
+        }
+
         this.errors.add(newError);
 
         return this;

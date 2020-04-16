@@ -66,7 +66,7 @@ public abstract class AbstractService {
     }
 
     protected static Response forbidden(final Long userID) {
-        return Response.status(Response.Status.FORBIDDEN).entity(new FaultDTO("Missing owner permissions for person: " + userID)).build();
+        return Response.status(Response.Status.FORBIDDEN).entity(new FaultDTO("001", "Forbidden for user: " + userID)).build();
     }
 
     protected static Response mismatchID(final Long pathID, final Long objID) {
@@ -74,7 +74,7 @@ public abstract class AbstractService {
     }
 
     protected static Response badRequest(final String msg) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(new FaultDTO(msg)).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(new FaultDTO("002", msg)).build();
     }
 
     protected static Response unprocessableEntity(final String field, final String errorMsg) {
@@ -86,12 +86,12 @@ public abstract class AbstractService {
     }
 
     protected static Response unknown(final Long id) {
-        return Response.status(Response.Status.NOT_FOUND).entity(new FaultDTO("Unknown entity [id=" + id + "]")).build();
+        return Response.status(Response.Status.NOT_FOUND).entity(new FaultDTO("003", "Unknown entity [id=" + id + "]")).build();
 
     }
 
     protected static Response conflict(final String msg) {
-        return Response.status(Response.Status.CONFLICT).entity(new FaultDTO(msg)).build();
+        return Response.status(Response.Status.CONFLICT).entity(new FaultDTO("004", msg)).build();
     }
 
     protected static Response internalError(final Exception ex) {

@@ -80,19 +80,12 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
 
     @Override
     public void create(PlanFeature entity) throws PreConditionException {
-
-        if (entity.getPlan() == null) {
-            throw new IllegalArgumentException("Plan cannot be null");
-        }
-        if (entity.getPlan().getId() == null) {
-            throw new IllegalArgumentException("Plan ID cannot be null");
+        if (entity.getPlan() == null || entity.getPlan().getId() == null) {
+            throw missingParameter("Plan");
         }
 
-        if (entity.getFeature() == null) {
-            throw new IllegalArgumentException("Feature cannot be null");
-        }
-        if (entity.getFeature().getId() == null) {
-            throw new IllegalArgumentException("Feature ID cannot be null");
+        if (entity.getFeature() == null || entity.getFeature().getId() == null) {
+            throw missingParameter("Feature");
         }
 
         Long planID = entity.getPlan().getId();
@@ -118,19 +111,14 @@ public class PlanFeatureFacade extends AbstractFacade<PlanFeature> {
 
     @Override
     public void edit(final PlanFeature newPlanFeature) throws PreConditionException {
-
         Plan plan = newPlanFeature.getPlan();
         Feature feature = newPlanFeature.getFeature();
 
-        if (newPlanFeature.getId() == null) {
-            throw new IllegalArgumentException("Id cannot be null");
+        if (plan == null || plan.getId() == null) {
+            throw missingParameter("Plan");
         }
-
-        if (plan == null) {
-            throw new IllegalArgumentException("Plan cannot be null");
-        }
-        if (feature == null) {
-            throw new IllegalArgumentException("Feature cannot be null");
+        if (feature == null || feature.getId() == null) {
+            throw missingParameter("Feature");
         }
         Plan savedPlan = planFacade.retrieve(plan.getId());
 
