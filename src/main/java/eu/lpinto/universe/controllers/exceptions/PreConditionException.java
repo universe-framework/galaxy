@@ -1,7 +1,9 @@
 package eu.lpinto.universe.controllers.exceptions;
 
+import eu.lpinto.universe.util.StringUtil;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -20,7 +22,7 @@ public class PreConditionException extends Exception {
     }
 
     public PreConditionException(final String field, String message, final String... errors) {
-        super(field);
+        super();
         addError(field, message, errors);
     }
 
@@ -49,5 +51,23 @@ public class PreConditionException extends Exception {
 
     public void setErrors(final Map<String, String[]> errors) {
         this.errors = errors;
+    }
+
+    @Override
+    public String getMessage() {
+        StringBuilder sb = new StringBuilder(500);
+
+        Iterator<Map.Entry<String, String[]>> it = getErrors().entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry<String, String[]> e = it.next();
+            sb.append(e.getKey()).append(": ").append(StringUtil.buildString(e.getValue()));
+
+            if (it.hasNext()) {
+                sb.append(" | ");
+            }
+        }
+
+        return sb.toString();
     }
 }
