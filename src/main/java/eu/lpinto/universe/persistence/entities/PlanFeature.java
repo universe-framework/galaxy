@@ -16,11 +16,11 @@ public class PlanFeature extends AbstractEntity implements Serializable {
 
     private Integer value;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE) // cascade merge will update target object with this instance
+    @ManyToOne(cascade = CascadeType.MERGE) // cascade merge will update target object with this instance
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "feature_id")
     private Feature feature;
 

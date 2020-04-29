@@ -31,7 +31,7 @@ public class User extends AbstractEntity implements Serializable {
     @OneToOne(fetch = FetchType.EAGER)
     private Image currentAvatar;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "ApplicationUser_Image",
                joinColumns = {
                    @JoinColumn(name = "applicationUser_id", referencedColumnName = "id")},
@@ -39,10 +39,10 @@ public class User extends AbstractEntity implements Serializable {
                    @JoinColumn(name = "image_id", referencedColumnName = "id")})
     private List<Image> avatars;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     private List<Employee> employees;
 
     /*

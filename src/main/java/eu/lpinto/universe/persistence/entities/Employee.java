@@ -16,13 +16,13 @@ public class Employee extends AbstractEntity implements Serializable {
 
     private Long externalID;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Company company;
 
     @Enumerated(EnumType.ORDINAL)
     private EmployeeProfile profile;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private User user;
 
     /*

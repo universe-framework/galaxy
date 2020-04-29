@@ -3,7 +3,10 @@ package eu.lpinto.universe.persistence.entities;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
@@ -15,7 +18,7 @@ public class Plan extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "plan", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<PlanFeature> features;
 
     /*

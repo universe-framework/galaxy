@@ -25,7 +25,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     @Size(min = 1, message = "Invalid name size")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
 
@@ -33,7 +33,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     @Column(updatable = false, nullable = false)
     private Calendar created;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "updater_id")
     private User updater;
 

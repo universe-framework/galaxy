@@ -31,22 +31,22 @@ public class Company extends AbstractEntity implements Serializable {
     private String town;
     private String country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "selectedAvatar_id")
     private Image selectedAvatar;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "parent_id")
     private Company parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent")
     private List<Company> children;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "Company_Image",
                joinColumns = {
                    @JoinColumn(name = "company_id", referencedColumnName = "id")},
@@ -54,7 +54,7 @@ public class Company extends AbstractEntity implements Serializable {
                    @JoinColumn(name = "image_id", referencedColumnName = "id")})
     private List<Image> avatars;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
+    @OneToMany(mappedBy = "company")
     private List<Employee> employees;
 
     /*

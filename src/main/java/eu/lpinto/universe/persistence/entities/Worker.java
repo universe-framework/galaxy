@@ -22,7 +22,7 @@ public class Worker extends AbstractEntity implements Serializable {
     @ManyToOne
     private Organization organization;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Employee employee;
 
     private Boolean enable;

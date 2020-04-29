@@ -42,19 +42,19 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     private String website;
 
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "organization")
     private List<Worker> workers;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Company company;
 
     private String calendarID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "selectedAvatar_id")
     private Image selectedAvatar;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "Organization_Image",
                joinColumns = {
                    @JoinColumn(name = "organization_id", referencedColumnName = "id")},
