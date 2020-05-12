@@ -68,7 +68,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
 
     private List<Organization> findByUser(final Long userID) {
         return getEntityManager()
-                .createQuery("SELECT o FROM Organization o WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.employee.user.id = :userID) AND o.enable = true", Organization.class)
+                .createQuery("SELECT o FROM Organization o WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.enable = true AND w.employee.user.id = :userID) AND o.enable = true", Organization.class)
                 .setParameter("userID", userID)
                 .getResultList();
     }
