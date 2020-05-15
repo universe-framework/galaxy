@@ -89,7 +89,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         } catch (RuntimeException ex) {
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
-            asyncResponse.resume(internalError(ex));
+            asyncResponse.resume(noContent());
         }
     }
 
