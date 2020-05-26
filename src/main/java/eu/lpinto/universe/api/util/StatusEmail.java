@@ -261,20 +261,26 @@ public class StatusEmail implements Runnable {
                        final HttpHeaders headers,
                        final Map<String, Object> options,
                        final Object dto) {
-        Map<String, String> uriInfoAux = new HashMap<>(uriInfo.getQueryParameters().size());
+        if (uriInfo != null) {
+            Map<String, String> uriInfoAux = new HashMap<>(uriInfo.getQueryParameters().size());
 
-        uriInfo.getQueryParameters().entrySet().forEach((e) -> {
-            uriInfoAux.put(e.getKey(), String.valueOf(e.getValue()));
-        });
+            uriInfo.getQueryParameters().entrySet().forEach((e) -> {
+                uriInfoAux.put(e.getKey(), String.valueOf(e.getValue()));
+            });
 
-        Map<String, String> headersAux = new HashMap<>(uriInfo.getQueryParameters().size());
-        headers.getRequestHeaders().entrySet().forEach((e) -> {
-            headersAux.put(e.getKey(), String.valueOf(e.getValue()));
-        });
+            this.uriInfo = uriInfoAux;
+        }
+
+        if (uriInfo != null) {
+            Map<String, String> headersAux = new HashMap<>(uriInfo.getQueryParameters().size());
+            headers.getRequestHeaders().entrySet().forEach((e) -> {
+                headersAux.put(e.getKey(), String.valueOf(e.getValue()));
+            });
+
+            this.headers = headersAux;
+        }
 
         this.ex = ex;
-        this.uriInfo = uriInfoAux;
-        this.headers = headersAux;
         this.options = options;
         this.dto = dto;
     }
