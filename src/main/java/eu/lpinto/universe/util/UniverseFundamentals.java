@@ -22,6 +22,8 @@ public final class UniverseFundamentals {
 
     /* Email */
     static public final String SUPPORT_ADDR;
+    static public final String REPLY_TO;
+    static public final String SENDER_NAME;
     static public final String SENDER_ADDR;
     static public final String SENDER_PASS;
     static public final String SMTP_ADDR;
@@ -65,6 +67,8 @@ public final class UniverseFundamentals {
 
             /* Email */
             SUPPORT_ADDR = properties.getProperty("support_addr");
+            REPLY_TO = properties.getProperty("reply_to");
+            SENDER_NAME = properties.getProperty("sender_name");
             SENDER_ADDR = properties.getProperty("email_addr");
             SENDER_PASS = properties.getProperty("email_pass");
             SMTP_ADDR = properties.getProperty("smtp");
