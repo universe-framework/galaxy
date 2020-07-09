@@ -65,7 +65,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
         return super.find(null);
     }
 
-    private List<Worker> findByOrganization(final Long organizationID) {
+    public List<Worker> findByOrganization(final Long organizationID) {
         List<Worker> workers = getEntityManager().createQuery(
                 "SELECT w FROM Worker w WHERE w.organization.id = :organizationID AND w.enable = true", Worker.class)
                 .setParameter("organizationID", organizationID)
@@ -74,7 +74,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
         return workers;
     }
 
-    private List<Worker> findByOrganizationAndUser(final Long organizationID, final Long userID) {
+    public List<Worker> findByOrganizationAndUser(final Long organizationID, final Long userID) {
         List<Worker> workers = getEntityManager().createQuery(
                 "SELECT w FROM Worker w WHERE w.organization.id = :organizationID AND w.enable = true AND w.employee.user.id = :userID", Worker.class)
                 .setParameter("organizationID", organizationID)
