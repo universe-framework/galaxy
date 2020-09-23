@@ -81,6 +81,10 @@ public class EmailFacade {
         sendEmail(senderEmail, senderName, replyTo, senderName, receiverEmail, subject, emailMessage, file);
     }
 
+    public void sendEmail(final String replyTo, final String receiverEmail, final String subject, final String emailMessage, final String file) {
+        sendEmail(senderEmail, senderName, replyTo, senderName, receiverEmail, subject, emailMessage, file);
+    }
+
     public void sendEmail(final String from, final String fromName, final String replyTo, final String replyToName,
                           final String receiverEmail, final String subject, final String emailMessage, final String... attachFiles) {
         if (session == null) {
