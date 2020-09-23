@@ -95,7 +95,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
             }
 
             if (abstractEntity.getUpdated() == null) {
-                abstractEntity.setUpdated(newNow);
+                abstractEntity.setUpdated(abstractEntity.getCreated());
             }
 
             abstractEntity.setFull(true);
