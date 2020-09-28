@@ -97,7 +97,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
         entities.parallelStream().forEach(entity -> {
             try {
-                result.add(create(userID, options, entity));
+                E create = create(userID, options, entity);
+                synchronized (result) {
+                    result.add(create);
+                }
             } catch (UnknownIdException | PermissionDeniedException | PreConditionException ex) {
                 throw new UnexpectedException(ex.getMessage());
             }
