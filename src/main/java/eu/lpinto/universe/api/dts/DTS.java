@@ -1,6 +1,7 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,17 @@ public abstract class DTS<E extends UniverseEntity, D> {
     }
 
     public List<D> toAPI(final List<E> entities) {
-        return entities == null ? null
-               : entities.parallelStream().map(entity -> DTS.this.toAPI(entity)).collect(Collectors.toList());
+        if (entities == null) {
+            return null;
+        }
+
+        List<D> result = new ArrayList<>(entities.size());
+
+        entities.forEach((entity) -> {
+            result.add(toAPI(entity));
+        });
+
+        return result;
     }
 
     public D toAPI(final E entity) {
