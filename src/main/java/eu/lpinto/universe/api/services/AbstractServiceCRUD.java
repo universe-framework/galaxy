@@ -117,7 +117,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             options.put("locale", locale);
 
             /* Log request */
-            logRequest(uriInfo, options, currentMethod(), dto);
+            logRequest(uriInfo, options, currentMethod(), dto.get(0).getClass().getSimpleName() + "[" + dto.size() + "]");
 
             /* Body */
             Response result = doCreate(userID, dto, options);
@@ -454,41 +454,44 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
-        LOGGER.debug("//////////////// -> REQUEST //"
-                     + "\n\tID: {}"
-                     + "\n\t{} ({})" // java function and service url
-                     + "\n\t{}"
-                     + "\n\t{}"
-                     + "\n\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",
-                     options.get("request"), // ID
-                     uriInfo.getRequestUri(), // URL
-                     methodName,
-                     StringUtil.buildString(options),
-                     buildBlody(dto)
-        );
-    }
-
-    private String buildBlody(final Object dto) {
         String body;
+
         if (dto == null) {
             body = "'null'";
 
-        } else if (dto instanceof Collection) {
-            Collection collection = (Collection) dto;
-
-            body = "Body: " + collection.iterator().next().getClass().getSimpleName() + " [" + collection.size() + "]";
-
-            if (collection.size() < 11) {
-                body += "\n" + StringUtil.toJson(dto);
-            }
+        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
+            body = "Result: " + ((List) dto).size() + " objects.";
 
         } else {
             body = StringUtil.toJson(dto);
         }
-        return body;
+
+        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\"
+                     + "\n\tID: {}"
+                     + "\n\t{} ({})" // java function and service url
+                     + "\n\t{}"
+                     + "\n\t{}"
+                     + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
+                     options.get("request"), // ID
+                     uriInfo.getRequestUri(), // URL
+                     methodName,
+                     StringUtil.buildString(options),
+                     body
+        );
     }
 
     protected void logResponse(final UriInfo uriInfo, final Map<String, Object> options, final String methodName, final Object response) {
+        String body;
+
+        if (response == null) {
+            body = "'null'";
+
+        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
+            body = "Result: " + ((List) response).size() + " objects.";
+        } else {
+            body = StringUtil.toJson(response);
+        }
+
         Long serviceDuration = null;
         Long controllerDuration = null;
         if (options != null) {
@@ -515,7 +518,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                      serviceDuration,
                      controllerDuration,
                      StringUtil.buildString(options),
-                     buildBlody(response));
+                     body);
     }
 
     private String currentMethod() {
