@@ -85,7 +85,7 @@ public class StatusEmail implements Runnable {
                                                 final Map<String, String> headers,
                                                 final Map<String, Object> options,
                                                 final Object dto) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(1000);
 
         ExceptionDescription exDescription = excetionHtmlParagraph(ex);
 
@@ -106,8 +106,12 @@ public class StatusEmail implements Runnable {
         sb.append("<hr>\n");
         sb.append(exDescription.html);
 
+        String subject = UniverseFundamentals.APP_NAME == null ? "" : "[" + UniverseFundamentals.APP_NAME + "] ";
+
+        subject += exDescription.className + ": " + exDescription.message;
+
         return sendStatusEmail(uriInfo, headers, options,
-                               exDescription.className + ": " + exDescription.message, // subject
+                               subject, // subject
                                "<div class=\"alert alert-danger\">\n" + "<h2>"
                                + "<a class=\"text-danger\" target=\"_blank\" href=\"https://www.google.pt/search?q=" + exDescription.className + ": " + exDescription.message + "\">"
                                + exDescription.className + ": " + exDescription.message + "</a>"
@@ -128,7 +132,7 @@ public class StatusEmail implements Runnable {
                                           final String subject,
                                           final String header,
                                           final String message) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(1000);
         sb.append("<!DOCTYPE html>\n");
         sb.append("<HTML lang=\"en\">\n");
         sb.append("<HEAD>\n");
@@ -249,6 +253,9 @@ public class StatusEmail implements Runnable {
     private Map<String, Object> options;
     private Object dto;
 
+    /*
+     * Constructors
+     */
     public StatusEmail(final Exception ex,
                        final UriInfo uriInfo,
                        final HttpHeaders headers,
