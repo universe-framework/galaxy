@@ -5,6 +5,7 @@ import java.util.Calendar;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -27,6 +28,9 @@ public class Image extends AbstractEntity implements Serializable {
     @Size(min = 1, max = 255, message = "Invalid email size")
     private String url;
 
+    @ManyToOne
+    private Organization organization;
+
     /*
      * Contructors
      */
@@ -41,8 +45,9 @@ public class Image extends AbstractEntity implements Serializable {
         this.url = url;
     }
 
-    public Image(final String url, final Long id, final String name, final Calendar created, final Calendar updated) {
+    public Image(final Organization organization, final String url, final Long id, final String name, final Calendar created, final Calendar updated) {
         super(id, name, created, updated);
+        this.organization = organization;
         this.url = url;
     }
 
@@ -55,5 +60,13 @@ public class Image extends AbstractEntity implements Serializable {
 
     public void setUrl(final String url) {
         this.url = url;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }
