@@ -246,8 +246,6 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
         } catch (UnknownIdException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(unknown(id));
 
         } catch (PermissionDeniedException ex) {

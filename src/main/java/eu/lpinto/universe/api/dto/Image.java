@@ -11,6 +11,7 @@ public class Image extends AbstractDTO implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
+    private Long organization;
     private String url;
 
     /*
@@ -28,9 +29,22 @@ public class Image extends AbstractDTO implements Serializable {
         this.url = url;
     }
 
+    public Image(Long organization, String url) {
+        this.organization = organization;
+        this.url = url;
+    }
+
     /*
      * Getters/Setters
      */
+    public Long getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Long organization) {
+        this.organization = organization;
+    }
+
     public String getUrl() {
         return url;
     }
