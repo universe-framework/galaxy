@@ -521,7 +521,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                      body);
     }
 
-    private String currentMethod() {
+    protected String currentMethod() {
         return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 
