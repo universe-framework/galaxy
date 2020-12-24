@@ -18,16 +18,19 @@ import javax.ws.rs.core.MediaType;
 public class RootService {
 
     static final private Date DEPLOY_TIME = new Date();
+    static final Map<String, String> result = new HashMap<>(5);
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, String> get() {
-        Map<String, String> result = new HashMap<>(2);
+    {
         result.put("application", UniverseFundamentals.APP_NAME);
         result.put("base-url", "/" + UniverseFundamentals.REST_BASE_URI);
         result.put("version", UniverseFundamentals.VERSION);
         result.put("deploy", new SimpleDateFormat("yyyy.MM.dd HH:mm zzz").format(DEPLOY_TIME));
+        result.put("build", "BUILD-ID");
+    }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, String> get() {
         return result;
     }
 }
