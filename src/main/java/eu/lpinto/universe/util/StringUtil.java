@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -70,6 +71,12 @@ public final class StringUtil {
         }
 
         return sb.toString();
+    }
+
+    static public String toAscii(final String src) {
+        return Normalizer
+                .normalize(src, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
     }
 
     static public String toJson(final Object obj) {
