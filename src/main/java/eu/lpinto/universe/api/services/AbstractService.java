@@ -253,7 +253,7 @@ public abstract class AbstractService {
                      body);
 
         Long duration = System.currentTimeMillis() - (Long) options.get("startMillis");
-        if (duration > 5000) {
+        if (duration > 10000) {
             for (Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
                 if (uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
                     return;
