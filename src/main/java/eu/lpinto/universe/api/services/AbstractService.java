@@ -1,9 +1,15 @@
 package eu.lpinto.universe.api.services;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.FaultDTO;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import eu.lpinto.universe.api.util.StatusEmail;
+import eu.lpinto.universe.util.StringUtil;
+import eu.lpinto.universe.util.UniverseFundamentals;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+import javax.ws.rs.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractService {
 
+    private static final Map<String, String> DO_NOT_TIMEOUT = UniverseFundamentals.DO_NOT_TIMEOUT;
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractService.class);
 
     /*
@@ -103,5 +110,161 @@ public abstract class AbstractService {
      */
     protected AbstractService() {
         super();
+    }
+
+    /*
+     * Helpers
+     */
+    protected void addSKeyString(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
+        List<String> keys = queryParameters.get(key);
+
+        try {
+            if (keys != null && !keys.isEmpty() && keys.size() == 1) {
+                options.put(key, Long.valueOf(keys.get(0)));
+            }
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid value: [" + keys.get(0) + "] for option: [" + key + "]");
+        }
+    }
+
+    protected void addSKeyCalendar(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
+        List<String> keys = queryParameters.get(key);
+        if (keys != null && !keys.isEmpty() && keys.size() == 1) {
+            Calendar startedAfter = Calendar.getInstance();
+            try {
+                startedAfter.setTime(new ISO8601DateFormat().parse(keys.get(0)));
+            } catch (ParseException ex) {
+                throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
+            }
+            options.put(key, startedAfter);
+        }
+    }
+
+    protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID) {
+        options.put("startMillis", System.currentTimeMillis());
+        options.put("request", UUID.randomUUID().toString());
+
+        options.put("user", userID);
+
+        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        queryParameters.keySet().forEach(key -> {
+            List<String> values = queryParameters.get(key);
+            if (values != null && !values.isEmpty() && values.size() == 1) {
+                if ("true".equalsIgnoreCase(values.get(0))) {
+                    options.put(key, Boolean.TRUE);
+
+                } else if ("false".equalsIgnoreCase(values.get(0))) {
+                    options.put(key, Boolean.FALSE);
+
+                } else {
+                    try {
+                        Long l = Long.valueOf(values.get(0));
+                        options.put(key, l);
+                    } catch (NumberFormatException ex) {
+                        options.put(key, values.get(0));
+                    }
+                }
+            }
+        });
+
+        options.put("service.start", System.currentTimeMillis());
+
+        return options;
+    }
+
+    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName) {
+        logRequest(uriInfo, options, methodName, null);
+    }
+
+    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
+        String body;
+
+        if (dto == null) {
+            body = "\"null\"";
+
+        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
+            Collection col = (Collection) dto;
+            body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
+
+        } else {
+            body = StringUtil.toJson(dto);
+        }
+
+        LOGGER.debug("\n{"
+                     + "\n\t\"type\" : \"request\","
+                     + "\n\t\"id\" : \"{}\","
+                     + "\n\t\"url\" : \"{}\","
+                     + "\n\t\"method\" : \"{}\","
+                     + "\n\t\"options\" : {},"
+                     + "\n\t\"body\" : {}"
+                     + "\n}",
+                     options.get("request"),
+                     uriInfo.getRequestUri(), // URL
+                     methodName,
+                     StringUtil.toJson(options),
+                     body
+        );
+    }
+
+    protected void logResponse(final UriInfo uriInfo, final HttpHeaders headers, final Map<String, Object> options, final String methodName, final Object response) {
+        String body;
+
+        if (response == null) {
+            body = "\"null\"";
+
+        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
+            Collection col = (Collection) response;
+            body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
+        } else {
+            body = StringUtil.toJson(response);
+        }
+
+        Long serviceDuration = null;
+        Long controllerDuration = null;
+        if (options != null) {
+            if (options.containsKey("service.start") && options.containsKey("service.end")) {
+                serviceDuration = ((Long) options.get("service.end")) - (Long) (options.get("service.start"));
+            }
+            if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
+                controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
+            }
+        }
+
+        LOGGER.debug("\n{"
+                     + "\n\t\"type\" : \"response\","
+                     + "\n\t\"id\" : \"{}\","
+                     + "\n\t\"url\" : \"{}\","
+                     + "\n\t\"method\" : \"{}\","
+                     + "\n\t\"duration\" : {"
+                     + "\n\t\t\"total\" : {},"
+                     + "\n\t\t\"service\" : {},"
+                     + "\n\t\t\"controller\" : {}"
+                     + "\n\t},"
+                     + "\n\t\"options\" : {},"
+                     + "\n\t\"body\" : {}"
+                     + "\n}",
+                     options.get("request"),
+                     uriInfo.getRequestUri(),
+                     methodName,
+                     System.currentTimeMillis() - (Long) options.get("startMillis"),
+                     serviceDuration,
+                     controllerDuration,
+                     StringUtil.toJson(options),
+                     body);
+
+        Long duration = System.currentTimeMillis() - (Long) options.get("startMillis");
+        if (duration > 5000) {
+            for (Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
+                if (uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
+                    return;
+                }
+            }
+
+            StatusEmail.sendExceptionEmail(new TimeoutException("Duration: " + duration), uriInfo, headers, options, response);
+        }
+    }
+
+    protected String currentMethod() {
+        return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 }

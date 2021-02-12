@@ -1,6 +1,5 @@
 package eu.lpinto.universe.api.services;
 
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.dto.Errors;
 import eu.lpinto.universe.api.dto.UniverseDTO;
 import eu.lpinto.universe.api.dts.UniverseDTS;
@@ -11,15 +10,10 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
-import eu.lpinto.universe.util.StringUtil;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import javax.ejb.Asynchronous;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
@@ -64,10 +58,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
         try {
-
             /* Setup */
             buildOptions(options, uriInfo, userID);
-
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());
@@ -77,7 +69,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -124,7 +116,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -181,7 +173,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -236,7 +228,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -303,7 +295,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -356,7 +348,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Log response */
             options.put("service.end", System.currentTimeMillis());
-            logResponse(uriInfo, options, currentMethod(), result.getEntity());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
 
             /* return */
             asyncResponse.resume(result);
@@ -385,142 +377,6 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public Response doDelete(final Long userID, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         getController().delete(userID, new HashMap<>(0), id);
         return noContent();
-    }
-
-    /*
-     * Helpers
-     */
-    protected void addSKeyString(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
-        List<String> keys = queryParameters.get(key);
-
-        try {
-            if (keys != null && !keys.isEmpty() && keys.size() == 1) {
-                options.put(key, Long.valueOf(keys.get(0)));
-            }
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid value: [" + keys.get(0) + "] for option: [" + key + "]");
-        }
-    }
-
-    protected void addSKeyCalendar(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
-        List<String> keys = queryParameters.get(key);
-        if (keys != null && !keys.isEmpty() && keys.size() == 1) {
-            Calendar startedAfter = Calendar.getInstance();
-            try {
-                startedAfter.setTime(new ISO8601DateFormat().parse(keys.get(0)));
-            } catch (ParseException ex) {
-                throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
-            }
-            options.put(key, startedAfter);
-        }
-    }
-
-    protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID) {
-        options.put("startMillis", System.currentTimeMillis());
-        options.put("request", UUID.randomUUID().toString());
-
-        options.put("user", userID);
-
-        MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-        queryParameters.keySet().forEach(key -> {
-            List<String> values = queryParameters.get(key);
-            if (values != null && !values.isEmpty() && values.size() == 1) {
-                if ("true".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.TRUE);
-
-                } else if ("false".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.FALSE);
-
-                } else {
-                    try {
-                        Long l = Long.valueOf(values.get(0));
-                        options.put(key, l);
-                    } catch (NumberFormatException ex) {
-                        options.put(key, values.get(0));
-                    }
-                }
-            }
-        });
-
-        options.put("service.start", System.currentTimeMillis());
-
-        return options;
-    }
-
-    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName) {
-        logRequest(uriInfo, options, methodName, null);
-    }
-
-    protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
-        String body;
-
-        if (dto == null) {
-            body = "'null'";
-
-        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
-            body = "Result: " + ((List) dto).size() + " objects.";
-
-        } else {
-            body = StringUtil.toJson(dto);
-        }
-
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -> REQUEST \\\\"
-                     + "\n\tID: {}"
-                     + "\n\t{} ({})" // java function and service url
-                     + "\n\t{}"
-                     + "\n\t{}"
-                     + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                     options.get("request"), // ID
-                     uriInfo.getRequestUri(), // URL
-                     methodName,
-                     StringUtil.buildString(options),
-                     body
-        );
-    }
-
-    protected void logResponse(final UriInfo uriInfo, final Map<String, Object> options, final String methodName, final Object response) {
-        String body;
-
-        if (response == null) {
-            body = "'null'";
-
-        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
-            body = "Result: " + ((List) response).size() + " objects.";
-        } else {
-            body = StringUtil.toJson(response);
-        }
-
-        Long serviceDuration = null;
-        Long controllerDuration = null;
-        if (options != null) {
-            if (options.containsKey("service.start") && options.containsKey("service.end")) {
-                serviceDuration = ((Long) options.get("service.end")) - (Long) (options.get("service.start"));
-            }
-            if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
-                controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
-            }
-        }
-
-        LOGGER.debug("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ RESPONSE ->"
-                     + "\n\tID: {}"
-                     + "\n\t{}({})" // java function and service url
-                     + "\n\tDuration: {}"
-                     + "\n\tService: {}"
-                     + "\n\tController: {}"
-                     + "\n\n\t{}"
-                     + "\n\t{}"
-                     + "\n////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////",
-                     options.get("request"),
-                     uriInfo.getRequestUri(), methodName,
-                     (System.currentTimeMillis() - (Long) options.get("startMillis")),
-                     serviceDuration,
-                     controllerDuration,
-                     StringUtil.buildString(options),
-                     body);
-    }
-
-    protected String currentMethod() {
-        return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 
     /*
