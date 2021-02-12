@@ -2,8 +2,9 @@ package eu.lpinto.universe.api.filters;
 
 import eu.lpinto.universe.api.dto.FaultDTO;
 import eu.lpinto.universe.controllers.TokenController;
-import eu.lpinto.universe.persistence.entities.User;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Priority;
 import javax.ejb.EJB;
 import javax.ws.rs.HttpMethod;
@@ -30,6 +31,8 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";
     private static final String USER_ID = "userID";
+    private static final String USER_NAME = "userName";
+    private static final String USER_EMAIL = "userEmail";
     private static final String ADMIN_ID = "0";
     private static final Map<String, String> DMZ_ENDPOINTS;
 
@@ -83,24 +86,15 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
                 } else {
 
-                    User user = tokenController.validate(TokenID);
+                    Long userID = tokenController.validate(TokenID);
 
-                    if (user == null) {
+                    if (userID == null) {
                         requestContext.abortWith(Response
                                 .status(Response.Status.UNAUTHORIZED)
                                 .entity(new FaultDTO("104", "Unknown access token")).build());
 
                     } else {
-                        Calendar c = new GregorianCalendar();
-                        c.add(Calendar.DAY_OF_MONTH, 1);
-                        if (user.getEmailValidated() == null && user.getCreated().after(c)) {
-                            requestContext.abortWith(Response
-                                    .status(Response.Status.UNAUTHORIZED)
-                                    .entity(new FaultDTO("105", "Email not validated yet")).build());
-
-                        } else {
-                            requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
-                        }
+                        requestContext.getHeaders().add(USER_ID, String.valueOf(userID));
                     }
                 }
 
