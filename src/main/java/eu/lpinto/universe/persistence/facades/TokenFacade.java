@@ -2,7 +2,6 @@ package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Token;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.ejb.Stateless;
@@ -35,6 +34,18 @@ public class TokenFacade extends AbstractFacade<Token> {
                     .getSingleResult();
 
             return session;
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public Long getUserID(final String token) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT u.id FROM User u INNER JOIN Token t ON t.user.id = u.id WHERE t.token = :token", Long.class)
+                    .setParameter("token", token)
+                    .getSingleResult();
+
         } catch (NoResultException ex) {
             return null;
         }

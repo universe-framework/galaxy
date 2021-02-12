@@ -2,6 +2,8 @@ package eu.lpinto.universe.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -43,6 +45,7 @@ public final class UniverseFundamentals {
      * Errors
      */
     static public final String ERRORS_EMAIL_ADDR;
+    static public final Map<String, String> DO_NOT_TIMEOUT;
 
     static {
         try (InputStream inputStream = UniverseFundamentals.class.getClassLoader().getResourceAsStream(FILE_PATH);) {
@@ -95,6 +98,17 @@ public final class UniverseFundamentals {
              * Erroes
              */
             ERRORS_EMAIL_ADDR = properties.getProperty("errors_email_addr");
+            String timeouts = properties.getProperty("do_not_timeout");
+            DO_NOT_TIMEOUT = new HashMap<>(5);
+            if (timeouts != null && !timeouts.isEmpty()) {
+                String[] pairs = timeouts.split(" ");
+
+                for (String pair : pairs) {
+                    String[] split = pair.split(":");
+
+                    DO_NOT_TIMEOUT.put(split[0], split[1]);
+                }
+            }
 
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);

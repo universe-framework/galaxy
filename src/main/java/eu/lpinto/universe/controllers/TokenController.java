@@ -67,16 +67,8 @@ public class TokenController {
         facade.remove(session);
     }
 
-    public User validate(final String token) {
-        Token session;
-
-        session = facade.findByToken(token);
-
-        if (session == null) {
-            return null;
-        }
-
-        return session.getUser();
+    public Long validate(final String token) {
+        return facade.getUserID(token);
     }
 
     public TokenFacade getFacade() {
