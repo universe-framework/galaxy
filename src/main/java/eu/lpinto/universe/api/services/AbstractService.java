@@ -140,6 +140,10 @@ public abstract class AbstractService {
         }
     }
 
+    protected Map<String, Object> buildOptions(final UriInfo uriInfo, final Long userID) {
+        return buildOptions(new HashMap<>(10 + (uriInfo == null ? 0 : uriInfo.getQueryParameters().size())), uriInfo, userID);
+    }
+
     protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID) {
         options.put("startMillis", System.currentTimeMillis());
         options.put("request", UUID.randomUUID().toString());
@@ -223,7 +227,8 @@ public abstract class AbstractService {
         Long controllerDuration = null;
         if (options != null) {
             if (options.containsKey("service.start") && options.containsKey("service.end")) {
-                serviceDuration = ((Long) options.get("service.end")) - (Long) (options.get("service.start"));
+                Long serviceEnd = options.get("service.end") == null ? System.currentTimeMillis() : (Long) options.get("service.end");
+                serviceDuration = (serviceEnd) - (Long) (options.get("service.start"));
             }
             if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
                 controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
