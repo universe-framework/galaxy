@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -89,15 +90,15 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .getResultList();
     }
 
-    private List<Organization> findBySiblings(Long organizationID, Long userID) throws PreConditionException {
-        Organization savedOrganization = super.retrieve(organizationID);
+    private List<Organization> findBySiblings(Long id, Long userID) throws PreConditionException {
+        Organization savedOrganization = super.retrieve(id);
 
         return getEntityManager()
                 .createQuery("SELECT o FROM Organization o INNER JOIN Worker w ON w.organization.id = o.id"
                              + " WHERE o.company.id = :companyID AND o.enable=1 AND o.id <> :organizationID"
                              + "  AND w.employee.user.id = :userID", Organization.class)
                 .setParameter("companyID", savedOrganization.getCompany().getId())
-                .setParameter("organizationID", organizationID)
+                .setParameter("organizationID", id)
                 .setParameter("userID", userID)
                 .getResultList();
     }
@@ -107,5 +108,32 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .createQuery("SELECT o FROM Organization o WHERE o.company.id IN (SELECT e.company.id FROM Employee e WHERE e.user.id = :userID) AND o.enable = true", Organization.class)
                 .setParameter("userID", userID)
                 .getResultList();
+    }
+
+    public Boolean hasFeature(final Long id, final String featureName) {
+        try {
+            em.createNativeQuery("select 1 from Feature f"
+                                 + " INNER JOIN Plan_Feature pf ON pf.feature_id = f.id"
+                                 + " INNER JOIN Plan p on p.id = pf.plan_id"
+                                 + " INNER JOIN Company c ON c.plan_id = p.id"
+                                 + " INNER JOIN Organization o ON o.company_id = c.id"
+                                 + " WHERE o.id = :id"
+                                 + " and f.name = :featureName")
+                    .setParameter("id", id)
+                    .setParameter("featureName", featureName)
+                    .getSingleResult();
+
+            return true;
+
+        } catch (NoResultException ex) {
+            return false;
+        }
+    }
+
+    public Long getCompanyID(final Long id) {
+        return getEntityManager()
+                .createQuery("SELECT o.company.id FROM Organization o WHERE o.id = :id", Long.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 }
