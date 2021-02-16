@@ -1,8 +1,11 @@
 package eu.lpinto.universe.persistence.facades;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +124,24 @@ public abstract class AbstractFacade<T> implements Facade<T> {
      */
     protected static PreConditionException missingParameter(final String paramName, final String... errors) {
         return new PreConditionException(paramName, "' cannot be null!", errors);
+    }
+
+    protected Calendar fromText(Object str) {
+        Calendar appointmentStartedAfter = Calendar.getInstance();
+        if (str != null) {
+            try {
+                ISO8601DateFormat df = new ISO8601DateFormat();
+                String after = str.toString();
+                Date appointmentStartedAfterAux = df.parse(after);
+
+                appointmentStartedAfter.setTime(appointmentStartedAfterAux);
+                return appointmentStartedAfter;
+            } catch (ParseException ex) {
+                // 
+            }
+        }
+
+        return null;
     }
 
     /*
