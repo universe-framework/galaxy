@@ -40,7 +40,7 @@ public abstract class AbstractService {
     protected static String firstCause(final Throwable ex) {
         if (ex.getCause() == null) {
 
-            String message = ex.getMessage();
+            String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 
             if (message == null) {
                 message = ex.getClass().getSimpleName();
