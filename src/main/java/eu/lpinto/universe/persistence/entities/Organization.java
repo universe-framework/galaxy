@@ -64,6 +64,9 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     private String customField;
 
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
+    private List<OrganizationFeature> features;
+
     /*
      * Constructors
      */
@@ -98,6 +101,14 @@ public class Organization extends AbstractEntity implements Serializable, Univer
         this.selectedAvatar = selectedAvatar;
         this.avatars = avatars;
         this.customField = billingID;
+    }
+
+    public Boolean hasFeature(final String featureName) {
+        if (features == null || features.isEmpty()) {
+            return false;
+        }
+
+        return features.stream().anyMatch((pf) -> (featureName.equals(pf.getFeature().getName())));
     }
 
     /*

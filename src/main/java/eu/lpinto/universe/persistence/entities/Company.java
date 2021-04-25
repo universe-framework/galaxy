@@ -36,10 +36,6 @@ public class Company extends AbstractEntity implements Serializable {
     private Image selectedAvatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id")
-    private Plan plan;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Company parent;
 
@@ -70,7 +66,7 @@ public class Company extends AbstractEntity implements Serializable {
 
     public Company(String phone, String facebook, String email, String vatNumber, String customField,
                    String street, String zip, String town, String country,
-                   Image selectedAvatar, Plan plan, Company parent,
+                   Image selectedAvatar, Company parent,
                    List<Company> children, List<Image> avatars, List<Employee> employees,
                    Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
         super(id, name, creator, created, updater, updated, deleted);
@@ -84,7 +80,6 @@ public class Company extends AbstractEntity implements Serializable {
         this.town = town;
         this.country = country;
         this.selectedAvatar = selectedAvatar;
-        this.plan = plan;
         this.parent = parent;
         this.children = children;
         this.avatars = avatars;
@@ -179,14 +174,6 @@ public class Company extends AbstractEntity implements Serializable {
         this.selectedAvatar = selectedAvatar;
     }
 
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public void setPlan(final Plan plan) {
-        this.plan = plan;
-    }
-
     public Company getParent() {
         return parent;
     }
@@ -234,23 +221,5 @@ public class Company extends AbstractEntity implements Serializable {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
-    }
-
-    /*
-     * Helpers
-     */
-    public Boolean hasFeature(final String featureName) {
-        Plan thisPlan;
-
-        if (this.getPlan() != null || this.getPlan().getId() != null) {
-            thisPlan = this.getPlan();
-
-        } else {
-            return false;
-        }
-
-        List<PlanFeature> planFeatures = thisPlan.getFeatures();
-
-        return planFeatures.stream().anyMatch((pf) -> (featureName.equals(pf.getFeature().getName())));
     }
 }

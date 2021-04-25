@@ -29,7 +29,6 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getTown(),
                     entity.getCountry(),
                     ImageDTS.toApiID(entity.getSelectedAvatar()),
-                    PlanDTS.toApiID(entity.getPlan()),
                     CompanyDTS.toApiID(entity.getParent()),
                     AbstractDTS.toApiID(entity.getChildren()),
                     ImageDTS.toApiID(entity.getAvatars())
@@ -47,7 +46,6 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getTown(),
                     entity.getCountry(),
                     null,
-                    PlanDTS.toApiID(entity.getPlan()),
                     null,
                     null,
                     null
@@ -76,7 +74,6 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                            dto.getTown(),
                            dto.getCountry(),
                            ImageDTS.T.toDomain(dto.getAvatar()),
-                           PlanDTS.T.toDomain(dto.getPlan()),
                            CompanyDTS.T.toDomain(dto.getParent()),
                            null,
                            null,

@@ -7,9 +7,7 @@ import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.Company;
 import eu.lpinto.universe.persistence.entities.Employee;
 import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Plan;
 import eu.lpinto.universe.persistence.facades.CompanyFacade;
-import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -37,11 +35,6 @@ public class CompanyController extends AbstractControllerCRUD<Company> {
 
     @Override
     public void doCreate(final Long userID, final Map<String, Object> options, Company entity) throws PreConditionException, UnknownIdException, PermissionDeniedException {
-
-        if (entity.getPlan() == null) {
-            entity.setPlan(new Plan(Long.valueOf(UniverseFundamentals.DEFAULT_PLAN)));
-        }
-
         super.doCreate(userID, options, entity);
 
         try {
