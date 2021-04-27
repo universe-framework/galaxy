@@ -1,8 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
-import eu.lpinto.universe.persistence.entities.OrganizationFeature;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
+import eu.lpinto.universe.persistence.entities.OrganizationFeature;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -25,14 +24,18 @@ public class OrganizationFeatureFacade extends AbstractFacade<OrganizationFeatur
 
     @Override
     public List<OrganizationFeature> find(Map<String, Object> options) throws PreConditionException {
-        return super.find(options); //To change body of generated methods, choose Tools | Templates.
+        if (options.containsKey(("organization"))) {
+            return getByOrganization((Long) options.get(("organization")));
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     public List<OrganizationFeature> getByOrganization(final Long organizationID) {
         return em.createQuery(
                 "SELECT t FROM OrganizationFeature t"
                 + " WHERE t.organization = :organizationID"
-                + " AND t.enabled = :enabled", OrganizationFeature.class)
+                + " AND t.deleted IS NULL", OrganizationFeature.class)
                 .setParameter("organizationID", organizationID)
                 .getResultList();
     }
