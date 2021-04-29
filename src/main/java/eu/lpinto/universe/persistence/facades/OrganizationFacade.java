@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -108,26 +107,6 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .createQuery("SELECT o FROM Organization o WHERE o.company.id IN (SELECT e.company.id FROM Employee e WHERE e.user.id = :userID) AND o.enable = true", Organization.class)
                 .setParameter("userID", userID)
                 .getResultList();
-    }
-
-    public Boolean hasFeature(final Long id, final String featureName) {
-        try {
-            em.createNativeQuery("select 1 from Feature f"
-                                 + " INNER JOIN Plan_Feature pf ON pf.feature_id = f.id"
-                                 + " INNER JOIN Plan p on p.id = pf.plan_id"
-                                 + " INNER JOIN Company c ON c.plan_id = p.id"
-                                 + " INNER JOIN Organization o ON o.company_id = c.id"
-                                 + " WHERE o.id = :id"
-                                 + " and f.name = :featureName")
-                    .setParameter("id", id)
-                    .setParameter("featureName", featureName)
-                    .getSingleResult();
-
-            return true;
-
-        } catch (NoResultException ex) {
-            return false;
-        }
     }
 
     public Long getCompanyID(final Long id) {

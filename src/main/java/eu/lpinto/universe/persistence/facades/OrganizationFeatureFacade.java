@@ -34,7 +34,7 @@ public class OrganizationFeatureFacade extends AbstractFacade<OrganizationFeatur
     public List<OrganizationFeature> getByOrganization(final Long organizationID) {
         return em.createQuery(
                 "SELECT t FROM OrganizationFeature t"
-                + " WHERE t.organization = :organizationID"
+                + " WHERE t.organization.id = :organizationID"
                 + " AND t.deleted IS NULL", OrganizationFeature.class)
                 .setParameter("organizationID", organizationID)
                 .getResultList();
