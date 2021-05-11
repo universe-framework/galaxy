@@ -5,10 +5,12 @@ import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
+import eu.lpinto.universe.persistence.entities.Repeatable;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.Facade;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,27 @@ import java.util.Map;
  */
 public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends AbstractController implements CrudController<E> {
 
+    /*
+     * Helpers
+     */
+    public static int GetCalendarField(final String periodType) {
+        switch (periodType) {
+            case "d":
+                return Calendar.DAY_OF_MONTH;
+            case "w":
+                return Calendar.WEEK_OF_YEAR;
+            case "m":
+                return Calendar.MONTH;
+            case "y":
+                return Calendar.YEAR;
+            default:
+                throw new UnsupportedOperationException("Invalid Period Type");
+        }
+    }
+
+    /*
+     * Fields
+     */
     private final String entityName;
 
     /*
@@ -31,7 +54,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     }
 
     /*
-     * Services
+     * CRUD
      */
     @Override
     public List<E> find(final Long userID, final Map<String, Object> options) throws PermissionDeniedException, PreConditionException {
@@ -133,6 +156,31 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         getFacade().create(entity);
     }
 
+    public void doCreateRepetitions(E entity, Long userID, Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
+        if (entity instanceof Repeatable) {
+            Repeatable newEntity = (Repeatable) entity;
+            if (newEntity.getPeriod() != null && newEntity.getPeriodType() != null && newEntity.getPeriodUntil() != null) {
+                Calendar s = newEntity.getStart();
+                Calendar e = newEntity.getEnd();
+
+                s = (Calendar) s.clone();
+                s.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                e = (Calendar) e.clone();
+                e.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+
+                while (s.before(newEntity.getPeriodUntil())) {
+                    E aux = (E) newEntity.clone(newEntity, s, e);
+                    doCreate(userID, options, aux);
+
+                    s = (Calendar) s.clone();
+                    s.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                    e = (Calendar) e.clone();
+                    e.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                }
+            }
+        }
+    }
+
     @Override
     public void update(final Long userID, final Map<String, Object> options, final E entity) throws UnknownIdException, PreConditionException, PermissionDeniedException {
         options.put("controller.start", System.currentTimeMillis());
@@ -204,10 +252,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     }
 
     /*
-     * Protected
+     * Assert Permissions
      */
-    protected abstract Facade<E> getFacade();
-
     public Boolean assertPremissionsCreate(final Long userID, final E entity) throws PermissionDeniedException {
         return true;
     }
@@ -219,4 +265,9 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     public Boolean assertPremissionsUpdateDelete(final Long userID, final E entity) throws PermissionDeniedException {
         return true;
     }
+
+    /*
+     * Getters / Setters
+     */
+    protected abstract Facade<E> getFacade();
 }
