@@ -158,25 +158,31 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     public void doCreateRepetitions(E entity, Long userID, Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
         if (entity instanceof Repeatable) {
-            Repeatable newEntity = (Repeatable) entity;
-            if (newEntity.getPeriod() != null && newEntity.getPeriodType() != null && newEntity.getPeriodUntil() != null) {
-                Calendar s = newEntity.getStart();
-                Calendar e = newEntity.getEnd();
+            Repeatable entityR = (Repeatable) entity;
+            if (entityR.getPeriod() != null && entityR.getPeriodType() != null && entityR.getPeriodUntil() != null
+                && entityR.getRepetitionId() == null) {
+                Calendar s = entityR.getStart();
+                Calendar e = entityR.getEnd();
 
                 s = (Calendar) s.clone();
-                s.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                s.add(GetCalendarField(entityR.getPeriodType()), entityR.getPeriod());
                 e = (Calendar) e.clone();
-                e.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                e.add(GetCalendarField(entityR.getPeriodType()), entityR.getPeriod());
 
-                while (s.before(newEntity.getPeriodUntil())) {
-                    E aux = (E) newEntity.clone(newEntity, s, e);
+                while (s.before(entityR.getPeriodUntil())) {
+                    Repeatable r = entityR.clone(entityR, s, e);
+                    r.setRepetitionId(entity.getId());
+                    E aux = (E) r;
                     doCreate(userID, options, aux);
 
                     s = (Calendar) s.clone();
-                    s.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                    s.add(GetCalendarField(entityR.getPeriodType()), entityR.getPeriod());
                     e = (Calendar) e.clone();
-                    e.add(GetCalendarField(newEntity.getPeriodType()), newEntity.getPeriod());
+                    e.add(GetCalendarField(entityR.getPeriodType()), entityR.getPeriod());
                 }
+
+                entityR.setRepetitionId(entity.getId());
+                getFacade().edit((E) entityR);
             }
         }
     }

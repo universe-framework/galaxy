@@ -6,7 +6,7 @@ import java.util.Calendar;
  *
  * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
  */
-public interface Repeatable {
+public interface Repeatable extends UniverseEntity {
 
     public Repeatable clone(final Repeatable other, final Calendar start, final Calendar end);
 
@@ -29,4 +29,8 @@ public interface Repeatable {
     public Calendar getPeriodUntil();
 
     public void setPeriodUntil(Calendar periodUntil);
+
+    public Long getRepetitionId();
+
+    public void setRepetitionId(Long repetitionId);
 }
