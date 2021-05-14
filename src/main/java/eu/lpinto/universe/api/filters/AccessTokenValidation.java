@@ -38,20 +38,22 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
     static {
         DMZ_ENDPOINTS = new HashMap<>(5);
-        DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.PUT);
-        DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
-        DMZ_ENDPOINTS.put("/p", HttpMethod.POST);
-        DMZ_ENDPOINTS.put("/people", HttpMethod.POST);
-        DMZ_ENDPOINTS.put("/tokens", HttpMethod.POST);
-        DMZ_ENDPOINTS.put("/users", HttpMethod.POST);
-        DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
 
         DMZ_ENDPOINTS.put("", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/features", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/p", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/plans", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/planFeatures", HttpMethod.GET);
+
+        DMZ_ENDPOINTS.put("/people", HttpMethod.POST);
+        DMZ_ENDPOINTS.put("/tokens", HttpMethod.POST);
+        DMZ_ENDPOINTS.put("/users", HttpMethod.POST);
+        DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
+
+        DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.PUT);
     }
 
     @Override
