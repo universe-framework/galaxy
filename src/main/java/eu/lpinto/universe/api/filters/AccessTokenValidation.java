@@ -31,8 +31,6 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";
     private static final String USER_ID = "userID";
-    private static final String USER_NAME = "userName";
-    private static final String USER_EMAIL = "userEmail";
     private static final String ADMIN_ID = "0";
     private static final Map<String, String> DMZ_ENDPOINTS;
 
@@ -44,7 +42,6 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/features", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);
-        DMZ_ENDPOINTS.put("/p", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/plans", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/planFeatures", HttpMethod.GET);
 
@@ -137,6 +134,10 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         }
 
         if (service[1].startsWith("/tokens/")) {
+            return true;
+        }
+
+        if (service[1].startsWith("/p/")) {
             return true;
         }
 
