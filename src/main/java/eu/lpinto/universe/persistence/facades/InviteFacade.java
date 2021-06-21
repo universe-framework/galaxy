@@ -38,7 +38,7 @@ public class InviteFacade extends AbstractFacade<Invite> {
         } else if (options.containsKey("organization")) {
             return getEntityManager()
                     .createQuery("SELECT i FROM Invite i WHERE i.organization.id = :organizationID", Invite.class)
-                    .setParameter("organizationID", (Long) options.get("organization"))
+                    .setParameter("organizationID", options.get("organization"))
                     .getResultList();
 
         } else {
@@ -52,14 +52,6 @@ public class InviteFacade extends AbstractFacade<Invite> {
         } catch (NoResultException ex) {
             return null;
         }
-    }
-
-    @Override
-    public Invite retrieve(Long id) {
-        return getEntityManager()
-                .createQuery("SELECT i FROM Invite i WHERE i.code = :codeID", Invite.class)
-                .setParameter("codeID", id.toString())
-                .getSingleResult();
     }
 
     @Override
