@@ -51,7 +51,10 @@ public class InviteService extends AbstractServiceCRUD<Invite, eu.lpinto.univers
         try {
             /* Setup */
             buildOptions(options, uriInfo, userID);
-            options.put("code", code);
+            
+            if(code != null) {
+                options.put("code", code);
+            }
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());
