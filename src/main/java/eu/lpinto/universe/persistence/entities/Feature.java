@@ -14,6 +14,8 @@ public class Feature extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer office;
+
     /*
      * Contructors
      */
@@ -24,7 +26,19 @@ public class Feature extends AbstractEntity implements Serializable {
         super(id);
     }
 
+    public Feature(Integer office) {
+        this.office = office;
+    }
+
     public Feature(final Long id, final String name, final Calendar created, final Calendar updated) {
         super(id, name, created, updated);
+    }
+
+    public Integer getOffice() {
+        return office;
+    }
+
+    public void setOffice(Integer office) {
+        this.office = office;
     }
 }

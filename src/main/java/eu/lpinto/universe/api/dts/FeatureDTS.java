@@ -17,10 +17,10 @@ public class FeatureDTS extends AbstractDTS<Feature, eu.lpinto.universe.api.dto.
             return null;
 
         } else if (entity.isFull()) {
-            return new eu.lpinto.universe.api.dto.Feature();
+            return new eu.lpinto.universe.api.dto.Feature(entity.getOffice());
 
         } else {
-            return new eu.lpinto.universe.api.dto.Feature();
+            return new eu.lpinto.universe.api.dto.Feature(entity.getOffice());
         }
     }
 
@@ -35,6 +35,6 @@ public class FeatureDTS extends AbstractDTS<Feature, eu.lpinto.universe.api.dto.
 
     @Override
     protected Feature buildEntity(eu.lpinto.universe.api.dto.Feature dto) {
-        return new Feature(dto.getId(), dto.getName(), dto.getCreated(), dto.getUpdated());
+        return new Feature(dto.getOffice());
     }
 }
