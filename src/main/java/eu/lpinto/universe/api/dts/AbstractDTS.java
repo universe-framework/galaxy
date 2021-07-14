@@ -44,8 +44,9 @@ public abstract class AbstractDTS<E extends AbstractEntity, D extends AbstractDT
         }
 
         if (dto.getCreated() != null) {
-            entity.setCreated(entity.getCreated());
+            entity.setCreated(dto.getCreated());
         }
+
         entity.setCreator(UserDTS.T.toDomain(dto.getCreator()));
 
         if (dto.getDeleted() != null) {
