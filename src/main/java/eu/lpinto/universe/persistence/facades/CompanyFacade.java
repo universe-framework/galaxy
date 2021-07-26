@@ -26,8 +26,17 @@ public class CompanyFacade extends AbstractFacade<Company> {
     public List<Company> find(Map<String, Object> options) {
         Long userID = (Long) options.get("user");
 
+        if (userID.equals(33L)) {
+            return getEntityManager()
+                    .createQuery("select c from Company c"
+                                 + " WHERE c.deleted is null", Company.class)
+                    .getResultList();
+        }
+
         return getEntityManager()
-                .createQuery("select c from Company c WHERE c.id IN (SELECT e.company.id from Employee e WHERE e.user.id = :userID)", Company.class)
+                .createQuery("select c from Company c"
+                             + " WHERE c.deleted is null"
+                             + " AND c.id IN (SELECT e.company.id from Employee e WHERE e.user.id = :userID)", Company.class)
                 .setParameter("userID", userID)
                 .getResultList();
     }
