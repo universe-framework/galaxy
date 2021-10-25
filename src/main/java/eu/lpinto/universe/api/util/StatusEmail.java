@@ -26,34 +26,8 @@ public class StatusEmail implements Runnable {
     static private EmailFacade facade = new EmailFacade();
 
     /*
-     * Exception
+     * Public send Exeption Email
      */
-    static private String toJson(final Object obj) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        /*
-         * Serialization
-         */
-        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
-        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        try {
-            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
-        } catch (JsonProcessingException ex) {
-            LOGGER.error("Cannot serialize object: " + obj);
-            return "[cannot serialize]";
-        }
-    }
-
     static public void sendExceptionEmail(final Exception ex,
                                           final UriInfo uriInfo,
                                           final HttpHeaders headers,
@@ -120,12 +94,8 @@ public class StatusEmail implements Runnable {
     }
 
     /*
-     * Helpers
+     * Send Status Email
      */
-    static private void sendEmail(final String subject, final String emailMessage) {
-        facade.sendEmail(subject, emailMessage);
-    }
-
     static private String sendStatusEmail(final Map<String, String> uriInfo,
                                           final Map<String, String> headers,
                                           final Map<String, Object> options,
@@ -204,6 +174,16 @@ public class StatusEmail implements Runnable {
         return emailBody;
     }
 
+    /*
+     * Do Send
+     */
+    static public void sendEmail(final String subject, final String emailMessage) {
+        facade.sendEmail(subject, emailMessage);
+    }
+
+    /*
+     * Content helpers
+     */
     static private ExceptionDescription excetionHtmlParagraph(final Exception ex) {
 
         ExceptionDescription result = new ExceptionDescription();
@@ -247,6 +227,32 @@ public class StatusEmail implements Runnable {
         return result;
     }
 
+    static private String toJson(final Object obj) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        mapper.enable(DeserializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        /*
+         * Serialization
+         */
+        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+        mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        try {
+            return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Cannot serialize object: " + obj);
+            return "[cannot serialize]";
+        }
+    }
+
     private Exception ex;
     private Map<String, String> uriInfo;
     private Map<String, String> headers;
@@ -268,7 +274,7 @@ public class StatusEmail implements Runnable {
                        final HttpHeaders headers,
                        final Map<String, Object> options,
                        final Object dto) {
-        if (uriInfo != null) {
+        if (uriInfo != null && uriInfo.getQueryParameters() != null) {
             Map<String, String> uriInfoAux = new HashMap<>(uriInfo.getQueryParameters().size());
 
             uriInfo.getQueryParameters().entrySet().forEach((e) -> {
@@ -278,8 +284,8 @@ public class StatusEmail implements Runnable {
             this.uriInfo = uriInfoAux;
         }
 
-        if (uriInfo != null) {
-            Map<String, String> headersAux = new HashMap<>(uriInfo.getQueryParameters().size());
+        if (headers != null && headers.getRequestHeaders() != null) {
+            Map<String, String> headersAux = new HashMap<>(headers.getRequestHeaders().size());
             headers.getRequestHeaders().entrySet().forEach((e) -> {
                 headersAux.put(e.getKey(), String.valueOf(e.getValue()));
             });
@@ -304,6 +310,9 @@ public class StatusEmail implements Runnable {
         this.dto = dto;
     }
 
+    /*
+     * Methods
+     */
     @Override
     public void run() {
         if (headers != null && headers.containsKey("Referer") && !headers.get("Referer").contains("localhost") && !headers.get("Referer").contains("dev")) {
@@ -311,6 +320,9 @@ public class StatusEmail implements Runnable {
         }
     }
 
+    /*
+     * Aux Class
+     */
     static private class ExceptionDescription {
 
         String message;
