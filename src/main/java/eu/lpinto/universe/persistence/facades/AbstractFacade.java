@@ -1,14 +1,12 @@
 package eu.lpinto.universe.persistence.facades;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import eu.lpinto.universe.api.util.StatusEmail;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.EntityManager;
 
 /**
@@ -18,6 +16,10 @@ import javax.persistence.EntityManager;
  * @param <T> Type of entity to be managed.
  */
 public abstract class AbstractFacade<T> implements Facade<T> {
+
+    protected static PreConditionException missingParameter(final String paramName, final String... errors) {
+        return new PreConditionException(paramName, "' cannot be null!", errors);
+    }
 
     private final Class<T> entityClass;
 
@@ -33,9 +35,9 @@ public abstract class AbstractFacade<T> implements Facade<T> {
      */
     @Override
     public List<T> find(final Map<String, Object> options) throws PreConditionException {
-        javax.persistence.criteria.CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
-        cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
+        StatusEmail.sendEmail("[" + UniverseFundamentals.APP_NAME + " | Debugging", "WARNING! AbstractFacade.findAll(" + entityClass.getSimpleName() + ")");
+
+        return findAll();
     }
 
     @Override
@@ -122,8 +124,11 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     /*
      * Helpers
      */
-    protected static PreConditionException missingParameter(final String paramName, final String... errors) {
-        return new PreConditionException(paramName, "' cannot be null!", errors);
+    protected List<T> findAll() throws PreConditionException {
+        javax.persistence.criteria.CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
+        cq.select(cq.from(entityClass));
+
+        return getEntityManager().createQuery(cq).getResultList();
     }
 
     protected Calendar fromText(Object str) {
@@ -137,7 +142,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
                 appointmentStartedAfter.setTime(appointmentStartedAfterAux);
                 return appointmentStartedAfter;
             } catch (ParseException ex) {
-                // 
+                //
             }
         }
 
