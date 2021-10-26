@@ -42,6 +42,6 @@ public class FeatureFacade extends AbstractFacade<Feature> {
                     .getResultList();
         }
 
-        return super.find(options);
+        return findAll();
     }
 }

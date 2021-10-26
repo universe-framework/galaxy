@@ -36,7 +36,7 @@ public class UserFacade extends AbstractFacade<User> {
             return getByHasClinic(hasClinic);
         }
 
-        throw new AssertionError("Cannot list all users. Please report this!");
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     /*

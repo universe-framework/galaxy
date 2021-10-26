@@ -4,6 +4,8 @@ import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Token;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -26,6 +28,12 @@ public class TokenFacade extends AbstractFacade<Token> {
     /*
      * DAO
      */
+
+    @Override
+    public List<Token> find(Map<String, Object> options) throws PreConditionException {
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
+    }
+    
     public Token findByToken(final String token) {
         try {
             Token session = getEntityManager().createQuery(

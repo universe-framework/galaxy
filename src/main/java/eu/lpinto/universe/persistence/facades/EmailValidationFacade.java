@@ -1,7 +1,6 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.persistence.entities.EmailValidation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -34,10 +33,9 @@ public class EmailValidationFacade extends AbstractFacade<EmailValidation> {
                     .createQuery("SELECT ev FROM EmailValidation ev WHERE ev.code = :codeID", EmailValidation.class)
                     .setParameter("codeID", "" + options.get("code"))
                     .getResultList();
-
-        } else {
-            return new ArrayList<>(0);
         }
+        
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     public EmailValidation retrieveByEmail(final String email) {

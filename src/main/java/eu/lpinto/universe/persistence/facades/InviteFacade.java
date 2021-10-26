@@ -40,10 +40,9 @@ public class InviteFacade extends AbstractFacade<Invite> {
                     .createQuery("SELECT i FROM Invite i WHERE i.organization.id = :organizationID", Invite.class)
                     .setParameter("organizationID", options.get("organization"))
                     .getResultList();
-
-        } else {
-            return new ArrayList<>(0);
         }
+        
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     public Invite retrieveByEmail(final String email) {

@@ -1,7 +1,9 @@
 package eu.lpinto.universe.persistence.facades;
 
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Image;
-import eu.lpinto.universe.persistence.facades.AbstractFacade;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +21,11 @@ public class ImageFacade extends AbstractFacade<Image> {
 
     public ImageFacade() {
         super(Image.class);
+    }
+
+    @Override
+    public List<Image> find(Map<String, Object> options) throws PreConditionException {
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     @Override

@@ -28,7 +28,7 @@ public class OrganizationFeatureFacade extends AbstractFacade<OrganizationFeatur
             return getByOrganization((Long) options.get(("organization")));
         }
 
-        throw new UnsupportedOperationException();
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     public List<OrganizationFeature> getByOrganization(final Long organizationID) {

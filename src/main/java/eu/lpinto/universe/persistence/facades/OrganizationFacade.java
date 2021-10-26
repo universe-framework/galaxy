@@ -31,10 +31,6 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     /*
      * DAO
      */
-    public List<Organization> findAll() {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public List<Organization> find(final Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("company")) {

@@ -124,7 +124,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
     /*
      * Helpers
      */
-    protected List<T> findAll() throws PreConditionException {
+    protected List<T> findAll() {
         javax.persistence.criteria.CriteriaQuery<T> cq = getEntityManager().getCriteriaBuilder().createQuery(entityClass);
         cq.select(cq.from(entityClass));
 

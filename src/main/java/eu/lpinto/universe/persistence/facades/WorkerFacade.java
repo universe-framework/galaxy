@@ -62,7 +62,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
             }
         }
 
-        return super.find(null);
+        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
     public List<Worker> findByOrganization(final Long organizationID) {
