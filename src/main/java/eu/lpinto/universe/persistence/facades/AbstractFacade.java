@@ -35,7 +35,8 @@ public abstract class AbstractFacade<T> implements Facade<T> {
      */
     @Override
     public List<T> find(final Map<String, Object> options) throws PreConditionException {
-        StatusEmail.sendEmail("[" + UniverseFundamentals.APP_NAME + " | Debugging", "WARNING! AbstractFacade.findAll(" + entityClass.getSimpleName() + ")");
+        StatusEmail.sendEmail("[" + UniverseFundamentals.APP_NAME + "] | Debugging: " + entityClass.getSimpleName(),
+                              "WARNING! AbstractFacade.findAll(" + entityClass.getSimpleName() + ")");
 
         return findAll();
     }
