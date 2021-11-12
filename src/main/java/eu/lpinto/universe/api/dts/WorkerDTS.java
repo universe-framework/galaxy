@@ -29,7 +29,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getPhone(),
                     entity.getMobilePhone(),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal()
+                    entity.getRole() == null ? null : entity.getRole().ordinal(),
+                    entity.getColor()
             );
 
         } else {
@@ -44,7 +45,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getPhone(),
                     entity.getMobilePhone(),
                     entity.getEmail(),
-                    entity.getRole() == null ? null : entity.getRole().ordinal()
+                    entity.getRole() == null ? null : entity.getRole().ordinal(),
+                    entity.getColor()
             );
         }
     }
@@ -72,6 +74,7 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                 dto.getMobilePhone(),
                 dto.getEmail(),
                 dto.getRole() == null ? null : eu.lpinto.universe.persistence.entities.WorkerProfile.values()[dto.getRole()],
+                dto.getColor(),
                 dto.getName(),
                 UserDTS.T.toDomain(dto.getCreator()),
                 dto.getCreated(),
@@ -79,5 +82,4 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                 dto.getUpdated(),
                 dto.getId());
     }
-
 }
