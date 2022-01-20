@@ -2,8 +2,6 @@ package eu.lpinto.universe.controllers;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Foundation for all controllers.
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractController.class);
     protected static final String EMAIL_USED = "Email address already in use";
     protected static final String MISSING_USERID = "Error: Unknown userID = ";
     protected static final String MISSING_CLINICID = "Error: Unknown clinicID = ";
@@ -36,7 +33,7 @@ public abstract class AbstractController {
     }
 
     protected static PreConditionException missingParameter(final String paramName, final String... errors) {
-        return new PreConditionException(paramName, "' cannot be null.", errors);
+        return new PreConditionException(paramName, "Cannot be null.", errors);
     }
 
     protected AbstractController() {
