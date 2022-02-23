@@ -2,6 +2,7 @@ package eu.lpinto.universe.api.filters;
 
 import eu.lpinto.universe.api.dto.FaultDTO;
 import eu.lpinto.universe.controllers.TokenController;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,12 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
         DMZ_ENDPOINTS.put("/users/passwordRecovery", HttpMethod.POST);
 
         DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.PUT);
+
+        if (UniverseFundamentals.DMZ != null) {
+            UniverseFundamentals.DMZ.entrySet().forEach((e) -> {
+                DMZ_ENDPOINTS.put("/" + e.getKey(), e.getValue());
+            });
+        }
     }
 
     @Override
@@ -141,9 +148,17 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true;
         }
 
-        if ((DMZ_ENDPOINTS.get(service[1]) != null && DMZ_ENDPOINTS.get(service[1]).equals(method))
+        String serviceKey = service[1];
+
+        if ((DMZ_ENDPOINTS.get(serviceKey) != null && DMZ_ENDPOINTS.get(serviceKey).equals(method))
             || service[1].endsWith("csv")) {
             return true; // dmz endpoint + operation
+        }
+
+        serviceKey = "/" + service[1].split("/")[1] + "/*";
+
+        if (service[1].contains("/") && (DMZ_ENDPOINTS.get(serviceKey) != null && DMZ_ENDPOINTS.get(serviceKey).equals(method))) {
+            return true; // dmz endpoint/* + operation
         }
 
         List<String> hack = queryParameters.get("userhack");

@@ -37,6 +37,7 @@ public final class UniverseFundamentals {
 
     /* REST api */
     static public final String APP_NAME;
+    static public final Map<String, String> DMZ;
     static public final String REST_BASE_URI = "api";
     static public final String REST_SERVICES_PACKAGE = "eu.lpinto.universe.api.services";
     static public final String REST_FILTERS_PACKAGE = "eu.lpinto.universe.api.filters";
@@ -62,6 +63,19 @@ public final class UniverseFundamentals {
             APP_NAME = properties.getProperty("APP_NAME");
             if (APP_NAME == null) {
                 throw new AssertionError("Missing property: APP_NAME");
+            }
+
+            String dmzAux = properties.getProperty("DMZ");
+            if (dmzAux != null) {
+                String[] pairs = dmzAux.split(",");
+                DMZ = new HashMap<>(pairs.length);
+
+                for (String pair : pairs) {
+                    String[] aux = pair.trim().split(":");
+                    DMZ.put(aux[0].trim(), aux[1].trim());
+                }
+            } else {
+                DMZ = null;
             }
 
             IMPORTS_FOLDER = properties.getProperty("IMPORTS_FOLDER");
