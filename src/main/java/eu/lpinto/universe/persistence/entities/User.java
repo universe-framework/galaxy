@@ -66,6 +66,8 @@ public class User extends AbstractEntity implements Serializable {
     @Size(min = 1, max = 256, message = "Invalid password size")
     private String password;
 
+    private String preferences;
+
     /*
      * Contructors
      */
@@ -100,7 +102,7 @@ public class User extends AbstractEntity implements Serializable {
     }
 
     public User(String baseUrl, Image currentAvatar, List<Image> avatars, List<Token> tokens, List<Employee> employees,
-                String email, String password,
+                String email, String password, String preferences,
                 String name, User creator, Calendar created, User updater, Calendar updated, Long id, Calendar deleted) {
         super(id, name, creator, created, updater, updated, deleted);
         this.baseUrl = baseUrl;
@@ -110,6 +112,7 @@ public class User extends AbstractEntity implements Serializable {
         this.employees = employees;
         this.email = email;
         this.password = password;
+        this.preferences = preferences;
     }
 
     /*
@@ -177,5 +180,13 @@ public class User extends AbstractEntity implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(String preferences) {
+        this.preferences = preferences;
     }
 }

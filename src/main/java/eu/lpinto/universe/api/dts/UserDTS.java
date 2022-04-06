@@ -18,7 +18,8 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
         return new eu.lpinto.universe.api.dto.User(
                 entity.getCurrentAvatar() == null ? null : entity.getCurrentAvatar().getUrl(),
                 entity.getEmail(),
-                null // passowrd is never released
+                null, // passowrd is never released
+                entity.getPreferences()
         );
     }
 
@@ -48,6 +49,7 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
                         null, // employees
                         dto.getEmail(),
                         Digest.getSHA(dto.getPassword()),
+                        dto.getPreferences(),
                         dto.getName(),
                         UserDTS.T.toDomain(dto.getCreator()),
                         dto.getCreated(),

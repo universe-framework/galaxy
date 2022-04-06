@@ -20,6 +20,7 @@ public class User extends AbstractDTO implements Serializable {
      */
     private String email;
     private String password;
+    private String preferences;
     private String baseUrl;
 
     /*
@@ -33,10 +34,11 @@ public class User extends AbstractDTO implements Serializable {
         super(id);
     }
 
-    public User(String currentAvatar, String email, String password) {
+    public User(String currentAvatar, String email, String password, String preferences) {
         this.currentAvatar = currentAvatar;
         this.email = (email == null ? null : email.isEmpty() ? null : email.trim().toLowerCase());
         this.password = password;
+        this.preferences = preferences;
     }
 
     /*
@@ -64,6 +66,14 @@ public class User extends AbstractDTO implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(String preferences) {
+        this.preferences = preferences;
     }
 
     public String getBaseUrl() {
