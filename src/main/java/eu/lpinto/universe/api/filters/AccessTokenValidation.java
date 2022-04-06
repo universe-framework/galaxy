@@ -155,7 +155,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true; // dmz endpoint + operation
         }
 
-        serviceKey = "/" + service[1].split("/")[1] + "/*";
+        serviceKey = "/" + (service[1].contains("/") ? service[1].split("/")[1] : service[1].contains("/")) + "/*";
 
         if (service[1].contains("/") && (DMZ_ENDPOINTS.get(serviceKey) != null && DMZ_ENDPOINTS.get(serviceKey).equals(method))) {
             return true; // dmz endpoint/* + operation
