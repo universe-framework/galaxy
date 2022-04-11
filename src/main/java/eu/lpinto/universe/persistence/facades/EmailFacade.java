@@ -4,13 +4,7 @@ import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.IOException;
 import java.util.Properties;
 import javax.ejb.Stateless;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -83,6 +77,10 @@ public class EmailFacade {
 
     public void sendEmail(final String replyTo, final String receiverEmail, final String subject, final String emailMessage, final String file) {
         sendEmail(senderEmail, senderName, replyTo, senderName, receiverEmail, subject, emailMessage, file);
+    }
+
+    public void sendEmail(final String replyTo, String replyToName, final String receiverEmail, final String subject, final String emailMessage, final String file) {
+        sendEmail(senderEmail, senderName, replyTo, replyToName, receiverEmail, subject, emailMessage, file);
     }
 
     public void sendEmail(final String from, final String fromName, final String replyTo, final String replyToName,
