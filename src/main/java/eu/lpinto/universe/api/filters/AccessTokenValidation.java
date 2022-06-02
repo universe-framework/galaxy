@@ -62,23 +62,9 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
     @Override
     public void filter(final ContainerRequestContext requestContext) {
-        if (dmz(requestContext)) {
-            return;
-        }
-
         String bearerToken = requestContext.getHeaderString(AUTHORIZATION_HEADER);
 
-        if (bearerToken == null) {
-            requestContext.abortWith(Response
-                    .status(Response.Status.UNAUTHORIZED)
-                    .entity(new FaultDTO("101", "Missing Authorization token")).build());
-
-        } else if (bearerToken.isEmpty() || !bearerToken.startsWith(BEARER)) {
-            requestContext.abortWith(Response
-                    .status(Response.Status.UNAUTHORIZED)
-                    .entity(new FaultDTO("102", "Invalid Authorization token")).build());
-
-        } else {
+        if (bearerToken != null && !bearerToken.isEmpty()) {
 
             /*
              * Token ID
@@ -110,6 +96,22 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
                         .status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity(new FaultDTO("100", "Cannot validate token. Error: " + ex.getLocalizedMessage())).build());
             }
+
+        } else {
+            if (dmz(requestContext)) {
+                // return;
+
+            } else if (bearerToken == null) {
+                requestContext.abortWith(Response
+                        .status(Response.Status.UNAUTHORIZED)
+                        .entity(new FaultDTO("101", "Missing Authorization token")).build());
+
+            } else if (bearerToken.isEmpty() || !bearerToken.startsWith(BEARER)) {
+                requestContext.abortWith(Response
+                        .status(Response.Status.UNAUTHORIZED)
+                        .entity(new FaultDTO("102", "Invalid Authorization token")).build());
+
+            }
         }
     }
 
@@ -132,10 +134,6 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
         String[] service = absolutePath.split("/api");
 
-        if (method.equals("PUT")) {
-            service[1] = service[1].replace("/", "").split("\\d{1,}")[0];
-        }
-
         if (service.length == 1) {
             return true; // root endpoint without '/'
         }
@@ -148,6 +146,10 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true;
         }
 
+        if (method.equals("PUT")) {
+            service[1] = service[1].replace("/", "").split("\\d{1,}")[0];
+        }
+
         String serviceKey = service[1];
 
         if ((DMZ_ENDPOINTS.get(serviceKey) != null && DMZ_ENDPOINTS.get(serviceKey).equals(method))
@@ -155,7 +157,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
             return true; // dmz endpoint + operation
         }
 
-        serviceKey = "/" + (service[1].contains("/") ? service[1].split("/")[1] : service[1].contains("/")) + "/*";
+        serviceKey = "/" + (service[1].contains("/") ? service[1].split("/")[1] : service[1]) + "/*";
 
         if (service[1].contains("/") && (DMZ_ENDPOINTS.get(serviceKey) != null && DMZ_ENDPOINTS.get(serviceKey).equals(method))) {
             return true; // dmz endpoint/* + operation
