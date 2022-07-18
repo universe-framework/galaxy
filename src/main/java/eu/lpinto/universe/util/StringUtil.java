@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -77,6 +77,22 @@ public final class StringUtil {
         return sb.toString();
     }
 
+    static public String buildString(final Calendar calendar) {
+        return buildString(calendar, TimeZone.getTimeZone("Europe/Lisbon"));
+    }
+
+    static public String buildString(final Calendar calendar, TimeZone tz) {
+        Calendar aux = (Calendar) calendar.clone();
+        aux.setTimeZone(tz);
+
+        return "" + aux.get(Calendar.YEAR)
+               + "-" + String.format("%02d", aux.get(Calendar.MONTH) + 1)
+               + "-" + String.format("%02d", aux.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /*
+     * To a spacific format
+     */
     static public String toAscii(final String src) {
         return Normalizer
                 .normalize(src, Normalizer.Form.NFD)
@@ -118,6 +134,21 @@ public final class StringUtil {
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    static public String buildStringDate(final Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    static public String buildStringTime(final Calendar calendar) {
+        return buildString(calendar, TimeZone.getTimeZone("Europe/Lisbon"));
+    }
+
+    static public String buildStringTime(final Calendar calendar, TimeZone tz) {
+        Calendar aux = (Calendar) calendar.clone();
+        aux.setTimeZone(tz);
+
+        return "" + aux.get(Calendar.HOUR_OF_DAY) + ":" + aux.get(Calendar.MINUTE);
     }
 
     /*
