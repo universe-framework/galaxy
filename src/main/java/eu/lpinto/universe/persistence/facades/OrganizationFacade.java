@@ -45,6 +45,15 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
             return findByUserAllInCompany((Long) options.get("user"));
         }
 
+        if (options.containsKey("god")) {
+            if (options.containsKey("enable") && ((Boolean) options.get("enable"))) {
+                return findAllForGOD();
+
+            } else {
+                return findForGOD();
+            }
+        }
+
         return findByUser((Long) options.get("user"));
     }
 
@@ -65,6 +74,22 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         savedOrganization.setFull(true);
 
         return savedOrganization;
+    }
+
+    private List<Organization> findForGOD() {
+        return getEntityManager()
+                .createQuery("SELECT o"
+                             + " FROM Organization o"
+                             + " WHERE o.enable = true", Organization.class)
+                .getResultList();
+    }
+
+    private List<Organization> findAllForGOD() {
+        return getEntityManager()
+                .createQuery("SELECT o"
+                             + " FROM Organization o"
+                             + " WHERE o.deleted IS NULL", Organization.class)
+                .getResultList();
     }
 
     private List<Organization> findByUser(final Long userID) {

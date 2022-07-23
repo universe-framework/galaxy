@@ -116,15 +116,19 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     public void doUpdate(final Long userID, final Map<String, Object> options, Organization newOrganization) {
 
         try {
-            Organization organization = super.doRetrieve(userID, options, newOrganization.getId());
+            Organization savedOrganization = super.doRetrieve(userID, options, newOrganization.getId());
 
-            if (organization.getWorkers() != null && !organization.getWorkers().isEmpty()) {
-                newOrganization.setWorkers(organization.getWorkers());
+            if (savedOrganization.getWorkers() != null && !savedOrganization.getWorkers().isEmpty()) {
+                newOrganization.setWorkers(savedOrganization.getWorkers());
             }
 
-            newOrganization.setExternalID(organization.getExternalID());
-            newOrganization.setEnable(true);
-            newOrganization.setCompany(organization.getCompany());
+            if (newOrganization.getEnable() == null) {
+                newOrganization.setEnable(savedOrganization.getEnable());
+            }
+
+            newOrganization.setExternalID(savedOrganization.getExternalID());
+            newOrganization.setCompany(savedOrganization.getCompany());
+
             super.doUpdate(userID, options, newOrganization);
 
         } catch (UnknownIdException | PreConditionException ex) {

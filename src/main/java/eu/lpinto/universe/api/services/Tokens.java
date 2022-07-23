@@ -6,6 +6,7 @@ import eu.lpinto.universe.controllers.TokenController;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Token;
 import eu.lpinto.universe.persistence.entities.User;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -50,7 +51,7 @@ public class Tokens extends AbstractService {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response logout(@HeaderParam("userID") final Long userID, @PathParam("id") final String id) {
+    public Response logout(@HeaderParam(UniverseFundamentals.AUTH_USER_ID) final Long userID, @PathParam("id") final String id) {
         try {
             controller.logout(userID, id);
 

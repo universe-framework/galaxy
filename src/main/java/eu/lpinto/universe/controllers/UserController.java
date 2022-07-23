@@ -103,6 +103,8 @@ public class UserController extends AbstractControllerCRUD<User> {
                 entity.setPassword(savedUser.getPassword());
             }
 
+            entity.setGod(savedUser.getGod());
+
         } catch (UnknownIdException ex) {
             throw new PreConditionException("id", "Unknown");
         }

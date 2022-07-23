@@ -46,7 +46,7 @@ public class ImageService extends AbstractServiceCRUD<eu.lpinto.universe.persist
     public void uploadFile(@Suspended final AsyncResponse asyncResponse,
                            final @Context UriInfo uriInfo,
                            final @Context HttpHeaders headers,
-                           final @HeaderParam("userID") Long userID,
+                           final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                            final @HeaderParam("U-Entity") String entityName,
                            final @HeaderParam("U-Entity-Id") Long entityID,
                            MultipartFormDataInput input) throws IOException {

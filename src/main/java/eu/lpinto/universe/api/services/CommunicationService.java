@@ -2,6 +2,7 @@ package eu.lpinto.universe.api.services;
 
 import eu.lpinto.universe.api.dto.Contact;
 import eu.lpinto.universe.persistence.facades.EmailFacade;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -30,7 +31,7 @@ public class CommunicationService extends AbstractService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void create(@Suspended final AsyncResponse asyncResponse,
-                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                        final @HeaderParam("Accept-Language") String locale,
                        final Contact contact) {
         asyncResponse.resume(doCreate(userID, locale, contact));

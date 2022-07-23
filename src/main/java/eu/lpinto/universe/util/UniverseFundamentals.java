@@ -42,6 +42,10 @@ public final class UniverseFundamentals {
     static public final String REST_SERVICES_PACKAGE = "eu.lpinto.universe.api.services";
     static public final String REST_FILTERS_PACKAGE = "eu.lpinto.universe.api.filters";
 
+    /* Auth */
+    static public final String AUTH_USER_ID = "userID";
+    static public final String AUTH_GOD = "GOD";
+
     /*
      * Errors
      */

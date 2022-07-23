@@ -207,9 +207,11 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         /*
          * User has permissions
          */
-        Boolean permission = assertPremissionsUpdateDelete(userID, savedEntity);
-        if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
-            throw new PermissionDeniedException();
+        if (!options.containsKey("god")) {
+            Boolean permission = assertPremissionsUpdateDelete(userID, savedEntity);
+            if (permission == null || false == permission) {
+                throw new PermissionDeniedException();
+            }
         }
 
         if (entity instanceof AbstractEntity) {

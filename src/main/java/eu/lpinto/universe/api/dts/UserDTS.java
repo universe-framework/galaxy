@@ -19,7 +19,8 @@ public class UserDTS extends AbstractDTS<User, eu.lpinto.universe.api.dto.User> 
                 entity.getCurrentAvatar() == null ? null : entity.getCurrentAvatar().getUrl(),
                 entity.getEmail(),
                 null, // passowrd is never released
-                entity.getPreferences()
+                entity.getPreferences(),
+                entity.getGod()
         );
     }
 

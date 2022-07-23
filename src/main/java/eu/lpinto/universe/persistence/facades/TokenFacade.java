@@ -28,12 +28,11 @@ public class TokenFacade extends AbstractFacade<Token> {
     /*
      * DAO
      */
-
     @Override
     public List<Token> find(Map<String, Object> options) throws PreConditionException {
         throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
-    
+
     public Token findByToken(final String token) {
         try {
             Token session = getEntityManager().createQuery(
@@ -42,18 +41,6 @@ public class TokenFacade extends AbstractFacade<Token> {
                     .getSingleResult();
 
             return session;
-        } catch (NoResultException ex) {
-            return null;
-        }
-    }
-
-    public Long getUserID(final String token) {
-        try {
-            return getEntityManager().createQuery(
-                    "SELECT u.id FROM User u INNER JOIN Token t ON t.user.id = u.id WHERE t.token = :token", Long.class)
-                    .setParameter("token", token)
-                    .getSingleResult();
-
         } catch (NoResultException ex) {
             return null;
         }

@@ -86,6 +86,18 @@ public class UserFacade extends AbstractFacade<User> {
         }
     }
 
+    public User getbyToken(final String token) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT new User(u.id, u.god) FROM User u INNER JOIN Token t ON t.user.id = u.id WHERE t.token = :token", User.class)
+                    .setParameter("token", token)
+                    .getSingleResult();
+
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
     @Override
     public void remove(User entity) {
         throw new IllegalArgumentException("Users cannot be deleted");

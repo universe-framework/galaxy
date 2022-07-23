@@ -24,17 +24,39 @@ public class CompanyFacade extends AbstractFacade<Company> {
 
     @Override
     public List<Company> find(Map<String, Object> options) {
-        Long userID = (Long) options.get("user");
-
-        if (userID.equals(33L)) {
+        if (options.containsValue("god")) {
             return getEntityManager()
-                    .createQuery("select c from Company c"
+                    .createQuery("select c"
+                                 + " FROM Company c"
                                  + " WHERE c.deleted is null", Company.class)
                     .getResultList();
-        }
 
+        } else if (options.containsKey("god")) {
+            return findForGOD();
+
+        } else {
+
+            Long userID = (Long) options.get("user");
+
+            return getByUser(userID);
+        }
+    }
+
+    /*
+     * Find
+     */
+    private List<Company> findForGOD() {
         return getEntityManager()
-                .createQuery("select c from Company c"
+                .createQuery("select c"
+                             + " FROM Company c"
+                             + " WHERE c.deleted is null", Company.class)
+                .getResultList();
+    }
+
+    private List<Company> getByUser(Long userID) {
+        return getEntityManager()
+                .createQuery("select c"
+                             + " FROM Company c"
                              + " WHERE c.deleted is null"
                              + " AND c.id IN (SELECT e.company.id from Employee e WHERE e.user.id = :userID)", Company.class)
                 .setParameter("userID", userID)

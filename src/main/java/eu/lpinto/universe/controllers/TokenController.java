@@ -67,10 +67,6 @@ public class TokenController {
         facade.remove(session);
     }
 
-    public Long validate(final String token) {
-        return facade.getUserID(token);
-    }
-
     public TokenFacade getFacade() {
         return facade;
     }

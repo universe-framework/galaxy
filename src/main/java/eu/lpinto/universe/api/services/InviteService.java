@@ -6,6 +6,7 @@ import eu.lpinto.universe.controllers.InviteController;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Invite;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ejb.Asynchronous;
@@ -45,14 +46,14 @@ public class InviteService extends AbstractServiceCRUD<Invite, eu.lpinto.univers
                      final @Context UriInfo uriInfo,
                      final @Context HttpHeaders headers,
                      final @QueryParam(value = "code") String code,
-                     final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+                     final @HeaderParam(value = UniverseFundamentals.AUTH_USER_ID) Long userID) throws PreConditionException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
         try {
             /* Setup */
             buildOptions(options, uriInfo, userID);
-            
-            if(code != null) {
+
+            if (code != null) {
                 options.put("code", code);
             }
 

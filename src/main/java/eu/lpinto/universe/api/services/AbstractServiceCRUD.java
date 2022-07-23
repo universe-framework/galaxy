@@ -10,6 +10,7 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
 import eu.lpinto.universe.persistence.entities.UniverseEntity;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +54,16 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public void find(@Suspended final AsyncResponse asyncResponse,
                      final @Context UriInfo uriInfo,
                      final @Context HttpHeaders headers,
-                     final @HeaderParam(value = "userID") Long userID) throws PreConditionException {
+                     final @HeaderParam(value = UniverseFundamentals.AUTH_USER_ID) Long userID,
+                     final @HeaderParam(value = UniverseFundamentals.AUTH_GOD) Boolean god) throws PreConditionException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
         try {
             /* Setup */
             buildOptions(options, uriInfo, userID);
+            if (god != null && god) {
+                options.put("god", god);
+            }
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());
@@ -96,7 +101,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public void createList(@Suspended final AsyncResponse asyncResponse,
                            final @Context UriInfo uriInfo,
                            final @Context HttpHeaders headers,
-                           final @HeaderParam("userID") Long userID,
+                           final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                            final @HeaderParam("Accept-Language") String locale,
                            final List<D> dto) {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
@@ -152,7 +157,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public void create(@Suspended final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
                        final @Context HttpHeaders headers,
-                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                        final @HeaderParam("Accept-Language") String locale,
                        final D dto) {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
@@ -209,7 +214,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             final AsyncResponse asyncResponse,
                          final @Context UriInfo uriInfo,
                          final @Context HttpHeaders headers,
-                         final @HeaderParam("userID") Long userID,
+                         final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                          final @PathParam("id") Long id) throws PermissionDeniedException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
@@ -267,7 +272,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
                        final @Context HttpHeaders headers,
-                       final @HeaderParam("userID") Long userID,
+                       final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                        final @PathParam("id") Long id,
                        final D dto) {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
@@ -329,7 +334,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             final AsyncResponse asyncResponse,
                        final @Context UriInfo uriInfo,
                        final @Context HttpHeaders headers,
-                       final @HeaderParam("userID") Long userID, @PathParam("id")
+                       final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID, @PathParam("id")
                        final Long id) {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 

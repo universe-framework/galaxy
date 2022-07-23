@@ -45,6 +45,8 @@ public class User extends AbstractEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Employee> employees;
 
+    private Boolean god;
+
     /*
      * Properties
      */
@@ -87,6 +89,11 @@ public class User extends AbstractEntity implements Serializable {
         super(firstName);
         this.email = email;
         this.password = password;
+    }
+
+    public User(Long id, Boolean sysAdmin) {
+        super(id);
+        this.god = sysAdmin;
     }
 
     public User(Image currentAvatar, List<Image> avatars, List<Token> tokens, List<Employee> employees,
@@ -188,5 +195,13 @@ public class User extends AbstractEntity implements Serializable {
 
     public void setPreferences(String preferences) {
         this.preferences = preferences;
+    }
+
+    public Boolean getGod() {
+        return god;
+    }
+
+    public void setGod(Boolean god) {
+        this.god = god;
     }
 }

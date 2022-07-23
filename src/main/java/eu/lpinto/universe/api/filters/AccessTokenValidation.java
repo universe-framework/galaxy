@@ -1,7 +1,8 @@
 package eu.lpinto.universe.api.filters;
 
 import eu.lpinto.universe.api.dto.FaultDTO;
-import eu.lpinto.universe.controllers.TokenController;
+import eu.lpinto.universe.persistence.entities.User;
+import eu.lpinto.universe.persistence.facades.UserFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +28,13 @@ import javax.ws.rs.ext.Provider;
 public class AccessTokenValidation implements ContainerRequestFilter, ContainerResponseFilter {
 
     @EJB
-    private TokenController tokenController;
+    private UserFacade userFacade;
+
+    public static final String USER_ID = UniverseFundamentals.AUTH_USER_ID;
+    public static final String GOD = UniverseFundamentals.AUTH_GOD;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER = "Bearer ";
-    private static final String USER_ID = "userID";
     private static final String ADMIN_ID = "0";
     private static final Map<String, String> DMZ_ENDPOINTS;
 
@@ -79,15 +82,16 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
                 } else {
 
-                    Long userID = tokenController.validate(TokenID);
+                    User user = userFacade.getbyToken(TokenID);
 
-                    if (userID == null) {
+                    if (user == null) {
                         requestContext.abortWith(Response
                                 .status(Response.Status.UNAUTHORIZED)
                                 .entity(new FaultDTO("104", "Unknown access token")).build());
 
                     } else {
-                        requestContext.getHeaders().add(USER_ID, String.valueOf(userID));
+                        requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
+                        requestContext.getHeaders().add(GOD, String.valueOf(user.getGod()));
                     }
                 }
 
