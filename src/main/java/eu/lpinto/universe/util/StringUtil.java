@@ -90,6 +90,25 @@ public final class StringUtil {
                + "-" + String.format("%02d", aux.get(Calendar.DAY_OF_MONTH));
     }
 
+    static public String buildString(final Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    static public String buildStringTime(final Calendar calendar) {
+        return buildStringTime(calendar, TimeZone.getTimeZone("Europe/Lisbon"));
+    }
+
+    static public String buildStringTime(final Calendar calendar, TimeZone tz) {
+        Calendar aux = (Calendar) calendar.clone();
+        aux.setTimeZone(tz);
+
+        return "" + aux.get(Calendar.HOUR_OF_DAY) + ":" + aux.get(Calendar.MINUTE);
+    }
+
+    static public String buildStringTime(final Date date) {
+        return new SimpleDateFormat("hh:mm").format(date);
+    }
+
     /*
      * To a spacific format
      */
@@ -134,21 +153,6 @@ public final class StringUtil {
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    static public String buildStringDate(final Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
-    }
-
-    static public String buildStringTime(final Calendar calendar) {
-        return buildString(calendar, TimeZone.getTimeZone("Europe/Lisbon"));
-    }
-
-    static public String buildStringTime(final Calendar calendar, TimeZone tz) {
-        Calendar aux = (Calendar) calendar.clone();
-        aux.setTimeZone(tz);
-
-        return "" + aux.get(Calendar.HOUR_OF_DAY) + ":" + aux.get(Calendar.MINUTE);
     }
 
     /*
