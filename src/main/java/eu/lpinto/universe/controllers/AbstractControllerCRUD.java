@@ -278,4 +278,8 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
      * Getters / Setters
      */
     protected abstract Facade<E> getFacade();
+
+    protected String getEntityName() {
+        return entityName;
+    }
 }

@@ -1,7 +1,9 @@
 package eu.lpinto.universe.controllers;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
-import eu.lpinto.universe.persistence.facades.EmailFacade;
+import eu.lpinto.universe.persistence.entities.Email;
+import eu.lpinto.universe.persistence.entities.EmailConfig;
+import eu.lpinto.universe.persistence.facades.EmailPlugin;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,9 +43,6 @@ public class EmailController {
     private final String validationStrEN;
 
     @EJB
-    private EmailFacade facade;
-
-    @EJB
     private UserFacade userFacade;
 
     public EmailController() {
@@ -74,7 +73,7 @@ public class EmailController {
         }
     }
 
-    public void recoverPassword(final String lang, final String email, String newPassword) throws PreConditionException {
+    public void recoverPassword(final String lang, final String recipientEmail, String newPassword) throws PreConditionException {
         String content;
         String subject;
 
@@ -95,15 +94,14 @@ public class EmailController {
             content = passwordRestStrEN;
         }
 
-        content = content.replaceAll("\\$\\{userName\\}", userFacade.findByEmail(email).getName());
-        content = content.replaceAll("\\$\\{email\\}", email);
+        content = content.replaceAll("\\$\\{userName\\}", userFacade.findByEmail(recipientEmail).getName());
+        content = content.replaceAll("\\$\\{email\\}", recipientEmail);
         content = content.replaceAll("\\$\\{password\\}", newPassword);
 
-        facade.sendEmail(email, subject, content);
-
+        new EmailPlugin(new EmailConfig()).send(new Email(recipientEmail, subject, content));
     }
 
-    public void sendValidation(final String lang, final String destinationEmail, final String userName, final String url) {
+    public void sendValidation(final String lang, final String recipient, final String userName, final String url) throws PreConditionException {
         String content;
         String subject;
 
@@ -127,11 +125,11 @@ public class EmailController {
         content = content.replaceAll("\\$\\{userName\\}", userName);
         content = content.replaceAll("\\$\\{url\\}", url);
 
-        facade.sendEmail(destinationEmail, subject, content);
+        new EmailPlugin(new EmailConfig()).send(new Email(recipient, subject, content));
     }
 
-    public void sendInvite(final String lang, final String destinationEmail, final String userName,
-                           final String creatorName, final String organizationName, final String inviteUrl) {
+    public void sendInvite(final String lang, final String recipient, final String userName,
+                           final String creatorName, final String organizationName, final String inviteUrl) throws PreConditionException {
         String content;
         String subject;
 
@@ -157,7 +155,7 @@ public class EmailController {
         content = content.replaceAll("\\$\\{organizationName\\}", organizationName);
         content = content.replaceAll("\\$\\{inviteUrl\\}", inviteUrl);
 
-        facade.sendEmail(destinationEmail, subject, content);
+        new EmailPlugin(new EmailConfig()).send(new Email(recipient, subject, content));
     }
 
 }

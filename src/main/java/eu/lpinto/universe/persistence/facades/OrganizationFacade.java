@@ -34,7 +34,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     @Override
     public List<Organization> find(final Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("company")) {
-            return findByCompany((Long) options.get("company"), (Long) options.get("user"));
+            return findByCompanyAndUser((Long) options.get("company"), (Long) options.get("user"));
         }
 
         if (options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
@@ -99,11 +99,12 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .getResultList();
     }
 
-    private List<Organization> findByCompany(Long companyID, Long userID) {
+    private List<Organization> findByCompanyAndUser(Long companyID, Long userID) {
         return getEntityManager()
                 .createQuery("SELECT o FROM Organization o"
                              + " INNER JOIN Worker w ON w.organization.id = o.id"
-                             + " WHERE o.company.id = :companyID AND o.enable=1"
+                             + " WHERE o.company.id = :companyID"
+                             + " AND o.enable = 1"
                              + " AND w.employee.user.id = :userID", Organization.class)
                 .setParameter("companyID", companyID)
                 .setParameter("userID", userID)
@@ -125,8 +126,20 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
 
     private List<Organization> findByUserAllInCompany(final Long userID) {
         return getEntityManager()
-                .createQuery("SELECT o FROM Organization o WHERE o.company.id IN (SELECT e.company.id FROM Employee e WHERE e.user.id = :userID) AND o.enable = true", Organization.class)
+                .createQuery("SELECT o FROM Organization o"
+                             + " WHERE o.company.id IN (SELECT e.company.id FROM Employee e WHERE e.user.id = :userID)"
+                             + " AND o.enable is true", Organization.class)
                 .setParameter("userID", userID)
+                .getResultList();
+    }
+
+    public List<Organization> getCompany(final Long companyID) {
+        return getEntityManager()
+                .createQuery("SELECT o"
+                             + " FROM Organization o"
+                             + " WHERE o.enable is true"
+                             + " AND  o.company_id = :id", Organization.class)
+                .setParameter("id", companyID)
                 .getResultList();
     }
 

@@ -5,7 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import eu.lpinto.universe.persistence.facades.EmailFacade;
+import eu.lpinto.universe.controllers.exceptions.PreConditionException;
+import eu.lpinto.universe.persistence.entities.Email;
+import eu.lpinto.universe.persistence.entities.EmailConfig;
+import eu.lpinto.universe.persistence.facades.EmailPlugin;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,7 +26,6 @@ import org.slf4j.LoggerFactory;
 public class StatusEmail implements Runnable {
 
     static private final Logger LOGGER = LoggerFactory.getLogger(StatusEmail.class);
-    static private EmailFacade facade = new EmailFacade();
 
     /*
      * Public send Exeption Email
@@ -91,6 +93,17 @@ public class StatusEmail implements Runnable {
                                + exDescription.className + ": " + exDescription.message + "</a>"
                                + "</h2>\n<p>" + exDescription.line + "</p>\n</div>\n", // header
                                sb.toString()); // message
+    }
+
+    /*
+     * Do Send
+     */
+    static public void sendEmail(final String subject, final String emailMessage) {
+        try {
+            new EmailPlugin(new EmailConfig()).send(new Email(UniverseFundamentals.SUPPORT_ADDR, subject, emailMessage));
+        } catch (PreConditionException ex) {
+            //           
+        }
     }
 
     /*
@@ -172,13 +185,6 @@ public class StatusEmail implements Runnable {
         sendEmail(subject, emailBody);
 
         return emailBody;
-    }
-
-    /*
-     * Do Send
-     */
-    static public void sendEmail(final String subject, final String emailMessage) {
-        facade.sendEmail(subject, emailMessage);
     }
 
     /*
