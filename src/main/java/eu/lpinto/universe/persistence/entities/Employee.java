@@ -57,6 +57,14 @@ public class Employee extends AbstractEntity implements Serializable {
         this.profile = profile;
     }
 
+    public Employee(Long externalID, Company company, EmployeeProfile profile, User user, String name) {
+        super(name);
+        this.externalID = externalID;
+        this.company = company;
+        this.profile = profile;
+        this.user = user;
+    }
+
     public Employee(Long externalID, Company company, EmployeeProfile profile, User user, String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
         this.externalID = externalID;

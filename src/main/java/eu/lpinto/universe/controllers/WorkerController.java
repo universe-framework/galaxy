@@ -4,11 +4,17 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
+import eu.lpinto.universe.persistence.entities.AbstractEntity;
+import eu.lpinto.universe.persistence.entities.Employee;
+import eu.lpinto.universe.persistence.entities.EmployeeProfile;
 import eu.lpinto.universe.persistence.entities.Organization;
+import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.entities.Worker;
 import eu.lpinto.universe.persistence.entities.WorkerProfile;
+import eu.lpinto.universe.persistence.facades.EmployeeFacade;
 import eu.lpinto.universe.persistence.facades.Facade;
 import eu.lpinto.universe.persistence.facades.OrganizationFacade;
+import eu.lpinto.universe.persistence.facades.UserFacade;
 import eu.lpinto.universe.persistence.facades.WorkerFacade;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
@@ -32,6 +38,12 @@ import org.apache.poi.ss.usermodel.Row;
  */
 @Stateless
 public class WorkerController extends AbstractControllerCRUD<Worker> {
+
+    @EJB
+    private UserFacade userFacade;
+
+    @EJB
+    private EmployeeFacade employeeFacade;
 
     @EJB
     private WorkerFacade facade;
@@ -59,7 +71,30 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
         if (newWorker.getEnable() == null) {
             newWorker.setEnable(true);   //DEFAULT (Enable = true)
         }
-        newWorker.setExternalID(newWorker.getId());
+
+        if (newWorker.getId() != null) {
+            newWorker.setExternalID(newWorker.getId());
+            newWorker.setId(null);
+        }
+
+        if (newWorker.getEmployee() == null) {
+            User user = null;
+            if (newWorker.getEmail() != null) {
+                user = new User(newWorker.getEmail(), newWorker.getEmail(), newWorker.getName());
+                userFacade.create(user);
+            }
+
+            Organization savedOrganization = organizationFacade.retrieve(newWorker.getOrganization().getId());
+
+            Employee newEmployee = new Employee(newWorker.getExternalID(),
+                                                savedOrganization.getCompany(),
+                                                newWorker.getRole() == WorkerProfile.ADMIN ? EmployeeProfile.ADMIN : EmployeeProfile.WORKER,
+                                                user,
+                                                AbstractEntity.buildCode(savedOrganization.getName(), newWorker.getName()));
+
+            employeeFacade.create(newEmployee);
+            newWorker.setEmployee(newEmployee);
+        }
 
         super.doCreate(userID, options, newWorker);
 
