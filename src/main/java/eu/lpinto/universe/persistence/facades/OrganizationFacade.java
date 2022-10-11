@@ -143,6 +143,15 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .getResultList();
     }
 
+    public Boolean hasFeature(final Long organizationID, final Long featureID) {
+        return getEntityManager().createNativeQuery("SELECT o.id FROM Organization_Feature o"
+                                                    + " WHERE o.organization_id = :organizationID"
+                                                    + " AND o.feature_id = :featureID")
+                .setParameter("organizationID", organizationID)
+                .setParameter("featureID", featureID)
+                .getSingleResult() != null;
+    }
+
     public Long getCompanyID(final Long id) {
         return getEntityManager()
                 .createQuery("SELECT o.company.id FROM Organization o WHERE o.id = :id", Long.class)
