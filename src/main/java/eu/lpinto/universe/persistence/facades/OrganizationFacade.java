@@ -35,26 +35,27 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     public List<Organization> find(final Map<String, Object> options) throws PreConditionException {
         if (options.containsKey("company")) {
             return findByCompanyAndUser((Long) options.get("company"), (Long) options.get("user"));
-        }
 
-        if (options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
+        } else if (options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
             return findBySiblings((Long) options.get("organization"), (Long) options.get("user"));
-        }
 
-        if (options.containsKey("companyOrgs")) {
+        } else if (options.containsKey("companyOrgs")) {
             return findByUserAllInCompany((Long) options.get("user"));
-        }
 
-        if (options.containsKey("god")) {
+        } else if (options.containsKey("god")) {
             if (options.containsKey("enable") && ((Boolean) options.get("enable"))) {
                 return findAllForGOD();
 
             } else {
                 return findForGOD();
             }
-        }
 
-        return findByUser((Long) options.get("user"));
+        } else if (options.containsKey("remoteAddr")) {
+            return findByUser((Long) options.get("user"));
+
+        } else {
+            return findByUser((Long) options.get("user"));
+        }
     }
 
     public List<Organization> findAllByUser(final Long userID) {
@@ -96,6 +97,18 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         return getEntityManager()
                 .createQuery("SELECT o FROM Organization o WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.enable = true AND w.employee.user.id = :userID) AND o.enable = true", Organization.class)
                 .setParameter("userID", userID)
+                .getResultList();
+    }
+
+    private List<Organization> findByUserIp(final Long userID, final String remoteAddr) {
+        return getEntityManager()
+                .createQuery("SELECT o "
+                             + "FROM Organization o"
+                             + " WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.enable = true AND w.employee.user.id = :userID)"
+                             + " AND o.enable = true"
+                             + " AND o.ip is null OR o.ip = :remoteAddr", Organization.class)
+                .setParameter("userID", userID)
+                .setParameter("remoteAddr", remoteAddr)
                 .getResultList();
     }
 

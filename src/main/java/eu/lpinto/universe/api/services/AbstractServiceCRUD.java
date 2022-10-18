@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Asynchronous;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
@@ -54,6 +55,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     public void find(@Suspended final AsyncResponse asyncResponse,
                      final @Context UriInfo uriInfo,
                      final @Context HttpHeaders headers,
+                     final @Context HttpServletRequest inRequest,
                      final @HeaderParam(value = UniverseFundamentals.AUTH_USER_ID) Long userID,
                      final @HeaderParam(value = UniverseFundamentals.AUTH_GOD) Boolean god) throws PreConditionException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
@@ -64,6 +66,8 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             if (god != null && god) {
                 options.put("god", god);
             }
+
+            options.put("remoteAddr", inRequest.getRemoteAddr());
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());
