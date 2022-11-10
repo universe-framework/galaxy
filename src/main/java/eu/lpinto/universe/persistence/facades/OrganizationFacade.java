@@ -106,7 +106,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                              + "FROM Organization o"
                              + " WHERE o.id IN (SELECT w.organization.id FROM Worker w WHERE w.enable = true AND w.employee.user.id = :userID)"
                              + " AND o.enable = true"
-                             + " AND o.ip is null OR o.ip = :remoteAddr", Organization.class)
+                             + " AND (o.ip is null OR o.ip = :remoteAddr)", Organization.class)
                 .setParameter("userID", userID)
                 .setParameter("remoteAddr", remoteAddr)
                 .getResultList();
