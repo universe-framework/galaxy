@@ -51,7 +51,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
             }
 
         } else if (options.containsKey("remoteAddr")) {
-            return findByUser((Long) options.get("user"));
+            return findByUserIp((Long) options.get("user"), (String) options.get("remoteAddr"));
 
         } else {
             return findByUser((Long) options.get("user"));

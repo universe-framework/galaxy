@@ -10,7 +10,7 @@
 
     <artifactId>galaxy</artifactId>
     <packaging>ejb</packaging>
-    <version>2.5.32-SNAPSHOT</version>
+    <version>2.5.32</version>
 
     <name>Universe Galaxy</name>
 

@@ -42,6 +42,8 @@ public class Organization extends AbstractEntity implements Serializable, Univer
 
     private String website;
 
+    private String ip;
+
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
     private List<Worker> workers;
 
