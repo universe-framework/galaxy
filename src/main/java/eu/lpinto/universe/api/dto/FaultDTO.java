@@ -31,7 +31,7 @@ public class FaultDTO implements Serializable {
      */
     @Override
     public String toString() {
-        return "System failed on error: " + this.code + " - " + this.error;
+        return "[" + this.code + "] " + this.error;
     }
 
     /*

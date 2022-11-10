@@ -43,6 +43,7 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
         DMZ_ENDPOINTS.put("", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/", HttpMethod.GET);
+        DMZ_ENDPOINTS.put("/about/you", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/emailValidations", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/features", HttpMethod.GET);
         DMZ_ENDPOINTS.put("/invites", HttpMethod.GET);

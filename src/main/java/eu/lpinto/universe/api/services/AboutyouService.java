@@ -9,20 +9,18 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 /**
  *
  * @author Luis Pinto <code>- luis.pinto@petuniversal.com</code>
  */
-@Path("about-you")
+@Path("about")
 public class AboutyouService extends AbstractService {
 
     @GET
     @Path("you")
     @Asynchronous
-    @Produces(MediaType.TEXT_HTML)
     public void retrieve(@Suspended
             final AsyncResponse asyncResponse,
                          final @Context UriInfo uriInfo,
