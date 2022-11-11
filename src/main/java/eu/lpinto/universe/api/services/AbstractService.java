@@ -145,6 +145,10 @@ public abstract class AbstractService {
     }
 
     protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID) {
+        return buildOptions(options, uriInfo, userID, null);
+    }
+
+    protected Map<String, Object> buildOptions(final Map<String, Object> options, final UriInfo uriInfo, final Long userID, HttpHeaders headers) {
         options.put("startMillis", System.currentTimeMillis());
         options.put("request", UUID.randomUUID().toString());
 
@@ -170,6 +174,29 @@ public abstract class AbstractService {
                 }
             }
         });
+
+        if (headers != null) {
+            MultivaluedMap<String, String> hh = headers.getRequestHeaders();
+            hh.keySet().forEach(key -> {
+                List<String> values = hh.get(key);
+                if (values != null && !values.isEmpty() && values.size() == 1) {
+                    if ("true".equalsIgnoreCase(values.get(0))) {
+                        options.put(key, Boolean.TRUE);
+
+                    } else if ("false".equalsIgnoreCase(values.get(0))) {
+                        options.put(key, Boolean.FALSE);
+
+                    } else {
+                        try {
+                            Long l = Long.valueOf(values.get(0));
+                            options.put(key, l);
+                        } catch (NumberFormatException ex) {
+                            options.put(key, values.get(0));
+                        }
+                    }
+                }
+            });
+        }
 
         options.put("service.start", System.currentTimeMillis());
 

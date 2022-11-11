@@ -62,7 +62,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
         try {
             /* Setup */
-            buildOptions(options, uriInfo, userID);
+            buildOptions(options, uriInfo, userID, headers);
             if (god != null && god) {
                 options.put("god", god);
             }
