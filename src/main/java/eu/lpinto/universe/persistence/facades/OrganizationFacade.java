@@ -2,11 +2,11 @@ package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.Worker;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -62,19 +62,21 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         return findByUser(userID);
     }
 
-    @Override
-    public Organization retrieve(Long id) throws PreConditionException {
-        Organization savedOrganization = super.retrieve(id);
-
-        savedOrganization.setWorkers(getEntityManager()
-                .createQuery("select w from Worker w left join fetch w.organization"
-                             + " where w.organization.id = :organizationID", Worker.class)
-                .setParameter("organizationID", id)
-                .getResultList());
-
-        savedOrganization.setFull(true);
-
-        return savedOrganization;
+    public Organization retrieveAndFilterIP(Long id, String remoteAddr) throws PreConditionException {
+        try {
+            return getEntityManager()
+                    .createQuery("SELECT o"
+                                 + " FROM Organization o"
+                                 + " WHERE o.id = :organizationID"
+                                 + " AND o.enable IS TRUE"
+                                 + " AND o.ip = :remoteAddr",
+                                 Organization.class)
+                    .setParameter("organizationID", id)
+                    .setParameter("remoteAddr", remoteAddr)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            throw new PreConditionException("Organization", "has IP Control");
+        }
     }
 
     private List<Organization> findForGOD() {

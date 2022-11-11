@@ -67,7 +67,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
                 options.put("god", god);
             }
 
-            options.put("remoteAddr", inRequest.getRemoteAddr());
+            options.put("remoteAddr", inRequest.getHeader("X-Forwarded-For") != null ? inRequest.getHeader("X-Forwarded-For") : inRequest.getRemoteAddr());
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());
@@ -218,6 +218,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             final AsyncResponse asyncResponse,
                          final @Context UriInfo uriInfo,
                          final @Context HttpHeaders headers,
+                         final @Context HttpServletRequest inRequest,
                          final @HeaderParam(UniverseFundamentals.AUTH_USER_ID) Long userID,
                          final @PathParam("id") Long id) throws PermissionDeniedException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
@@ -226,6 +227,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
 
             /* Setup */
             buildOptions(options, uriInfo, userID);
+            options.put("remoteAddr", inRequest.getHeader("X-Forwarded-For") != null ? inRequest.getHeader("X-Forwarded-For") : inRequest.getRemoteAddr());
 
             /* Log request */
             logRequest(uriInfo, options, currentMethod());

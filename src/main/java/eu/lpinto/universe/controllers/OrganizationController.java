@@ -48,6 +48,11 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
      * Public methods
      */
     @Override
+    public Organization doRetrieve(Long userID, Map<String, Object> options, Long id) throws UnknownIdException, PreConditionException {
+        return getFacade().retrieveAndFilterIP(id, (String) options.get("remoteAddr"));
+    }
+
+    @Override
     public void doCreate(final Long userID, final Map<String, Object> options, Organization newOrganization) throws PreConditionException, UnknownIdException, PermissionDeniedException {
 
         /*
