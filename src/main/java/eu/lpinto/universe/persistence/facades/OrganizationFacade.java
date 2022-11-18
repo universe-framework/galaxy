@@ -69,7 +69,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                                  + " FROM Organization o"
                                  + " WHERE o.id = :organizationID"
                                  + " AND o.enable IS TRUE"
-                                 + " AND o.ip = :remoteAddr",
+                                 + " AND (o.ip = NULL OR o.ip = :remoteAddr)",
                                  Organization.class)
                     .setParameter("organizationID", id)
                     .setParameter("remoteAddr", remoteAddr)
