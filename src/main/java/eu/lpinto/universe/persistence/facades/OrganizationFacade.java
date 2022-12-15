@@ -153,7 +153,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .createQuery("SELECT o"
                              + " FROM Organization o"
                              + " WHERE o.enable is true"
-                             + " AND  o.company_id = :id", Organization.class)
+                             + " AND o.company.id = :id", Organization.class)
                 .setParameter("id", companyID)
                 .getResultList();
     }
