@@ -58,7 +58,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                 /*
                  * By Organization
                  */
-                return findByOrganization(organizationID);
+                return findByOrganizationAndEnable(organizationID);
             }
         }
 
@@ -67,8 +67,35 @@ public class WorkerFacade extends AbstractFacade<Worker> {
 
     public List<Worker> findByOrganization(final Long organizationID) {
         List<Worker> workers = getEntityManager().createQuery(
-                "SELECT w FROM Worker w WHERE w.organization.id = :organizationID AND w.enable = true", Worker.class)
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.id = :organizationID",
+                Worker.class)
                 .setParameter("organizationID", organizationID)
+                .getResultList();
+
+        return workers;
+    }
+
+    public List<Worker> findByOrganizationAndEnable(final Long organizationID) {
+        List<Worker> workers = getEntityManager().createQuery(
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.id = :organizationID"
+                + "   AND w.enable = true", Worker.class)
+                .setParameter("organizationID", organizationID)
+                .getResultList();
+
+        return workers;
+    }
+
+    public List<Worker> findByCompany(final Long companyID) {
+        List<Worker> workers = getEntityManager().createQuery(
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.company.id = :companyID",
+                Worker.class)
+                .setParameter("companyID", companyID)
                 .getResultList();
 
         return workers;
@@ -76,11 +103,33 @@ public class WorkerFacade extends AbstractFacade<Worker> {
 
     public List<Worker> findByOrganizationAndUser(final Long organizationID, final Long userID) {
         List<Worker> workers = getEntityManager().createQuery(
-                "SELECT w FROM Worker w WHERE w.organization.id = :organizationID AND w.enable = true AND w.employee.user.id = :userID", Worker.class)
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.id = :organizationID"
+                + " AND w.enable = true"
+                + " AND w.employee.user.id = :userID",
+                Worker.class)
                 .setParameter("organizationID", organizationID)
                 .setParameter("userID", userID)
                 .getResultList();
 
         return workers;
+    }
+
+    public Worker retrieve(final Long organizationID, final Long userID) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT w"
+                    + " FROM Worker w"
+                    + " WHERE w.organization.id = :organizationID"
+                    + " AND w.enable = true"
+                    + " AND w.employee.user.id = :userID",
+                    Worker.class)
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("userID", userID)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 }

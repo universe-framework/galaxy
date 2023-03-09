@@ -61,16 +61,18 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
     }
 
-    public Employee retrieve(final Long companyID, final Long personID) {
+    public Employee retrieve(final Long companyID, final Long userID) {
         try {
-            Employee companyPeople = getEntityManager()
-                    .createQuery("SELECT employee FROM Employee employee "
-                                 + "WHERE employee.company.id = :companyID AND employee.person.id = :personID", Employee.class)
+            return getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE employee.company.id = :companyID"
+                    + "   AND employee.user.id = :userID",
+                    Employee.class)
                     .setParameter("companyID", companyID)
-                    .setParameter("PpersonID", personID)
+                    .setParameter("userID", userID)
                     .getSingleResult();
 
-            return companyPeople;
         } catch (NoResultException ex) {
             return null;
         }
@@ -125,9 +127,13 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
     /*
      * Helpers
      */
-    private List<Employee> getByCompany(final Long companyID) {
+    public List<Employee> getByCompany(final Long companyID) {
         try {
-            List<Employee> companyPeople = getEntityManager().createQuery("SELECT employee FROM Employee employee WHERE employee.company.id = :companyID", Employee.class)
+            List<Employee> companyPeople = getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE employee.company.id = :companyID",
+                    Employee.class)
                     .setParameter("companyID", companyID)
                     .getResultList();
 
@@ -137,7 +143,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         }
     }
 
-    private List<Employee> getByCompanyAndProfiles(final Long companyID, final String profile) {
+    public List<Employee> getByCompanyAndProfiles(final Long companyID, final String profile) {
         List<EmployeeProfile> profiles;
         if ("staff".equals(profile)) {
             profiles = Arrays.asList(EmployeeProfile.ADMIN, EmployeeProfile.WORKER);
@@ -147,7 +153,12 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         }
 
         try {
-            List<Employee> companyPeople = getEntityManager().createQuery("SELECT employee FROM Employee employee WHERE  employee.company.id = :companyID AND employee.profile in :profiles", Employee.class)
+            List<Employee> companyPeople = getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE employee.company.id = :companyID"
+                    + "   AND employee.profile in :profiles",
+                    Employee.class)
                     .setParameter("companyID", companyID)
                     .setParameter("profiles", profiles)
                     .getResultList();
@@ -158,16 +169,34 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         }
     }
 
-    private List<Employee> getByCompanyAndUser(final Long companyID, final Long userID) {
+    public List<Employee> getByUser(final Long userID) {
         try {
-            List<Employee> companyPeople = getEntityManager()
-                    .createQuery("SELECT employee FROM Employee employee"
-                                 + " WHERE employee.company.id = :companyID AND employee.user.id = :userID", Employee.class)
+            return getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE "
+                    + "employee.user.id = :userID",
+                    Employee.class)
+                    .setParameter("userID", userID)
+                    .getResultList();
+
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public List<Employee> getByCompanyAndUser(final Long companyID, final Long userID) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE employee.company.id = :companyID"
+                    + "   AND employee.user.id = :userID",
+                    Employee.class)
                     .setParameter("companyID", companyID)
                     .setParameter("userID", userID)
                     .getResultList();
 
-            return companyPeople;
         } catch (NoResultException ex) {
             return null;
         }
@@ -175,12 +204,16 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
 
     public List<Employee> getByCompanyAndExternalID(final Long companyID, final String externalID) {
         try {
-            List<Employee> companyPeople = getEntityManager().createQuery("SELECT employee FROM Employee employee WHERE (employee.externalID = :externalID AND employee.company.id = :companyID)", Employee.class)
+            return getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE (employee.externalID = :externalID"
+                    + "   AND employee.company.id = :companyID)",
+                    Employee.class)
                     .setParameter("companyID", companyID)
                     .setParameter("externalID", externalID)
                     .getResultList();
 
-            return companyPeople;
         } catch (NoResultException ex) {
             return null;
         }

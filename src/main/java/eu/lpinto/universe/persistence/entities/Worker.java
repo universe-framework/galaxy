@@ -36,7 +36,7 @@ public class Worker extends AbstractEntity implements Serializable {
 
     @Enumerated(EnumType.ORDINAL)
     private WorkerProfile role;
-    
+
     private String color;
 
     /*
@@ -59,8 +59,24 @@ public class Worker extends AbstractEntity implements Serializable {
         this.role = role;
     }
 
+    public Worker(Worker other) {
+        super(other.getName(), null, null, null, null, null);
+        this.professionalLetterNumber = other.professionalLetterNumber;
+        this.birthdate = other.birthdate;
+        this.organization = other.organization;
+        this.employee = other.employee;
+        this.enable = other.enable;
+        this.externalID = other.externalID;
+        this.address = other.address;
+        this.phone = other.phone;
+        this.mobilePhone = other.mobilePhone;
+        this.email = other.email;
+        this.role = other.role;
+        this.color = other.color;
+    }
+
     public Worker(Integer professionalLetterNumber, Calendar birthdate, Organization organization, Employee employee,
-                  Boolean enable, Long externalID, String address, String phone, String mobilePhone, String email, 
+                  Boolean enable, Long externalID, String address, String phone, String mobilePhone, String email,
                   WorkerProfile role, String color,
                   String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
         super(name, creator, created, updater, updated, id);
