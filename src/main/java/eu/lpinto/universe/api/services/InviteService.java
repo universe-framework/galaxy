@@ -15,8 +15,8 @@ import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -44,12 +44,13 @@ public class InviteService extends AbstractServiceCRUD<Invite, eu.lpinto.univers
      * Creates a dupplicate but is necessray for now because of the code param
      */
     @GET
+    @Path("codes/{code}")
     @Asynchronous
     @Produces(value = MediaType.APPLICATION_JSON)
     public void find(@Suspended final AsyncResponse asyncResponse,
                      final @Context UriInfo uriInfo,
                      final @Context HttpHeaders headers,
-                     final @QueryParam(value = "code") String code,
+                     final @PathParam(value = "code") String code,
                      final @HeaderParam(value = UniverseFundamentals.AUTH_USER_ID) Long userID) throws PreConditionException {
         Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
 
