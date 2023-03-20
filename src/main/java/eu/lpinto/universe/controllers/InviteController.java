@@ -65,6 +65,11 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
 
         if (savedUser == null) {
             // Never seen before, create
+            Invite retrieveByEmail = facade.retrieveByEmail(invitedEmail);
+            if (retrieveByEmail != null) {
+                facade.remove(retrieveByEmail);
+            }
+
             invite(invite, savedOrganization, userID, options);
 
         } else {
@@ -87,16 +92,6 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
                 }
             }
         }
-
-        /*
-         * Preconditions
-         */
-        Invite retrieveByEmail = facade.retrieveByEmail(invitedEmail);
-        if (retrieveByEmail != null) {
-            facade.remove(retrieveByEmail);
-        }
-
-        invite(invite, savedOrganization, userID, options);
     }
 
     private void createWorker(Organization savedOrganization, Employee savedEmployee, User savedUser, Invite invite, final Long userID, final Map<String, Object> options) throws UnknownIdException, PreConditionException, PermissionDeniedException {
