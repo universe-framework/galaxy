@@ -122,7 +122,6 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                     "SELECT w"
                     + " FROM Worker w"
                     + " WHERE w.organization.id = :organizationID"
-                    + " AND w.enable = true"
                     + " AND w.employee.user.id = :userID",
                     Worker.class)
                     .setParameter("organizationID", organizationID)
