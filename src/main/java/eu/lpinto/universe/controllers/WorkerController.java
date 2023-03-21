@@ -1,5 +1,6 @@
 package eu.lpinto.universe.controllers;
 
+import eu.lpinto.universe.api.util.Digest;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
@@ -80,7 +81,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
         if (newWorker.getEmployee() == null) {
             User user = null;
             if (newWorker.getEmail() != null) {
-                user = new User(newWorker.getEmail(), newWorker.getEmail(), newWorker.getName());
+                user = new User(newWorker.getEmail(), Digest.getSHA(newWorker.getAddress()), newWorker.getName());
                 userFacade.create(user);
             }
 
@@ -171,10 +172,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
      */
     @Override
     public Boolean assertPremissionsCreate(Long userID, Worker entity) throws PermissionDeniedException {
-        if (entity.getId() == null && userID != null) {
-            return true;
-        }
-        throw new PermissionDeniedException();
+        return true;
     }
 
     @Override

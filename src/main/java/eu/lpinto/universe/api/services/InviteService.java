@@ -17,6 +17,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -40,6 +41,48 @@ public class InviteService extends AbstractServiceCRUD<Invite, eu.lpinto.univers
         super(InviteDTS.T);
     }
 
+    @GET
+    @Asynchronous
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public void find(@Suspended final AsyncResponse asyncResponse,
+                     final @Context UriInfo uriInfo,
+                     final @Context HttpHeaders headers,
+                     final @QueryParam(value = "code") String code,
+                     final @HeaderParam(value = UniverseFundamentals.AUTH_USER_ID) Long userID) throws PreConditionException {
+        Map<String, Object> options = new HashMap<>(10 + uriInfo.getQueryParameters().size());
+
+        try {
+            /* Setup */
+            buildOptions(options, uriInfo, userID);
+
+            if (code != null) {
+                options.put("code", code);
+            }
+
+            /* Log request */
+            logRequest(uriInfo, options, currentMethod());
+
+            /* Body */
+            Response result = doFind(options);
+
+            /* Log response */
+            options.put("service.end", System.currentTimeMillis());
+            logResponse(uriInfo, headers, options, currentMethod(), result.getEntity());
+
+            /* return */
+            asyncResponse.resume(result);
+
+        } catch (PermissionDeniedException ex) {
+            getLogger().error(ex.getMessage(), ex);
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(forbidden((Long) options.get("user")));
+
+        } catch (RuntimeException ex) {
+            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+            asyncResponse.resume(noContent());
+        }
+    }
+
     /*
      * Creates a dupplicate but is necessray for now because of the code param
      */
@@ -47,7 +90,7 @@ public class InviteService extends AbstractServiceCRUD<Invite, eu.lpinto.univers
     @Path("codes/{code}")
     @Asynchronous
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void find(@Suspended final AsyncResponse asyncResponse,
+    public void code(@Suspended final AsyncResponse asyncResponse,
                      final @Context UriInfo uriInfo,
                      final @Context HttpHeaders headers,
                      final @PathParam(value = "code") String code,
