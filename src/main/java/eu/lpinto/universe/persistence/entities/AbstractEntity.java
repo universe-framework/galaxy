@@ -119,7 +119,7 @@ public abstract class AbstractEntity implements UniverseEntity {
     @Override
     public boolean equals(final Object other) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(other instanceof AbstractEntity)) {
+        if(!(other instanceof AbstractEntity)) {
             return false;
         }
 
@@ -213,8 +213,6 @@ public abstract class AbstractEntity implements UniverseEntity {
     }
 
     public void setDeleted(final Calendar deleted) {
-        assertNotNull(deleted);
-
         this.deleted = deleted;
     }
 
@@ -222,19 +220,19 @@ public abstract class AbstractEntity implements UniverseEntity {
      * Protected helpers
      */
     protected void assertNotNull(final List<Object> field) {
-        if (field == null || field.isEmpty()) {
+        if(field == null || field.isEmpty()) {
             throw new IllegalArgumentException("Cannot set field with null or empty List");
         }
     }
 
     protected void assertNotNull(final String field) {
-        if (field == null || field.isEmpty()) {
+        if(field == null || field.isEmpty()) {
             throw new IllegalArgumentException("Cannot set field with null or empty String");
         }
     }
 
     protected void assertNotNull(final Object field) {
-        if (field == null) {
+        if(field == null) {
             throw new IllegalArgumentException("Cannot set field with null");
         }
     }
