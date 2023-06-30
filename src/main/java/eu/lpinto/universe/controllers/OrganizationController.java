@@ -59,11 +59,11 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
          * Preconditions
          */
         final String key = "user";
-        if (false == options.containsKey(key)) {
+        if(false == options.containsKey(key)) {
             throw new UnexpectedException("Missing userID");
         }
 
-        if (newOrganization.getCompany() == null || newOrganization.getCompany().getId() == null) {
+        if(newOrganization.getCompany() == null || newOrganization.getCompany().getId() == null) {
             throw new UnexpectedException("Missing company id");
         }
 
@@ -72,7 +72,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
          */
         Company savedCompany = companyFacade.retrieve(newOrganization.getCompany().getId());
 
-        if (savedCompany == null) {
+        if(savedCompany == null) {
             throw new PreConditionException("company", "unknown");
         }
 
@@ -80,13 +80,13 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
 
         Employee currentEmployee = null;
 
-        for (Employee employee : employees) {
-            if (userID.equals(employee.getUser().getId())) {
+        for(Employee employee : employees) {
+            if(employee.getUser() != null && userID.equals(employee.getUser().getId())) {
                 currentEmployee = employee;
             }
         }
 
-        if (currentEmployee == null) {
+        if(currentEmployee == null) {
             throw new PreConditionException("organization.company", "User is not a employee");
         }
 
@@ -95,7 +95,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         /*
          * Creates a new Organization
          */
-        if (newOrganization instanceof UniverseEntity) {
+        if(newOrganization instanceof UniverseEntity) {
             Organization organizationEntity = (Organization) newOrganization;
 
             Calendar newNow = options.get("now") == null ? new GregorianCalendar() : (Calendar) options.get("now");
@@ -123,11 +123,11 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
         try {
             Organization savedOrganization = super.doRetrieve(userID, options, newOrganization.getId());
 
-            if (savedOrganization.getWorkers() != null && !savedOrganization.getWorkers().isEmpty()) {
+            if(savedOrganization.getWorkers() != null && !savedOrganization.getWorkers().isEmpty()) {
                 newOrganization.setWorkers(savedOrganization.getWorkers());
             }
 
-            if (newOrganization.getEnable() == null) {
+            if(newOrganization.getEnable() == null) {
                 newOrganization.setEnable(savedOrganization.getEnable());
             }
 
@@ -136,7 +136,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
 
             super.doUpdate(userID, options, newOrganization);
 
-        } catch (UnknownIdException | PreConditionException ex) {
+        } catch(UnknownIdException | PreConditionException ex) {
             Logger.getLogger(OrganizationController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -149,7 +149,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
             savedOrganization.setEnable(false);
             savedOrganization.setCompany(organization.getCompany());
             super.doUpdate(userID, options, savedOrganization);
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             Logger.getLogger(OrganizationController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -159,7 +159,7 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
      */
     @Override
     public Boolean assertPremissionsCreate(Long userID, Organization entity) throws PermissionDeniedException {
-        if (entity.getId() == null && userID != null) {
+        if(entity.getId() == null && userID != null) {
             return true;
         }
         throw new PermissionDeniedException();
@@ -174,12 +174,12 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     public Boolean assertPremissionsUpdateDelete(Long userID, Organization entity) throws PermissionDeniedException {
         try {
             Organization savedOrganization = super.doRetrieve(userID, new HashMap<>(0), entity.getId());
-            if (savedOrganization.getEnable() == true) {
+            if(savedOrganization.getEnable() == true) {
                 return true;
             } else {
                 throw new PermissionDeniedException();
             }
-        } catch (UnknownIdException | PreConditionException ex) {
+        } catch(UnknownIdException | PreConditionException ex) {
             Logger.getLogger(OrganizationController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
