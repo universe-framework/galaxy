@@ -29,9 +29,7 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getTown(),
                     entity.getCountry(),
                     ImageDTS.toApiID(entity.getSelectedAvatar()),
-                    CompanyDTS.toApiID(entity.getParent()),
-                    AbstractDTS.toApiID(entity.getChildren()),
-                    ImageDTS.toApiID(entity.getAvatars())
+                    CompanyDTS.toApiID(entity.getParent())
             );
 
         } else {
@@ -45,8 +43,6 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                     entity.getZip(),
                     entity.getTown(),
                     entity.getCountry(),
-                    null,
-                    null,
                     null,
                     null
             );
@@ -74,16 +70,6 @@ public class CompanyDTS extends AbstractDTS<Company, eu.lpinto.universe.api.dto.
                            dto.getTown(),
                            dto.getCountry(),
                            ImageDTS.T.toDomain(dto.getAvatar()),
-                           CompanyDTS.T.toDomain(dto.getParent()),
-                           null,
-                           null,
-                           null,
-                           dto.getId(),
-                           dto.getName(),
-                           UserDTS.T.toDomain(dto.getCreator()),
-                           dto.getCreated(),
-                           UserDTS.T.toDomain(dto.getUpdater()),
-                           dto.getUpdated(),
-                           dto.getDeleted());
+                           CompanyDTS.T.toDomain(dto.getParent()));
     }
 }

@@ -2,7 +2,6 @@ package eu.lpinto.universe.persistence.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import javax.persistence.*;
 
@@ -66,10 +65,7 @@ public class Company extends AbstractEntity implements Serializable {
 
     public Company(String phone, String facebook, String email, String vatNumber, String customField,
                    String street, String zip, String town, String country,
-                   Image selectedAvatar, Company parent,
-                   List<Company> children, List<Image> avatars, List<Employee> employees,
-                   Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
-        super(id, name, creator, created, updater, updated, deleted);
+                   Image selectedAvatar, Company parent) {
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
@@ -81,9 +77,6 @@ public class Company extends AbstractEntity implements Serializable {
         this.country = country;
         this.selectedAvatar = selectedAvatar;
         this.parent = parent;
-        this.children = children;
-        this.avatars = avatars;
-        this.employees = employees;
     }
 
 
