@@ -41,24 +41,41 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
      */
     @Override
     public List<Employee> find(Map<String, Object> options) throws PreConditionException {
-        if (options != null) {
-            if (options.containsKey("company")) {
-                if (options.containsKey("externalID")) {
+        if(options != null) {
+            if(options.containsKey("company")) {
+                if(options.containsKey("externalID")) {
                     return getByCompanyAndExternalID((Long) options.get("company"), options.get("externalID").toString());
 
-                } else if (options.containsKey("profile")) {
+                } else if(options.containsKey("profile")) {
                     return getByCompanyAndProfiles((Long) options.get("company"), options.get("profile").toString());
 
-                } else if (options.containsKey("me") && (Boolean) options.get("me")) {
+                } else if(options.containsKey("me") && (Boolean) options.get("me")) {
                     return getByCompanyAndUser((Long) options.get("company"), (Long) options.get("user"));
 
                 } else {
                     return getByCompany((Long) options.get("company"));
                 }
             }
+
+            return getMine((Long) options.get("user"));
         }
 
-        throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
+        throw new AssertionError("This should never happen");
+    }
+
+    public List<Employee> getMine(final Long userID) {
+        try {
+            return getEntityManager().createQuery(
+                    "SELECT employee"
+                    + " FROM Employee employee"
+                    + " WHERE employee.user.id = :userID",
+                    Employee.class)
+                    .setParameter("userID", userID)
+                    .getResultList();
+
+        } catch(NoResultException ex) {
+            return null;
+        }
     }
 
     public Employee retrieve(final Long companyID, final Long userID) {
@@ -73,7 +90,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .setParameter("userID", userID)
                     .getSingleResult();
 
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -85,33 +102,33 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
         Company company = new Company();
         Person person = new Person();
 
-        if (newEmployee.getCompany() != null) {
-            if (newEmployee.getCompany().getId() != null) {
+        if(newEmployee.getCompany() != null) {
+            if(newEmployee.getCompany().getId() != null) {
                 Long companyID = newEmployee.getCompany().getId();
                 company = companyFacade.retrieve(companyID);
             }
         }
 
-        if (newEmployee.getId() != null) {
+        if(newEmployee.getId() != null) {
             savedEmployee = retrieve(newEmployee.getId());
         }
 
-        if (savedEmployee == null) {
+        if(savedEmployee == null) {
             throw new IllegalArgumentException("There is no Employee with that id");
         }
-        if (company == null) {
+        if(company == null) {
             throw new IllegalArgumentException("There is no Company with that id");
         }
-        if (person == null) {
+        if(person == null) {
             throw new IllegalArgumentException("There is no Person with that id");
         }
 
-        if (savedEmployee.getCompany() != null) {
+        if(savedEmployee.getCompany() != null) {
             newEmployee.setCompany(savedEmployee.getCompany());
         }
 
         //The code below is to get the name of the employee with that id since the name doesnt come down
-        if (savedEmployee.getName() != null) {
+        if(savedEmployee.getName() != null) {
             String name = savedEmployee.getName();
             newEmployee.setName(name);
         }
@@ -138,14 +155,14 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .getResultList();
 
             return companyPeople;
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
 
     public List<Employee> getByCompanyAndProfiles(final Long companyID, final String profile) {
         List<EmployeeProfile> profiles;
-        if ("staff".equals(profile)) {
+        if("staff".equals(profile)) {
             profiles = Arrays.asList(EmployeeProfile.ADMIN, EmployeeProfile.WORKER);
 
         } else {
@@ -164,7 +181,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .getResultList();
 
             return companyPeople;
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -180,7 +197,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .setParameter("userID", userID)
                     .getResultList();
 
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -197,7 +214,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .setParameter("userID", userID)
                     .getResultList();
 
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -214,7 +231,7 @@ public class EmployeeFacade extends AbstractFacade<Employee> {
                     .setParameter("externalID", externalID)
                     .getResultList();
 
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
