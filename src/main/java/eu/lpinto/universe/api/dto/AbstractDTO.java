@@ -45,6 +45,11 @@ public abstract class AbstractDTO extends UniverseDTO implements Serializable {
         this.name = name;
     }
 
+    public AbstractDTO(Long id, String name) {
+        super(id);
+        this.name = name;
+    }
+
     /*
      * Getters/Setters
      */

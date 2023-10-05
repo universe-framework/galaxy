@@ -41,8 +41,7 @@ public class Company extends AbstractDTO implements Serializable {
 
     public Company(String phone, String facebook, String email, String vatNumber, String customField,
                    String street, String zip, String town, String country,
-                   Long avatar, Long parent,
-                   List<Long> children, List<Long> avatars) {
+                   Long avatar, Long parent) {
         this.phone = phone;
         this.facebook = facebook;
         this.email = email;
@@ -54,8 +53,6 @@ public class Company extends AbstractDTO implements Serializable {
         this.country = country;
         this.avatar = avatar;
         this.parent = parent;
-        this.children = children;
-        this.avatars = avatars;
     }
 
     /*

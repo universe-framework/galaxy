@@ -2,9 +2,6 @@ package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.api.dto.OrganizationFeatureDTO;
 import eu.lpinto.universe.persistence.entities.OrganizationFeature;
-import eu.lpinto.universe.api.dts.AbstractDTS;
-import eu.lpinto.universe.api.dts.FeatureDTS;
-import eu.lpinto.universe.api.dts.OrganizationDTS;
 
 /**
  *
