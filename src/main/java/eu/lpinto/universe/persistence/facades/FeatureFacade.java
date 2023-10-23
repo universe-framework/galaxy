@@ -30,15 +30,28 @@ public class FeatureFacade extends AbstractFacade<Feature> {
 
     @Override
     public List<Feature> find(Map<String, Object> options) throws PreConditionException {
-        if (options.containsKey("organization")) {
+        if(options.containsKey("organization")) {
 
             Long orgID = (Long) options.get("organization");
 
-            return getEntityManager().createQuery("SELECT t.feature FROM OrganizationFeature t"
+            return getEntityManager().createQuery("SELECT t.feature"
+                                                  + " FROM OrganizationFeature t"
                                                   + " WHERE t.organization.id = :orgID"
                                                   + " AND t.deleted IS NULL",
                                                   Feature.class)
                     .setParameter("orgID", orgID)
+                    .getResultList();
+
+        } else if(options.containsKey("company")) {
+
+            Long companyID = (Long) options.get("company");
+
+            return getEntityManager().createQuery("SELECT f"
+                                                  + " FROM Feature f"
+                                                  + " WHERE f.organization.company.id = :companyID"
+                                                  + " AND f.deleted IS NULL",
+                                                  Feature.class)
+                    .setParameter("companyID", companyID)
                     .getResultList();
         }
 
