@@ -23,14 +23,16 @@ public class WorkerDTO extends AbstractDTO implements Serializable {
     private String email;
     private Integer role;
     private String color;
+    private Boolean manager;
+    private Boolean undermanager;
 
     public WorkerDTO() {
         super();
     }
 
-    public WorkerDTO(Integer professionalLetterNumber, Calendar birthdate,
-                     Long organization, Long employee, Boolean enable, Long externalID, String address, String phone,
-                     String mobilePhone, String email, Integer role, String color) {
+    public WorkerDTO(Integer professionalLetterNumber, Calendar birthdate, Long organization, Long employee,
+                     Boolean enable, Long externalID, String address, String phone, String mobilePhone, String email,
+                     Integer role, String color, Boolean manager, Boolean undermanager) {
         this.professionalLetterNumber = professionalLetterNumber;
         this.birthdate = birthdate;
         this.organization = organization;
@@ -43,6 +45,8 @@ public class WorkerDTO extends AbstractDTO implements Serializable {
         this.email = email;
         this.role = role;
         this.color = color;
+        this.manager = manager;
+        this.undermanager = undermanager;
     }
 
     public Integer getProfessionalLetterNumber() {
@@ -139,5 +143,21 @@ public class WorkerDTO extends AbstractDTO implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Boolean getManager() {
+        return manager;
+    }
+
+    public void setManager(Boolean manager) {
+        this.manager = manager;
+    }
+
+    public Boolean getUndermanager() {
+        return undermanager;
+    }
+
+    public void setUndermanager(Boolean undermanager) {
+        this.undermanager = undermanager;
     }
 }

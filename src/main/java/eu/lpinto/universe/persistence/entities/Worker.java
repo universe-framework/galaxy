@@ -39,6 +39,10 @@ public class Worker extends AbstractEntity implements Serializable {
 
     private String color;
 
+    private Boolean manager;
+
+    private Boolean undermanager;
+
     /*
      * Constructors
      */
@@ -73,13 +77,13 @@ public class Worker extends AbstractEntity implements Serializable {
         this.email = other.email;
         this.role = other.role;
         this.color = other.color;
+        this.manager = other.manager;
+        this.undermanager = other.undermanager;
     }
 
     public Worker(Integer professionalLetterNumber, Calendar birthdate, Organization organization, Employee employee,
                   Boolean enable, Long externalID, String address, String phone, String mobilePhone, String email,
-                  WorkerProfile role, String color,
-                  String name, User creator, Calendar created, User updater, Calendar updated, Long id) {
-        super(name, creator, created, updater, updated, id);
+                  WorkerProfile role, String color, Boolean manager, Boolean undermanager) {
         this.professionalLetterNumber = professionalLetterNumber;
         this.birthdate = birthdate;
         this.organization = organization;
@@ -92,6 +96,8 @@ public class Worker extends AbstractEntity implements Serializable {
         this.email = email;
         this.role = role;
         this.color = color;
+        this.manager = manager;
+        this.undermanager = undermanager;
     }
 
     /*
@@ -191,5 +197,21 @@ public class Worker extends AbstractEntity implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Boolean getManager() {
+        return manager;
+    }
+
+    public void setManager(Boolean manager) {
+        this.manager = manager;
+    }
+
+    public Boolean getUndermanager() {
+        return undermanager;
+    }
+
+    public void setUndermanager(Boolean undermanager) {
+        this.undermanager = undermanager;
     }
 }

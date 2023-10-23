@@ -1,8 +1,6 @@
 package eu.lpinto.universe.api.dts;
 
 import eu.lpinto.universe.api.dto.WorkerDTO;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.Organization;
 import eu.lpinto.universe.persistence.entities.Worker;
 
 /**
@@ -15,9 +13,9 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
 
     @Override
     protected WorkerDTO buildDTO(Worker entity) {
-        if (entity == null) {
+        if(entity == null) {
             return null;
-        } else if (entity.isFull()) {
+        } else if(entity.isFull()) {
             return new WorkerDTO(
                     entity.getProfessionalLetterNumber(),
                     entity.getBirthdate(),
@@ -30,7 +28,9 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getMobilePhone(),
                     entity.getEmail(),
                     entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getColor()
+                    entity.getColor(),
+                    entity.getManager(),
+                    entity.getUndermanager()
             );
 
         } else {
@@ -46,14 +46,16 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                     entity.getMobilePhone(),
                     entity.getEmail(),
                     entity.getRole() == null ? null : entity.getRole().ordinal(),
-                    entity.getColor()
+                    entity.getColor(),
+                    entity.getManager(),
+                    entity.getUndermanager()
             );
         }
     }
 
     @Override
     public Worker toDomain(Long id) {
-        if (id == null) {
+        if(id == null) {
             return null;
         }
 
@@ -65,8 +67,8 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
         return new Worker(
                 dto.getProfessionalLetterNumber(),
                 dto.getBirthdate(),
-                dto.getOrganization() == null ? null : new Organization(dto.getOrganization()),
-                dto.getEmployee() == null ? null : new Employee(dto.getEmployee()),
+                OrganizationDTS.T.toDomain(dto.getOrganization()),
+                EmployeeDTS.T.toDomain(dto.getEmployee()),
                 dto.getEnable(),
                 dto.getExternalID(),
                 dto.getAddress(),
@@ -75,11 +77,7 @@ public class WorkerDTS extends AbstractDTS<Worker, WorkerDTO> {
                 dto.getEmail(),
                 dto.getRole() == null ? null : eu.lpinto.universe.persistence.entities.WorkerProfile.values()[dto.getRole()],
                 dto.getColor(),
-                dto.getName(),
-                UserDTS.T.toDomain(dto.getCreator()),
-                dto.getCreated(),
-                UserDTS.T.toDomain(dto.getUpdater()),
-                dto.getUpdated(),
-                dto.getId());
+                dto.getManager(),
+                dto.getUndermanager());
     }
 }
