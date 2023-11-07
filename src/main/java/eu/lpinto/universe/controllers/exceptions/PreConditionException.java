@@ -33,9 +33,11 @@ public class PreConditionException extends Exception {
         } else {
             String[] aux = new String[errors.length + 1];
             aux[0] = message;
-            for (int i = 0; i < aux.length; i++) {
-                aux[i] = errors[i - 1];
+
+            for(int i = 0; i < errors.length; i++) {
+                aux[i + 1] = errors[i];
             }
+
             this.errors.put(field, aux);
         }
 
@@ -59,7 +61,7 @@ public class PreConditionException extends Exception {
 
         Iterator<Map.Entry<String, String[]>> it = getErrors().entrySet().iterator();
 
-        while (it.hasNext()) {
+        while(it.hasNext()) {
             Map.Entry<String, String[]> e = it.next();
             sb.append(e.getKey()).append(": ").append(StringUtil.buildString(e.getValue()));
 

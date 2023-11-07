@@ -73,7 +73,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
             return;
         }
 
-        for (T entity : entities) {
+        for(T entity : entities) {
             create(entity);
         }
     }
@@ -142,7 +142,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
 
                 appointmentStartedAfter.setTime(appointmentStartedAfterAux);
                 return appointmentStartedAfter;
-            } catch (ParseException ex) {
+            } catch(ParseException ex) {
                 //
             }
         }
