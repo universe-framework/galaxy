@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.lpinto.universe.util.UniverseProperties;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -30,10 +31,8 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         /* Serialization */
-        mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
         mapper.enable(SerializationFeature.WRAP_EXCEPTIONS);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
@@ -41,9 +40,16 @@ public class JacksonConfigurator implements ContextResolver<ObjectMapper> {
 
         /* Other */
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
 
         mapper.registerModule(new JavaTimeModule());
+
+        /* DEV */
+        if (UniverseProperties.VERSION.indexOf("SNAPSHOT") > 1) {
+            mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+
+        }
     }
 
     @Override
