@@ -27,13 +27,11 @@ public class UserFacade extends AbstractFacade<User> {
     @Override
     public List<User> find(final Map<String, Object> options) {
 
-        /*
-         * By hasClinic
-         */
-        if (options.containsKey("hasClinic")) {
-            Boolean hasClinic = (Boolean) options.get("hasClinic");
+        if (options.containsKey("company")) {
+            return getByCompany((Long) options.get("company"));
 
-            return getByHasClinic(hasClinic);
+        } else if (options.containsKey("hasClinic")) {
+            return getByHasClinic((Boolean) options.get("hasClinic"));
         }
 
         throw new AssertionError("Cannot list all " + getEntityClass().getSimpleName() + ". Please report this!");
@@ -45,7 +43,7 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByName(final String name) {
         try {
             return (User) em.createNamedQuery("User.findByName").setParameter("name", name).getSingleResult();
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -53,7 +51,7 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByEmail(final String email) {
         try {
             return (User) em.createNamedQuery("User.findByEmail").setParameter("email", email).getSingleResult();
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -81,7 +79,7 @@ public class UserFacade extends AbstractFacade<User> {
             }
 
             return users;
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
@@ -93,9 +91,23 @@ public class UserFacade extends AbstractFacade<User> {
                     .setParameter("token", token)
                     .getSingleResult();
 
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
+    }
+
+    public List<User> getByCompany(final Long companyID) {
+        return getEntityManager().createNativeQuery(
+                "SELECT u.* FROM ApplicationUser u INNER JOIN Employee e ON e.user_id = u.id AND e.company_id = :companyID", User.class)
+                .setParameter("companyID", companyID)
+                .getResultList();
+    }
+
+    public List<User> getByCompanyX(final Long companyID) {
+        return getEntityManager().createQuery(
+                "SELECT e.user FROM Employee e WHERE e.company.id = :companyID", User.class)
+                .setParameter("companyID", companyID)
+                .getResultList();
     }
 
     @Override
