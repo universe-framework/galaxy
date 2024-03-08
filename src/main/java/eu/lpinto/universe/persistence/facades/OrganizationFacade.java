@@ -33,24 +33,24 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
      */
     @Override
     public List<Organization> find(final Map<String, Object> options) throws PreConditionException {
-        if (options.containsKey("company")) {
+        if(options.containsKey("company")) {
             return findByCompanyAndUser((Long) options.get("company"), (Long) options.get("user"));
 
-        } else if (options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
+        } else if(options.containsKey("organization") && options.containsKey("siblings") && ((Boolean) options.get("siblings"))) {
             return findBySiblings((Long) options.get("organization"), (Long) options.get("user"));
 
-        } else if (options.containsKey("companyOrgs")) {
+        } else if(options.containsKey("companyOrgs")) {
             return findByUserAllInCompany((Long) options.get("user"));
 
-        } else if (options.containsKey("god")) {
-            if (options.containsKey("enable") && ((Boolean) options.get("enable"))) {
+        } else if(options.containsKey("god")) {
+            if(options.containsKey("enable") && ((Boolean) options.get("enable"))) {
                 return findAllForGOD();
 
             } else {
                 return findForGOD();
             }
 
-        } else if (options.containsKey("remoteAddr")) {
+        } else if(options.containsKey("remoteAddr")) {
             return findByUserIp((Long) options.get("user"), (String) options.get("remoteAddr"));
 
         } else {
@@ -74,7 +74,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                     .setParameter("organizationID", id)
                     .setParameter("remoteAddr", remoteAddr)
                     .getSingleResult();
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             throw new PreConditionException("Organization", "has IP Control");
         }
     }
@@ -159,18 +159,26 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     }
 
     public Boolean hasFeature(final Long organizationID, final Long featureID) {
-        return getEntityManager().createNativeQuery("SELECT o.id FROM Organization_Feature o"
-                                                    + " WHERE o.organization_id = :organizationID"
-                                                    + " AND o.feature_id = :featureID")
-                .setParameter("organizationID", organizationID)
-                .setParameter("featureID", featureID)
-                .getSingleResult() != null;
+        try {
+            return getEntityManager().createNativeQuery("SELECT o.id FROM Organization_Feature o"
+                                                        + " WHERE o.organization_id = :organizationID"
+                                                        + " AND o.feature_id = :featureID")
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("featureID", featureID)
+                    .getSingleResult() != null;
+        } catch(NoResultException ex) {
+            return false;
+        }
     }
 
     public Long getCompanyID(final Long id) {
-        return getEntityManager()
-                .createQuery("SELECT o.company.id FROM Organization o WHERE o.id = :id", Long.class)
-                .setParameter("id", id)
-                .getSingleResult();
+        try {
+            return getEntityManager()
+                    .createQuery("SELECT o.company.id FROM Organization o WHERE o.id = :id", Long.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch(NoResultException ex) {
+            return null;
+        }
     }
 }
