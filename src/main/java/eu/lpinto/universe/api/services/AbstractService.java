@@ -7,6 +7,8 @@ import eu.lpinto.universe.api.util.StatusEmail;
 import eu.lpinto.universe.util.StringUtil;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import javax.ws.rs.core.*;
@@ -38,11 +40,11 @@ public abstract class AbstractService {
      * Helpers
      */
     protected static String firstCause(final Throwable ex) {
-        if (ex.getCause() == null) {
+        if(ex.getCause() == null) {
 
             String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 
-            if (message == null) {
+            if(message == null) {
                 message = ex.getClass().getSimpleName();
             }
 
@@ -50,6 +52,30 @@ public abstract class AbstractService {
 
         } else {
             return firstCause(ex.getCause());
+        }
+    }
+
+    protected static Calendar calendar(final String param) {
+        try {
+            ISO8601DateFormat df = new ISO8601DateFormat();
+
+            Calendar result = Calendar.getInstance();
+            Date afterAux = df.parse(param);
+            result.setTime(afterAux);
+
+            return result;
+
+        } catch(ParseException ex) {
+            return null;
+        }
+    }
+
+    protected static LocalDate localDate(final String param) {
+        try {
+            return LocalDate.parse(param);
+
+        } catch(DateTimeParseException ex) {
+            return null;
         }
     }
 
@@ -119,21 +145,21 @@ public abstract class AbstractService {
         List<String> keys = queryParameters.get(key);
 
         try {
-            if (keys != null && !keys.isEmpty() && keys.size() == 1) {
+            if(keys != null && !keys.isEmpty() && keys.size() == 1) {
                 options.put(key, Long.valueOf(keys.get(0)));
             }
-        } catch (NumberFormatException ex) {
+        } catch(NumberFormatException ex) {
             throw new IllegalArgumentException("Invalid value: [" + keys.get(0) + "] for option: [" + key + "]");
         }
     }
 
     protected void addSKeyCalendar(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
         List<String> keys = queryParameters.get(key);
-        if (keys != null && !keys.isEmpty() && keys.size() == 1) {
+        if(keys != null && !keys.isEmpty() && keys.size() == 1) {
             Calendar startedAfter = Calendar.getInstance();
             try {
                 startedAfter.setTime(new ISO8601DateFormat().parse(keys.get(0)));
-            } catch (ParseException ex) {
+            } catch(ParseException ex) {
                 throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
             }
             options.put(key, startedAfter);
@@ -157,40 +183,40 @@ public abstract class AbstractService {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         queryParameters.keySet().forEach(key -> {
             List<String> values = queryParameters.get(key);
-            if (values != null && !values.isEmpty() && values.size() == 1) {
-                if ("true".equalsIgnoreCase(values.get(0))) {
+            if(values != null && !values.isEmpty() && values.size() == 1) {
+                if("true".equalsIgnoreCase(values.get(0))) {
                     options.put(key, Boolean.TRUE);
 
-                } else if ("false".equalsIgnoreCase(values.get(0))) {
+                } else if("false".equalsIgnoreCase(values.get(0))) {
                     options.put(key, Boolean.FALSE);
 
                 } else {
                     try {
                         Long l = Long.valueOf(values.get(0));
                         options.put(key, l);
-                    } catch (NumberFormatException ex) {
+                    } catch(NumberFormatException ex) {
                         options.put(key, values.get(0));
                     }
                 }
             }
         });
 
-        if (headers != null) {
+        if(headers != null) {
             MultivaluedMap<String, String> hh = headers.getRequestHeaders();
             hh.keySet().forEach(key -> {
                 List<String> values = hh.get(key);
-                if (values != null && !values.isEmpty() && values.size() == 1) {
-                    if ("true".equalsIgnoreCase(values.get(0))) {
+                if(values != null && !values.isEmpty() && values.size() == 1) {
+                    if("true".equalsIgnoreCase(values.get(0))) {
                         options.put(key, Boolean.TRUE);
 
-                    } else if ("false".equalsIgnoreCase(values.get(0))) {
+                    } else if("false".equalsIgnoreCase(values.get(0))) {
                         options.put(key, Boolean.FALSE);
 
                     } else {
                         try {
                             Long l = Long.valueOf(values.get(0));
                             options.put(key, l);
-                        } catch (NumberFormatException ex) {
+                        } catch(NumberFormatException ex) {
                             options.put(key, values.get(0));
                         }
                     }
@@ -210,10 +236,10 @@ public abstract class AbstractService {
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
         String body;
 
-        if (dto == null) {
+        if(dto == null) {
             body = "\"null\"";
 
-        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
+        } else if(dto instanceof Collection && ((Collection) dto).size() > 3) {
             Collection col = (Collection) dto;
             body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
 
@@ -240,10 +266,10 @@ public abstract class AbstractService {
     protected void logResponse(final UriInfo uriInfo, final HttpHeaders headers, final Map<String, Object> options, final String methodName, final Object response) {
         String body;
 
-        if (response == null) {
+        if(response == null) {
             body = "\"null\"";
 
-        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
+        } else if(response instanceof Collection && ((Collection) response).size() > 3) {
             Collection col = (Collection) response;
             body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
         } else {
@@ -252,12 +278,12 @@ public abstract class AbstractService {
 
         Long serviceDuration = null;
         Long controllerDuration = null;
-        if (options != null) {
-            if (options.containsKey("service.start") && options.containsKey("service.end")) {
+        if(options != null) {
+            if(options.containsKey("service.start") && options.containsKey("service.end")) {
                 Long serviceEnd = options.get("service.end") == null ? System.currentTimeMillis() : (Long) options.get("service.end");
                 serviceDuration = (serviceEnd) - (Long) (options.get("service.start"));
             }
-            if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
+            if(options.containsKey("controller.start") && options.containsKey("controller.end")) {
                 controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
             }
         }
@@ -285,9 +311,9 @@ public abstract class AbstractService {
                      body);
 
         Long duration = System.currentTimeMillis() - (Long) options.get("startMillis");
-        if (duration > 10000) {
-            for (Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
-                if (uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
+        if(duration > 10000) {
+            for(Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
+                if(uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
                     return;
                 }
             }
