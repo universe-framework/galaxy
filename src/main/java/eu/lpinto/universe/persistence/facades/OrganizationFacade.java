@@ -171,6 +171,22 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         }
     }
 
+    public Boolean hasSetting(final Long organizationID, final String code) {
+        try {
+            return getEntityManager().createNativeQuery(
+                    "SELECT osb.id"
+                    + " FROM Organization_SettingBoolean osb"
+                    + " INNER JOIN Setting s ON s.id = osb.setting_id"
+                    + " WHERE s.code = :code"
+                    + " AND osb.organization_id = :organizationID")
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("code", code)
+                    .getSingleResult() != null;
+        } catch(NoResultException ex) {
+            return false;
+        }
+    }
+
     public Long getCompanyID(final Long id) {
         try {
             return getEntityManager()
