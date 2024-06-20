@@ -63,7 +63,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
         try {
             /* Setup */
             buildOptions(options, uriInfo, userID, headers);
-            if (god != null && god) {
+            if(god != null && god) {
                 options.put("god", god);
             }
 
@@ -82,12 +82,12 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(forbidden((Long) options.get("user")));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(noContent());
         }
@@ -129,21 +129,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PreConditionException ex) {
-            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+        } catch(PreConditionException ex) {
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(forbidden(userID));
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(unknown(ex.getId()));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
@@ -185,21 +184,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PreConditionException ex) {
-            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
+        } catch(PreConditionException ex) {
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(forbidden(userID));
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(unknown(ex.getId()));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(internalError(ex));
@@ -242,19 +240,18 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PreConditionException ex) {
-            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+        } catch(PreConditionException ex) {
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             asyncResponse.resume(unknown(id));
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(forbidden(userID));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
@@ -262,7 +259,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
     }
 
     public Response doRetrieve(final Long userID, final Long id, final Map<String, Object> options) throws PermissionDeniedException, UnknownIdException, PreConditionException {
-        if (id == null) {
+        if(id == null) {
             return unprocessableEntity(new Errors().addError("entity.id", "Missing id"));
         }
 
@@ -292,10 +289,10 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             logRequest(uriInfo, options, currentMethod(), dto);
 
             /* Preconditions */
-            if (dto.getId() == null) {
+            if(dto.getId() == null) {
                 dto.setId(id);
 
-            } else if (!dto.getId().equals(id)) {
+            } else if(!dto.getId().equals(id)) {
                 asyncResponse.resume(mismatchID(id, dto.getId()));
             }
 
@@ -309,18 +306,18 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PreConditionException ex) {
+        } catch(PreConditionException ex) {
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             asyncResponse.resume(unknown(dto.getId()));
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             asyncResponse.resume(forbidden(userID));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options, dto);
             asyncResponse.resume(internalError(ex));
@@ -362,21 +359,20 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             /* return */
             asyncResponse.resume(result);
 
-        } catch (PreConditionException ex) {
-            StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
+        } catch(PreConditionException ex) {
             asyncResponse.resume(unprocessableEntity(new Errors(ex.getErrors())));
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(unknown(id));
 
-        } catch (PermissionDeniedException ex) {
+        } catch(PermissionDeniedException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(forbidden(userID));
 
-        } catch (RuntimeException ex) {
+        } catch(RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(internalError(ex));
