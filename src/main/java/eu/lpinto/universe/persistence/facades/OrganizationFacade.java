@@ -129,6 +129,10 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     private List<Organization> findBySiblings(Long id, Long userID) throws PreConditionException {
         Organization savedOrganization = super.retrieve(id);
 
+        if(savedOrganization == null || savedOrganization.getCompany() == null) {
+            return null;
+        }
+
         return getEntityManager()
                 .createQuery("SELECT o FROM Organization o INNER JOIN Worker w ON w.organization.id = o.id"
                              + " WHERE o.company.id = :companyID AND o.enable=1 AND o.id <> :organizationID"
@@ -165,6 +169,19 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                                                         + " AND o.feature_id = :featureID")
                     .setParameter("organizationID", organizationID)
                     .setParameter("featureID", featureID)
+                    .getSingleResult() != null;
+        } catch(NoResultException ex) {
+            return false;
+        }
+    }
+
+    public Boolean hasFeatureSales(final Long organizationID) {
+        try {
+            return getEntityManager().createNativeQuery("SELECT o.id FROM Organization_Feature o"
+                                                        + " WHERE o.organization_id = :organizationID"
+                                                        + " AND o.feature_id = :featureID")
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("featureID", 4)
                     .getSingleResult() != null;
         } catch(NoResultException ex) {
             return false;
