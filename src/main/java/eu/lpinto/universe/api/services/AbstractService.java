@@ -179,6 +179,7 @@ public abstract class AbstractService {
         options.put("request", UUID.randomUUID().toString());
 
         options.put("user", userID);
+        options.put("url", uriInfo.getRequestUri());
 
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         queryParameters.keySet().forEach(key -> {
