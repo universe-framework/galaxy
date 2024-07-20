@@ -88,6 +88,7 @@ public abstract class AbstractServiceCRUD<E extends UniverseEntity, D extends Un
             asyncResponse.resume(forbidden((Long) options.get("user")));
 
         } catch(RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
             StatusEmail.sendExceptionEmail(ex, uriInfo, headers, options);
             asyncResponse.resume(noContent());
         }

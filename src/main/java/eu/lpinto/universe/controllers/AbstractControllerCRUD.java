@@ -26,7 +26,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
      * Helpers
      */
     public static int GetCalendarField(final String periodType) {
-        switch (periodType) {
+        switch(periodType) {
             case "d":
                 return Calendar.DAY_OF_MONTH;
             case "w":
@@ -61,7 +61,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         options.put("controller.start", System.currentTimeMillis());
 
         Boolean permission = assertPremissionsRead(userID, null);
-        if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
+        if(false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
@@ -82,7 +82,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         /*
          * Preconditions
          */
-        if (id == null) {
+        if(id == null) {
             throw missingParameter("id");
         }
 
@@ -91,12 +91,12 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
          */
         E result = doRetrieve(userID, options, id);
 
-        if (result == null) {
+        if(result == null) {
             throw new UnknownIdException(entityName, id);
         }
 
         Boolean permission = assertPremissionsRead(userID, result);
-        if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
+        if(false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
@@ -112,7 +112,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
 
     @Override
     public List<E> create(final Long userID, final Map<String, Object> options, final List<E> entities) throws UnknownIdException, PermissionDeniedException, PreConditionException {
-        if (entities == null || entities.isEmpty()) {
+        if(entities == null || entities.isEmpty()) {
             return new ArrayList<>(0);
         }
 
@@ -121,10 +121,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         entities.parallelStream().forEach(entity -> {
             try {
                 E create = create(userID, options, entity);
-                synchronized (result) {
+                synchronized(result) {
                     result.add(create);
                 }
-            } catch (UnknownIdException | PermissionDeniedException | PreConditionException ex) {
+            } catch(UnknownIdException | PermissionDeniedException | PreConditionException ex) {
                 throw new UnexpectedException(ex.getMessage());
             }
         });
@@ -137,11 +137,11 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         options.put("controller.start", System.currentTimeMillis());
 
         Boolean permission = assertPremissionsCreate(userID, entity);
-        if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
+        if(false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
-        if (userID != null && entity instanceof AbstractEntity) {
+        if(userID != null && entity instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
             abstractEntity.setCreator(new User(userID));
         }
@@ -157,10 +157,10 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     }
 
     public void doCreateRepetitions(E entity, Long userID, Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
-        if (entity instanceof Repeatable) {
+        if(entity instanceof Repeatable) {
             Repeatable entityR = (Repeatable) entity;
-            if (entityR.getPeriod() != null && entityR.getPeriodType() != null && entityR.getPeriodUntil() != null
-                && entityR.getRepetitionId() == null) {
+            if(entityR.getPeriod() != null && entityR.getPeriodType() != null && entityR.getPeriodUntil() != null
+               && entityR.getRepetitionId() == null) {
                 Calendar s = entityR.getStart();
                 Calendar e = entityR.getEnd();
 
@@ -169,7 +169,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
                 e = (Calendar) e.clone();
                 e.add(GetCalendarField(entityR.getPeriodType()), entityR.getPeriod());
 
-                while (s.before(entityR.getPeriodUntil())) {
+                while(s.before(entityR.getPeriodUntil())) {
                     Repeatable r = entityR.clone(entityR, s, e);
                     r.setRepetitionId(entity.getId());
                     E aux = (E) r;
@@ -192,7 +192,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
         options.put("controller.start", System.currentTimeMillis());
 
         Long id = entity.getId();
-        if (id == null) {
+        if(id == null) {
             throw missingParameter("id");
         }
 
@@ -200,21 +200,21 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
          * UniverseEntity exists
          */
         E savedEntity = getFacade().retrieve(id);
-        if (savedEntity == null) {
+        if(savedEntity == null) {
             throw new UnknownIdException(entityName, id);
         }
 
         /*
          * User has permissions
          */
-        if (!options.containsKey("god")) {
+        if(!options.containsKey("god")) {
             Boolean permission = assertPremissionsUpdateDelete(userID, savedEntity);
-            if (permission == null || false == permission) {
+            if(permission == null || false == permission) {
                 throw new PermissionDeniedException();
             }
         }
 
-        if (entity instanceof AbstractEntity) {
+        if(entity instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
             abstractEntity.setUpdater(new User(userID));
         }
@@ -231,7 +231,7 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
     public void delete(final Long userID, final Map<String, Object> options, final Long id) throws UnknownIdException, PermissionDeniedException, PreConditionException {
         options.put("controller.start", System.currentTimeMillis());
 
-        if (id == null) {
+        if(id == null) {
             throw missingParameter("id");
         }
 
@@ -239,15 +239,16 @@ public abstract class AbstractControllerCRUD<E extends UniverseEntity> extends A
          * UniverseEntity exists
          */
         E savedEntity = getFacade().retrieve(id);
-        if (savedEntity == null) {
-            throw new UnknownIdException(entityName, id);
+        if(savedEntity == null) {
+            // throw new UnknownIdException(entityName, id);
+            return;
         }
 
         /*
          * User has permissions
          */
         Boolean permission = assertPremissionsUpdateDelete(userID, savedEntity);
-        if (false == isSystemAdmin(userID) && (permission == null || false == permission)) {
+        if(false == isSystemAdmin(userID) && (permission == null || false == permission)) {
             throw new PermissionDeniedException();
         }
 
