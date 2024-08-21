@@ -34,8 +34,10 @@ public class StatusEmail implements Runnable {
                                           final UriInfo uriInfo,
                                           final HttpHeaders headers,
                                           final Map<String, Object> options) {
-        Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options));
-        t.start();
+        if(UniverseFundamentals.DEBUG_LEVEL > 0) {
+            Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options));
+            t.start();
+        }
     }
 
     static public void sendExceptionEmail(final Exception ex,
@@ -43,8 +45,10 @@ public class StatusEmail implements Runnable {
                                           final HttpHeaders headers,
                                           final Map<String, Object> options,
                                           final Object dto) {
-        Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options, dto));
-        t.start();
+        if(UniverseFundamentals.DEBUG_LEVEL > 0) {
+            Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options, dto));
+            t.start();
+        }
     }
 
     static public void sendExceptionEmail(final Exception ex,
@@ -52,8 +56,10 @@ public class StatusEmail implements Runnable {
                                           final Map<String, String> headers,
                                           final Map<String, Object> options,
                                           final Object dto) {
-        Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options, dto));
-        t.start();
+        if(UniverseFundamentals.DEBUG_LEVEL > 0) {
+            Thread t = new Thread(new StatusEmail(ex, uriInfo, headers, options, dto));
+            t.start();
+        }
     }
 
     static private String sendExceptionEmailAux(final Exception ex,
@@ -65,7 +71,7 @@ public class StatusEmail implements Runnable {
 
         ExceptionDescription exDescription = excetionHtmlParagraph(ex);
 
-        if (dto != null) {
+        if(dto != null) {
             sb.append("<div class=\"jumbotron\">\n");
             sb.append("\n<h1>").append(exDescription.className).append(": ").append(exDescription.message).append("</h1>\n");
             sb.append("<p>").append(exDescription.line).append("</p>\n");
@@ -101,8 +107,8 @@ public class StatusEmail implements Runnable {
     static public void sendEmail(final String subject, final String emailMessage) {
         try {
             new EmailPlugin(new EmailConfig()).send(new Email(UniverseFundamentals.SUPPORT_ADDR, subject, emailMessage));
-        } catch (PreConditionException ex) {
-            //           
+        } catch(PreConditionException ex) {
+            //
         }
     }
 
@@ -125,7 +131,7 @@ public class StatusEmail implements Runnable {
         sb.append("<BODY>\n");
         sb.append("<div class=\"container-fluid\">\n");
         sb.append("<div class=\"page-header\">\n");
-        if (UniverseFundamentals.APP_NAME != null) {
+        if(UniverseFundamentals.APP_NAME != null) {
             sb.append("<h1>").append(UniverseFundamentals.APP_NAME).append("</h1>\n");
         }
         sb.append("</div>");
@@ -205,16 +211,16 @@ public class StatusEmail implements Runnable {
         /* Print Exception */
         printWriter.println("\n<h4>Exception: " + ex.getClass().getCanonicalName() + ": " + ex.getMessage() + "</h4>");
         printWriter.println("\n<small>");
-        for (StackTraceElement e : ex.getStackTrace()) {
+        for(StackTraceElement e : ex.getStackTrace()) {
             printWriter.println("\tat " + e.getClassName() + "." + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")<br>");
         }
         printWriter.println("</small>");
 
-        for (Throwable t = ex.getCause(); t != null; t = t.getCause()) {
+        for(Throwable t = ex.getCause(); t != null; t = t.getCause()) {
             printWriter.println("<h4>Caused by: " + t.getClass().getSimpleName() + ": " + t.getMessage() + "</h4>");
 
             printWriter.println("<small>");
-            for (StackTraceElement elem : t.getStackTrace()) {
+            for(StackTraceElement elem : t.getStackTrace()) {
                 printWriter.println("\tat " + elem.getClassName() + "." + elem.getMethodName() + "(" + elem.getFileName() + ":" + elem.getLineNumber() + ")<br>");
             }
             printWriter.println("</small>");
@@ -253,7 +259,7 @@ public class StatusEmail implements Runnable {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             return mapper.writeValueAsString(obj).replace(System.lineSeparator(), System.lineSeparator() + '\t');
-        } catch (JsonProcessingException ex) {
+        } catch(JsonProcessingException ex) {
             LOGGER.error("Cannot serialize object: " + obj);
             return "[cannot serialize]";
         }
@@ -280,7 +286,7 @@ public class StatusEmail implements Runnable {
                        final HttpHeaders headers,
                        final Map<String, Object> options,
                        final Object dto) {
-        if (uriInfo != null && uriInfo.getQueryParameters() != null) {
+        if(uriInfo != null && uriInfo.getQueryParameters() != null) {
             Map<String, String> uriInfoAux = new HashMap<>(uriInfo.getQueryParameters().size());
 
             uriInfo.getQueryParameters().entrySet().forEach((e) -> {
@@ -290,7 +296,7 @@ public class StatusEmail implements Runnable {
             this.uriInfo = uriInfoAux;
         }
 
-        if (headers != null && headers.getRequestHeaders() != null) {
+        if(headers != null && headers.getRequestHeaders() != null) {
             Map<String, String> headersAux = new HashMap<>(headers.getRequestHeaders().size());
             headers.getRequestHeaders().entrySet().forEach((e) -> {
                 headersAux.put(e.getKey(), String.valueOf(e.getValue()));
@@ -321,7 +327,7 @@ public class StatusEmail implements Runnable {
      */
     @Override
     public void run() {
-        if (headers != null && headers.containsKey("Referer") && !headers.get("Referer").contains("localhost") && !headers.get("Referer").contains("dev")) {
+        if(headers != null && headers.containsKey("Referer") && !headers.get("Referer").contains("localhost") && !headers.get("Referer").contains("dev")) {
             sendExceptionEmailAux(ex, uriInfo, headers, options, dto);
         }
     }

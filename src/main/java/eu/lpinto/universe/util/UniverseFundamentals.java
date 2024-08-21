@@ -51,11 +51,12 @@ public final class UniverseFundamentals {
      */
     static public final String ERRORS_EMAIL_ADDR;
     static public final Map<String, String> DO_NOT_TIMEOUT;
+    static public final Integer DEBUG_LEVEL;
 
     static {
-        try (InputStream inputStream = UniverseFundamentals.class.getClassLoader().getResourceAsStream(FILE_PATH);) {
+        try(InputStream inputStream = UniverseFundamentals.class.getClassLoader().getResourceAsStream(FILE_PATH);) {
 
-            if (inputStream == null) {
+            if(inputStream == null) {
                 throw new AssertionError("Missing config file: " + FILE_PATH);
             }
 
@@ -65,16 +66,16 @@ public final class UniverseFundamentals {
             ENV = properties.getProperty("ENVIROMENT");
 
             APP_NAME = properties.getProperty("APP_NAME");
-            if (APP_NAME == null) {
+            if(APP_NAME == null) {
                 throw new AssertionError("Missing property: APP_NAME");
             }
 
             String dmzAux = properties.getProperty("DMZ");
-            if (dmzAux != null) {
+            if(dmzAux != null) {
                 String[] pairs = dmzAux.split(",");
                 DMZ = new HashMap<>(pairs.length);
 
-                for (String pair : pairs) {
+                for(String pair : pairs) {
                     String[] aux = pair.trim().split(":");
                     DMZ.put(aux[0].trim(), aux[1].trim());
                 }
@@ -101,8 +102,8 @@ public final class UniverseFundamentals {
             String folder = properties.getProperty("DATA_STORE_FOLDER");
             String prefix = properties.getProperty("IMAGES_URL");
 
-            if (folder != null || prefix != null) {
-                if (folder == null || prefix == null) {
+            if(folder != null || prefix != null) {
+                if(folder == null || prefix == null) {
                     throw new AssertionError("Bad configuration for avatar properties: DATA_STORE_FOLDER | IMAGES_URL");
                 }
             }
@@ -116,19 +117,22 @@ public final class UniverseFundamentals {
              * Erroes
              */
             ERRORS_EMAIL_ADDR = properties.getProperty("errors_email_addr");
+
             String timeouts = properties.getProperty("do_not_timeout");
             DO_NOT_TIMEOUT = new HashMap<>(5);
-            if (timeouts != null && !timeouts.isEmpty()) {
+            if(timeouts != null && !timeouts.isEmpty()) {
                 String[] pairs = timeouts.split(" ");
 
-                for (String pair : pairs) {
+                for(String pair : pairs) {
                     String[] split = pair.split(":");
 
                     DO_NOT_TIMEOUT.put(split[0], split[1]);
                 }
             }
 
-        } catch (IOException ex) {
+            DEBUG_LEVEL = properties.getProperty("debug_level") == null ? 0 : Integer.valueOf(properties.getProperty("debug_level"));
+
+        } catch(IOException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
