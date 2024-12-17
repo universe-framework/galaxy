@@ -35,17 +35,17 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                     .getResultList();
 
             return clinics;
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }
 
     @Override
     public List<Worker> find(final Map<String, Object> options) throws PreConditionException {
-        if (options.containsKey("organization")) {
+        if(options.containsKey("organization")) {
             Long organizationID = (Long) options.get("organization");
 
-            if (options.containsKey("me")) {
+            if(options.containsKey("me")) {
 
                 /*
                  * By Organization & User
@@ -116,6 +116,20 @@ public class WorkerFacade extends AbstractFacade<Worker> {
         return workers;
     }
 
+    public List<Worker> findByOrganizationAndEmail(final Long organizationID, final String email) {
+        List<Worker> workers = getEntityManager().createQuery(
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.id = :organizationID"
+                + " AND w.email = :email",
+                Worker.class)
+                .setParameter("organizationID", organizationID)
+                .setParameter("email", email)
+                .getResultList();
+
+        return workers;
+    }
+
     public Worker retrieve(final Long organizationID, final Long userID) {
         try {
             return getEntityManager().createQuery(
@@ -127,7 +141,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                     .setParameter("organizationID", organizationID)
                     .setParameter("userID", userID)
                     .getSingleResult();
-        } catch (NoResultException ex) {
+        } catch(NoResultException ex) {
             return null;
         }
     }

@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,34 +65,52 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
     @Override
     public void doCreate(final Long userID, final Map<String, Object> options, Worker newWorker) throws PreConditionException, UnknownIdException, PermissionDeniedException {
 
-        if (newWorker.getOrganization() == null || newWorker.getRole() == null) {
+        String password = newWorker.getAddress();
+        newWorker.setAddress(null);
+        Worker workerAux = newWorker;
+
+        if(newWorker.getOrganization() == null || newWorker.getRole() == null) {
             throw new UnexpectedException("The Worker doesn't have organization or role");
         }
 
-        //Hopi
-        if (newWorker.getEnable() == null) {
-            newWorker.setEnable(true);   //DEFAULT (Enable = true)
+        List<Worker> savedWorkers = facade.findByOrganizationAndEmail(userID, newWorker.getEmail());
+
+        if(savedWorkers == null || savedWorkers.isEmpty()) {
+
+            //Hopi
+            if(newWorker.getEnable() == null) {
+                newWorker.setEnable(true);   //DEFAULT (Enable = true)
+            }
+
+            if(newWorker.getId() != null) {
+                newWorker.setExternalID(newWorker.getId());
+                newWorker.setId(null);
+            }
+
+        } else {
+            Worker savedWorker = savedWorkers.get(0);
+            if(savedWorker.getEnable() == null || savedWorker.getEnable() == false) {
+                savedWorker.setEnable(true);
+            }
+
+            workerAux = savedWorker;
         }
 
-        if (newWorker.getId() != null) {
-            newWorker.setExternalID(newWorker.getId());
-            newWorker.setId(null);
-        }
-
-        if (newWorker.getEmployee() == null) {
+        if(workerAux.getEmployee() == null) {
             User user = null;
-            if (newWorker.getEmail() != null) {
-                user = new User(newWorker.getEmail(), Digest.getSHA(newWorker.getAddress()), newWorker.getName());
+
+            if(workerAux.getEmail() != null) {
+                user = new User(workerAux.getEmail(), Digest.getSHA(password), workerAux.getName());
                 userFacade.create(user);
             }
 
-            Organization savedOrganization = organizationFacade.retrieve(newWorker.getOrganization().getId());
+            Organization savedOrganization = organizationFacade.retrieve(workerAux.getOrganization().getId());
 
-            Employee newEmployee = new Employee(newWorker.getExternalID(),
+            Employee newEmployee = new Employee(workerAux.getExternalID(),
                                                 savedOrganization.getCompany(),
-                                                newWorker.getRole() == WorkerProfile.ADMIN ? EmployeeProfile.ADMIN : EmployeeProfile.WORKER,
+                                                workerAux.getRole() == WorkerProfile.ADMIN ? EmployeeProfile.ADMIN : EmployeeProfile.WORKER,
                                                 user,
-                                                AbstractEntity.buildCode(savedOrganization.getName(), newWorker.getName()));
+                                                AbstractEntity.buildCode(savedOrganization.getName(), workerAux.getName()));
 
             employeeFacade.create(newEmployee);
             newWorker.setEmployee(newEmployee);
@@ -99,7 +118,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
         super.doCreate(userID, options, newWorker);
 
-        if (UniverseFundamentals.IMPORTS_FOLDER != null) {
+        if(UniverseFundamentals.IMPORTS_FOLDER != null) {
 
             String baseDir = UniverseFundamentals.IMPORTS_FOLDER;
 
@@ -108,28 +127,28 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             File src = new File(baseDir + File.separator + "companies" + File.separator
                                 + savedOrganization.getCompany().getId() + File.separator + "employees.xls");
 
-            if (src.exists()) {
-                try (FileInputStream inputFile = new FileInputStream(src)) {
+            if(src.exists()) {
+                try(FileInputStream inputFile = new FileInputStream(src)) {
                     HSSFWorkbook workbook = new HSSFWorkbook(inputFile);
                     HSSFSheet sheet = workbook.getSheetAt(0);
 
                     Iterator<Row> rowIterator = sheet.iterator();
                     rowIterator.next();
-                    while (rowIterator.hasNext()) {
+                    while(rowIterator.hasNext()) {
                         Row row = rowIterator.next();
                         String auxEmail = row.getCell(1).getStringCellValue();
                         Integer role = new Double(row.getCell(2).getNumericCellValue()).intValue();
                         Long organizationID = new Double(row.getCell(3).getNumericCellValue()).longValue();
 
-                        if (newWorker.getEmail().equals(auxEmail) && !newWorker.getOrganization().getId().equals(organizationID)) {
+                        if(newWorker.getEmail().equals(auxEmail) && !newWorker.getOrganization().getId().equals(organizationID)) {
                             Worker w = new Worker(new Organization(organizationID), newWorker.getEmployee(), true, auxEmail, WorkerProfile.values()[role], newWorker.getName());
                             facade.create(w);
                         }
                     }
 
-                } catch (FileNotFoundException ex) {
+                } catch(FileNotFoundException ex) {
                     throw new RuntimeException(ex);
-                } catch (IOException ex) {
+                } catch(IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -147,7 +166,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setOrganization(savedWorker.getOrganization());
             super.doUpdate(userID, options, newWorker);
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             throw new PreConditionException("id", "Unknonwn");
         }
     }
@@ -162,7 +181,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             savedWorker.setRole(newWorker.getRole());
             super.doUpdate(userID, options, savedWorker);
 
-        } catch (UnknownIdException ex) {
+        } catch(UnknownIdException ex) {
             throw new PreConditionException("id", "Unknonwn");
         }
     }
@@ -177,7 +196,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
     @Override
     public Boolean assertPremissionsRead(Long userID, Worker entity) throws PermissionDeniedException {
-        if (userID != null) {
+        if(userID != null) {
             return true;
         } else {
             throw new PermissionDeniedException();
@@ -188,12 +207,12 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
     public Boolean assertPremissionsUpdateDelete(Long userID, Worker entity) throws PermissionDeniedException {
         try {
             Worker savedWorker = super.doRetrieve(userID, new HashMap<>(0), entity.getId());
-            if (savedWorker.getEnable() == true) {
+            if(savedWorker.getEnable() == true) {
                 return true;
             } else {
                 throw new PermissionDeniedException();
             }
-        } catch (UnknownIdException | PreConditionException ex) {
+        } catch(UnknownIdException | PreConditionException ex) {
             Logger.getLogger(WorkerController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;

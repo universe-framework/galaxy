@@ -15,6 +15,7 @@ import eu.lpinto.universe.persistence.facades.EmployeeFacade;
 import eu.lpinto.universe.persistence.facades.InviteFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import eu.lpinto.universe.persistence.facades.WorkerFacade;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -63,28 +64,32 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         Company savedCompany = savedOrganization.getCompany();
         User savedUser = userFacade.findByEmail(invitedEmail);
 
-        if (savedUser == null) {
-            // Never seen before, create
-            Invite retrieveByEmail = facade.retrieveByEmail(invitedEmail);
-            if (retrieveByEmail != null) {
-                facade.remove(retrieveByEmail);
-            }
+        if(savedUser == null) {
+            List<Worker> savedWorkers = workerFacade.findByOrganizationAndEmail(invite.getOrganization().getId(), invitedEmail);
+            if(savedWorkers == null || savedWorkers.isEmpty()) {
 
-            invite(invite, savedOrganization, userID, options);
+                // Never seen before, create
+                Invite retrieveByEmail = facade.retrieveByEmail(invitedEmail);
+                if(retrieveByEmail != null) {
+                    facade.remove(retrieveByEmail);
+                }
+
+                invite(invite, savedOrganization, userID, options);
+            }
 
         } else {
             // User exists
             Employee savedEmployee = employeeFacade.retrieve(savedCompany.getId(), savedUser.getId());
 
-            if (savedEmployee == null) {
-                createEmployee(savedCompany, invite, savedUser, userID, options);
+            if(savedEmployee == null) {
+                savedEmployee = createEmployee(savedCompany, invite, savedUser, userID, options);
                 createWorker(savedOrganization, savedEmployee, savedUser, invite, userID, options);
 
             } else {
                 // Employee already exists
                 Worker savedWorker = workerFacade.retrieve(savedOrganization.getId(), savedUser.getId());
 
-                if (savedWorker == null) {
+                if(savedWorker == null) {
                     createWorker(savedOrganization, savedEmployee, savedUser, invite, userID, options);
 
                 } else {
@@ -95,20 +100,21 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
     }
 
     private void createWorker(Organization savedOrganization, Employee savedEmployee, User savedUser, Invite invite, final Long userID, final Map<String, Object> options) throws UnknownIdException, PreConditionException, PermissionDeniedException {
-        Worker newWorker = new Worker(savedOrganization, savedEmployee, true, savedUser.getEmail(), invite.getRole(), savedUser.getEmail());
+        Worker newWorker = new Worker(savedOrganization, savedEmployee, true, savedUser.getEmail(), invite.getRole(), savedUser.getName());
         workerController.doCreate(userID, options, newWorker);
     }
 
-    private void createEmployee(Company savedCompany, Invite invite, User savedUser, final Long userID, final Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
+    private Employee createEmployee(Company savedCompany, Invite invite, User savedUser, final Long userID, final Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
         Employee newEmployee = new Employee(savedCompany, WorkerProfile.ADMIN.equals(invite.getRole()) ? EmployeeProfile.ADMIN : EmployeeProfile.WORKER, savedUser);
         employeeController.doCreate(userID, options, newEmployee);
+        return newEmployee;
     }
 
     private void invite(Invite invite, Organization savedOrganization, final Long userID, final Map<String, Object> options) throws PreConditionException, PermissionDeniedException, UnknownIdException {
         /*
-        * Body
+         * Body
          */
-        if (invite.getName() == null) {
+        if(invite.getName() == null) {
             invite.setName(savedOrganization.getName(), invite.getEmail());
         }
 
