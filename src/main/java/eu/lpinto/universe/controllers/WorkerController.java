@@ -73,7 +73,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             throw new UnexpectedException("The Worker doesn't have organization or role");
         }
 
-        List<Worker> savedWorkers = facade.findByOrganizationAndEmail(userID, newWorker.getEmail());
+        List<Worker> savedWorkers = facade.findByOrganizationAndEmail(newWorker.getOrganization().getId(), newWorker.getEmail());
 
         if(savedWorkers == null || savedWorkers.isEmpty()) {
 
