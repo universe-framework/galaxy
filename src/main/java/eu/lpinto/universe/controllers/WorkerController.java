@@ -5,18 +5,8 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.EmployeeFacade;
-import eu.lpinto.universe.persistence.facades.Facade;
-import eu.lpinto.universe.persistence.facades.OrganizationFacade;
-import eu.lpinto.universe.persistence.facades.UserFacade;
-import eu.lpinto.universe.persistence.facades.WorkerFacade;
+import eu.lpinto.universe.persistence.entities.*;
+import eu.lpinto.universe.persistence.facades.*;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -52,6 +43,9 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
     @EJB
     private OrganizationFacade organizationFacade;
+
+    @EJB
+    private OrganizationFeatureFacade organizationFeatureFacade;
 
     public WorkerController() {
         super(Worker.class.getCanonicalName());
@@ -114,6 +108,25 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
             employeeFacade.create(newEmployee);
             newWorker.setEmployee(newEmployee);
+        }
+
+        Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+
+        if(results.containsValue(true)) {
+            String module = "";
+
+            for(Entry<String, Boolean> result : results.entrySet()) {
+
+                if(result.getValue()) {
+                    if("".equals(module)) {
+                        module = result.getKey();
+                    } else {
+                        module = module + ", " + result.getKey();
+                    }
+                }
+            }
+
+            throw new PreConditionException("Modules: " + module, "already full of workers");
         }
 
         super.doCreate(userID, options, newWorker);
@@ -216,5 +229,97 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             Logger.getLogger(WorkerController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
+    }
+
+    private Map<String, Boolean> checkOrganizationFeatureQuantity(Worker newWorker) throws PreConditionException {
+        Long organizationID = newWorker.getOrganization().getId();
+
+        List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(organizationID);
+
+        Map<String, Boolean> results = new HashMap<>();
+
+        for(OrganizationFeature feature : features) {
+            switch(newWorker.getRole()) {
+                case ADMIN:
+                    Long nrAdmins = facade.countByRole(WorkerProfile.ADMIN, organizationID);
+
+                    if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAdmins)) {
+                        results.put(feature.getFeature().getName(), true);
+                        break;
+                    }
+
+                    results.put(feature.getFeature().getName(), false);
+                    break;
+
+                case DOCTOR:
+                    Long nrDoctors = facade.countByRole(WorkerProfile.DOCTOR, organizationID);
+
+                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 18 || feature.getFeature().getId() == 16
+                       || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 3 || feature.getFeature().getId() == 5) {
+
+                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrDoctors)) {
+                            results.put(feature.getFeature().getName(), true);
+                            break;
+                        }
+
+                        results.put(feature.getFeature().getName(), false);
+                        break;
+                    }
+                    break;
+
+                case NURSE:
+                    Long nrNurses = facade.countByRole(WorkerProfile.NURSE, organizationID);
+
+                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 16
+                       || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 3 || feature.getFeature().getId() == 5) {
+
+                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrNurses)) {
+                            results.put(feature.getFeature().getName(), true);
+                            break;
+                        }
+
+                        results.put(feature.getFeature().getName(), false);
+                        break;
+                    }
+                    break;
+
+                case ASSISTANT:
+                    Long nrAssistants = facade.countByRole(WorkerProfile.ASSISTANT, organizationID);
+
+                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 1) {
+
+                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAssistants)) {
+
+                            results.put(feature.getFeature().getName(), true);
+                            break;
+                        }
+
+                        results.put(feature.getFeature().getName(), false);
+                        break;
+                    }
+                    break;
+
+                case RECEPTIONIST:
+                    Long nrReceptionists = facade.countByRole(WorkerProfile.RECEPTIONIST, organizationID);
+
+                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 4) {
+
+                        if(feature.getQuantity() != null && feature.getQuantity() <= nrReceptionists) {
+                            results.put(feature.getFeature().getName(), true);
+                            break;
+                        }
+
+                        results.put(feature.getFeature().getName(), false);
+                        break;
+
+                    }
+                    break;
+
+                default:
+
+            }
+        }
+
+        return results;
     }
 }

@@ -2,6 +2,7 @@ package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Worker;
+import eu.lpinto.universe.persistence.entities.WorkerProfile;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -128,6 +129,13 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                 .getResultList();
 
         return workers;
+    }
+
+    public Long countByRole(final WorkerProfile role, final Long organizationID) {
+        return getEntityManager().createQuery("SELECT COUNT(w) FROM Worker w WHERE w.role = :role AND w.organization.id = :organizationID", Long.class)
+                .setParameter("role", role)
+                .setParameter("organizationID", organizationID)
+                .getSingleResult();
     }
 
     public Worker retrieve(final Long organizationID, final Long userID) {
