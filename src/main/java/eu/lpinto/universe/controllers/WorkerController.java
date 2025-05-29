@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -238,11 +235,23 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
         Map<String, Boolean> results = new HashMap<>();
 
+        Long nrAdmins = facade.countByRole(WorkerProfile.ADMIN, organizationID);
+
+        Long nrDoctors = facade.countByRole(WorkerProfile.DOCTOR, organizationID);
+        ArrayList<Long> doctorFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 5L, 9L, 16L, 18L));
+
+        Long nrNurses = facade.countByRole(WorkerProfile.NURSE, organizationID);
+        ArrayList<Long> nurseFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 5L, 9L, 16L));
+
+        Long nrAssistants = facade.countByRole(WorkerProfile.ASSISTANT, organizationID);
+        ArrayList<Long> assistantFeatures = new ArrayList<>(Arrays.asList(1L, 9L));
+
+        Long nrReceptionists = facade.countByRole(WorkerProfile.RECEPTIONIST, organizationID);
+        ArrayList<Long> receptionistFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 4L, 9L));
+
         for(OrganizationFeature feature : features) {
             switch(newWorker.getRole()) {
                 case ADMIN:
-                    Long nrAdmins = facade.countByRole(WorkerProfile.ADMIN, organizationID);
-
                     if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAdmins)) {
                         results.put(feature.getFeature().getName(), true);
                         break;
@@ -252,10 +261,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
                     break;
 
                 case DOCTOR:
-                    Long nrDoctors = facade.countByRole(WorkerProfile.DOCTOR, organizationID);
-
-                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 18 || feature.getFeature().getId() == 16
-                       || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 3 || feature.getFeature().getId() == 5) {
+                    if(doctorFeatures.contains(feature.getFeature().getId())) {
 
                         if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrDoctors)) {
                             results.put(feature.getFeature().getName(), true);
@@ -268,10 +274,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
                     break;
 
                 case NURSE:
-                    Long nrNurses = facade.countByRole(WorkerProfile.NURSE, organizationID);
-
-                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 16
-                       || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 3 || feature.getFeature().getId() == 5) {
+                    if(nurseFeatures.contains(feature.getFeature().getId())) {
 
                         if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrNurses)) {
                             results.put(feature.getFeature().getName(), true);
@@ -284,9 +287,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
                     break;
 
                 case ASSISTANT:
-                    Long nrAssistants = facade.countByRole(WorkerProfile.ASSISTANT, organizationID);
-
-                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 1) {
+                    if(assistantFeatures.contains(feature.getFeature().getId())) {
 
                         if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAssistants)) {
 
@@ -300,9 +301,7 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
                     break;
 
                 case RECEPTIONIST:
-                    Long nrReceptionists = facade.countByRole(WorkerProfile.RECEPTIONIST, organizationID);
-
-                    if(feature.getFeature().getId() == 2 || feature.getFeature().getId() == 9 || feature.getFeature().getId() == 1 || feature.getFeature().getId() == 4) {
+                    if(receptionistFeatures.contains(feature.getFeature().getId())) {
 
                         if(feature.getQuantity() != null && feature.getQuantity() <= nrReceptionists) {
                             results.put(feature.getFeature().getName(), true);
