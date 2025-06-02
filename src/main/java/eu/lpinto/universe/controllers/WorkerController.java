@@ -174,6 +174,26 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setExternalID(savedWorker.getExternalID());
             newWorker.setEnable(true);
             newWorker.setOrganization(savedWorker.getOrganization());
+
+            Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+
+            if(results.containsValue(true)) {
+                String module = "";
+
+                for(Entry<String, Boolean> result : results.entrySet()) {
+
+                    if(result.getValue()) {
+                        if("".equals(module)) {
+                            module = result.getKey();
+                        } else {
+                            module = module + ", " + result.getKey();
+                        }
+                    }
+                }
+
+                throw new PreConditionException("Modules: " + module, "already full of workers");
+            }
+
             super.doUpdate(userID, options, newWorker);
 
         } catch(UnknownIdException ex) {
