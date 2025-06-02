@@ -107,23 +107,25 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setEmployee(newEmployee);
         }
 
-        Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+        if(newWorker.getRole() == WorkerProfile.DOCTOR) {
+            Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
 
-        if(results.containsValue(true)) {
-            String module = "";
+            if(results.containsValue(true)) {
+                String module = "";
 
-            for(Entry<String, Boolean> result : results.entrySet()) {
+                for(Entry<String, Boolean> result : results.entrySet()) {
 
-                if(result.getValue()) {
-                    if("".equals(module)) {
-                        module = result.getKey();
-                    } else {
-                        module = module + ", " + result.getKey();
+                    if(result.getValue()) {
+                        if("".equals(module)) {
+                            module = result.getKey();
+                        } else {
+                            module = module + ", " + result.getKey();
+                        }
                     }
                 }
-            }
 
-            throw new PreConditionException("Modules: " + module, "already full of workers");
+                throw new PreConditionException("Modules: " + module, "already full of veterinarians!");
+            }
         }
 
         super.doCreate(userID, options, newWorker);
@@ -175,23 +177,25 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setEnable(true);
             newWorker.setOrganization(savedWorker.getOrganization());
 
-            Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+            if(newWorker.getRole() == WorkerProfile.DOCTOR) {
+                Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
 
-            if(results.containsValue(true)) {
-                String module = "";
+                if(results.containsValue(true)) {
+                    String module = "";
 
-                for(Entry<String, Boolean> result : results.entrySet()) {
+                    for(Entry<String, Boolean> result : results.entrySet()) {
 
-                    if(result.getValue()) {
-                        if("".equals(module)) {
-                            module = result.getKey();
-                        } else {
-                            module = module + ", " + result.getKey();
+                        if(result.getValue()) {
+                            if("".equals(module)) {
+                                module = result.getKey();
+                            } else {
+                                module = module + ", " + result.getKey();
+                            }
                         }
                     }
-                }
 
-                throw new PreConditionException("Modules: " + module, "already full of workers");
+                    throw new PreConditionException("Modules: " + module, "already full of veterinarians!");
+                }
             }
 
             super.doUpdate(userID, options, newWorker);
@@ -255,86 +259,17 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
         Map<String, Boolean> results = new HashMap<>();
 
-        Long nrAdmins = facade.countByRole(WorkerProfile.ADMIN, organizationID);
-
         Long nrDoctors = facade.countByRole(WorkerProfile.DOCTOR, organizationID);
-        ArrayList<Long> doctorFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 5L, 9L, 16L, 18L));
-
-        Long nrNurses = facade.countByRole(WorkerProfile.NURSE, organizationID);
-        ArrayList<Long> nurseFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 5L, 9L, 16L));
-
-        Long nrAssistants = facade.countByRole(WorkerProfile.ASSISTANT, organizationID);
-        ArrayList<Long> assistantFeatures = new ArrayList<>(Arrays.asList(1L, 9L));
-
-        Long nrReceptionists = facade.countByRole(WorkerProfile.RECEPTIONIST, organizationID);
-        ArrayList<Long> receptionistFeatures = new ArrayList<>(Arrays.asList(1L, 2L, 4L, 9L));
+        ArrayList<Long> doctorFeatures = new ArrayList<>(Arrays.asList(3L));
 
         for(OrganizationFeature feature : features) {
-            switch(newWorker.getRole()) {
-                case ADMIN:
-                    if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAdmins)) {
-                        results.put(feature.getFeature().getName(), true);
-                        break;
-                    }
+            if(feature.getFeature() != null && doctorFeatures.contains(feature.getFeature().getId())) {
+                if(feature.getQuantity() == null || nrDoctors >= feature.getQuantity()) {
+                    results.put(feature.getFeature().getName(), Boolean.TRUE);
 
-                    results.put(feature.getFeature().getName(), false);
-                    break;
-
-                case DOCTOR:
-                    if(doctorFeatures.contains(feature.getFeature().getId())) {
-
-                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrDoctors)) {
-                            results.put(feature.getFeature().getName(), true);
-                            break;
-                        }
-
-                        results.put(feature.getFeature().getName(), false);
-                        break;
-                    }
-                    break;
-
-                case NURSE:
-                    if(nurseFeatures.contains(feature.getFeature().getId())) {
-
-                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrNurses)) {
-                            results.put(feature.getFeature().getName(), true);
-                            break;
-                        }
-
-                        results.put(feature.getFeature().getName(), false);
-                        break;
-                    }
-                    break;
-
-                case ASSISTANT:
-                    if(assistantFeatures.contains(feature.getFeature().getId())) {
-
-                        if(feature.getQuantity() != null && feature.getQuantity() <= Float.valueOf(nrAssistants)) {
-
-                            results.put(feature.getFeature().getName(), true);
-                            break;
-                        }
-
-                        results.put(feature.getFeature().getName(), false);
-                        break;
-                    }
-                    break;
-
-                case RECEPTIONIST:
-                    if(receptionistFeatures.contains(feature.getFeature().getId())) {
-
-                        if(feature.getQuantity() != null && feature.getQuantity() <= nrReceptionists) {
-                            results.put(feature.getFeature().getName(), true);
-                            break;
-                        }
-
-                        results.put(feature.getFeature().getName(), false);
-                        break;
-
-                    }
-                    break;
-
-                default:
+                } else {
+                    results.put(feature.getFeature().getName(), Boolean.FALSE);
+                }
 
             }
         }
