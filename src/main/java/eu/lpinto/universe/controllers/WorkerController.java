@@ -107,6 +107,9 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setEmployee(newEmployee);
         }
 
+        /*
+         * Check if veterinary exceeds the quantity associated with clinical feature
+         */
         if(newWorker.getRole() == WorkerProfile.DOCTOR) {
             Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
 
@@ -177,7 +180,11 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setEnable(true);
             newWorker.setOrganization(savedWorker.getOrganization());
 
-            if(newWorker.getRole() == WorkerProfile.DOCTOR) {
+            /*
+             * Check if the role of the updated worker is different from the saved worker and if it is a
+             * veterinary -> if true -> checks if a new veterinary exceeds the quantity associated with clinical feature
+             */
+            if(savedWorker.getRole() != newWorker.getRole() && newWorker.getRole() == WorkerProfile.DOCTOR) {
                 Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
 
                 if(results.containsValue(true)) {
