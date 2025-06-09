@@ -12,8 +12,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -111,23 +113,19 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
          * Check if veterinary exceeds the quantity associated with clinical feature
          */
         if(newWorker.getRole() == WorkerProfile.DOCTOR) {
-            Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+            Long nrVeterinarians = facade.countByRole(WorkerProfile.DOCTOR, newWorker.getOrganization().getId());
 
-            if(results.containsValue(true)) {
-                String module = "";
+            List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(newWorker.getOrganization().getId());
+            Float quantity = 0F;
 
-                for(Entry<String, Boolean> result : results.entrySet()) {
-
-                    if(result.getValue()) {
-                        if("".equals(module)) {
-                            module = result.getKey();
-                        } else {
-                            module = module + ", " + result.getKey();
-                        }
-                    }
+            for(OrganizationFeature feature : features) {
+                if(feature.getFeature().getId() == 3) {
+                    quantity = feature.getQuantity();
                 }
+            }
 
-                throw new PreConditionException("Modules: " + module, "already full of veterinarians!");
+            if(nrVeterinarians >= quantity) {
+                throw new PreConditionException("Module: clinical", "already full of veterinarians!");
             }
         }
 
@@ -185,23 +183,19 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
              * veterinary -> if true -> checks if a new veterinary exceeds the quantity associated with clinical feature
              */
             if(savedWorker.getRole() != newWorker.getRole() && newWorker.getRole() == WorkerProfile.DOCTOR) {
-                Map<String, Boolean> results = checkOrganizationFeatureQuantity(newWorker);
+                Long nrVeterinarians = facade.countByRole(WorkerProfile.DOCTOR, newWorker.getOrganization().getId());
 
-                if(results.containsValue(true)) {
-                    String module = "";
+                List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(newWorker.getOrganization().getId());
+                Float quantity = 0F;
 
-                    for(Entry<String, Boolean> result : results.entrySet()) {
-
-                        if(result.getValue()) {
-                            if("".equals(module)) {
-                                module = result.getKey();
-                            } else {
-                                module = module + ", " + result.getKey();
-                            }
-                        }
+                for(OrganizationFeature feature : features) {
+                    if(feature.getFeature().getId() == 3) {
+                        quantity = feature.getQuantity();
                     }
+                }
 
-                    throw new PreConditionException("Modules: " + module, "already full of veterinarians!");
+                if(nrVeterinarians >= quantity) {
+                    throw new PreConditionException("Module: clinical", "already full of veterinarians!");
                 }
             }
 
@@ -257,30 +251,5 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             Logger.getLogger(WorkerController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
-    }
-
-    private Map<String, Boolean> checkOrganizationFeatureQuantity(Worker newWorker) throws PreConditionException {
-        Long organizationID = newWorker.getOrganization().getId();
-
-        List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(organizationID);
-
-        Map<String, Boolean> results = new HashMap<>();
-
-        Long nrDoctors = facade.countByRole(WorkerProfile.DOCTOR, organizationID);
-        ArrayList<Long> doctorFeatures = new ArrayList<>(Arrays.asList(3L));
-
-        for(OrganizationFeature feature : features) {
-            if(feature.getFeature() != null && doctorFeatures.contains(feature.getFeature().getId())) {
-                if(feature.getQuantity() == null || nrDoctors >= feature.getQuantity()) {
-                    results.put(feature.getFeature().getName(), Boolean.TRUE);
-
-                } else {
-                    results.put(feature.getFeature().getName(), Boolean.FALSE);
-                }
-
-            }
-        }
-
-        return results;
     }
 }
