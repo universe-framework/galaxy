@@ -3,6 +3,7 @@ package eu.lpinto.universe.persistence.facades;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import eu.lpinto.universe.api.util.StatusEmail;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
+import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.persistence.entities.AbstractEntity;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.text.ParseException;
@@ -30,6 +31,14 @@ public abstract class AbstractFacade<T> implements Facade<T> {
         this.entityClass = entityClass;
     }
 
+    public void execute(String query) {
+        try {
+            getEntityManager().createNativeQuery(query).executeUpdate();
+        } catch(Exception ex) {
+            throw new UnexpectedException(ex.getMessage());
+        }
+    }
+
     /*
      * DAO
      */
@@ -43,7 +52,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
 
     @Override
     public T retrieve(final Long id) throws PreConditionException {
-        if (id == null) {
+        if(id == null) {
             throw new IllegalArgumentException("Cannot perform a retrieve for " + this.entityClass.getSimpleName() + " with id [null]");
         }
 
@@ -69,7 +78,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
 
     @Override
     public void create(final List<T> entities) throws PreConditionException {
-        if (entities == null || entities.isEmpty()) {
+        if(entities == null || entities.isEmpty()) {
             return;
         }
 
@@ -85,22 +94,22 @@ public abstract class AbstractFacade<T> implements Facade<T> {
 
     @Override
     public void create(final T entity, Map<String, Object> options) throws PreConditionException {
-        if (entity == null) {
+        if(entity == null) {
             throw new IllegalArgumentException("Cannot create a new " + this.entityClass.getCanonicalName() + " with [null] object");
         }
 
-        if (entity instanceof AbstractEntity) {
+        if(entity instanceof AbstractEntity) {
             AbstractEntity abstractEntity = (AbstractEntity) entity;
 
             Calendar newNow = options == null || options.get("now") == null
                               ? new GregorianCalendar()
                               : (Calendar) options.get("now");
 
-            if (abstractEntity.getCreated() == null) {
+            if(abstractEntity.getCreated() == null) {
                 abstractEntity.setCreated(newNow);
             }
 
-            if (abstractEntity.getUpdated() == null) {
+            if(abstractEntity.getUpdated() == null) {
                 abstractEntity.setUpdated(abstractEntity.getCreated());
             }
 
@@ -134,7 +143,7 @@ public abstract class AbstractFacade<T> implements Facade<T> {
 
     protected Calendar fromText(Object str) {
         Calendar appointmentStartedAfter = Calendar.getInstance();
-        if (str != null) {
+        if(str != null) {
             try {
                 ISO8601DateFormat df = new ISO8601DateFormat();
                 String after = str.toString();
