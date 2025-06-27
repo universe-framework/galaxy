@@ -118,6 +118,17 @@ public class OrganizationController extends AbstractControllerCRUD<Organization>
     }
 
     @Override
+    public void update(Long userID, Map<String, Object> options, Organization entity) throws UnknownIdException, PreConditionException, PermissionDeniedException {
+        User savedUser = userFacade.retrieve(userID);
+
+        if(savedUser.getGod()) {
+            options.put("god", true);
+        }
+
+        super.update(userID, options, entity);
+    }
+
+    @Override
     public void doUpdate(final Long userID, final Map<String, Object> options, Organization newOrganization) {
 
         try {
