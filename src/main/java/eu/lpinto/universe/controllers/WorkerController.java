@@ -5,18 +5,8 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.EmployeeFacade;
-import eu.lpinto.universe.persistence.facades.Facade;
-import eu.lpinto.universe.persistence.facades.OrganizationFacade;
-import eu.lpinto.universe.persistence.facades.UserFacade;
-import eu.lpinto.universe.persistence.facades.WorkerFacade;
+import eu.lpinto.universe.persistence.entities.*;
+import eu.lpinto.universe.persistence.facades.*;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,6 +42,9 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
     @EJB
     private OrganizationFacade organizationFacade;
+
+    @EJB
+    private OrganizationFeatureFacade organizationFeatureFacade;
 
     public WorkerController() {
         super(Worker.class.getCanonicalName());
@@ -116,6 +109,26 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setEmployee(newEmployee);
         }
 
+        /*
+         * Check if veterinary exceeds the quantity associated with clinical feature
+         */
+        if(newWorker.getRole() == WorkerProfile.DOCTOR) {
+            Long nrVeterinarians = facade.countByRole(WorkerProfile.DOCTOR, newWorker.getOrganization().getId());
+
+            List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(newWorker.getOrganization().getId());
+            Float quantity = 0F;
+
+            for(OrganizationFeature feature : features) {
+                if(feature.getFeature().getId() == 3) {
+                    quantity = feature.getQuantity();
+                }
+            }
+
+            if(nrVeterinarians >= quantity) {
+                throw new PreConditionException("Module: clinical", "already full of veterinarians!");
+            }
+        }
+
         super.doCreate(userID, options, newWorker);
 
         if(UniverseFundamentals.IMPORTS_FOLDER != null) {
@@ -164,6 +177,28 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
             newWorker.setExternalID(savedWorker.getExternalID());
             newWorker.setEnable(true);
             newWorker.setOrganization(savedWorker.getOrganization());
+
+            /*
+             * Check if the role of the updated worker is different from the saved worker and if it is a
+             * veterinary -> if true -> checks if a new veterinary exceeds the quantity associated with clinical feature
+             */
+            if(savedWorker.getRole() != newWorker.getRole() && newWorker.getRole() == WorkerProfile.DOCTOR) {
+                Long nrVeterinarians = facade.countByRole(WorkerProfile.DOCTOR, newWorker.getOrganization().getId());
+
+                List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(newWorker.getOrganization().getId());
+                Float quantity = 0F;
+
+                for(OrganizationFeature feature : features) {
+                    if(feature.getFeature().getId() == 3) {
+                        quantity = feature.getQuantity();
+                    }
+                }
+
+                if(nrVeterinarians >= quantity) {
+                    throw new PreConditionException("Module: clinical", "already full of veterinarians!");
+                }
+            }
+
             super.doUpdate(userID, options, newWorker);
 
         } catch(UnknownIdException ex) {
