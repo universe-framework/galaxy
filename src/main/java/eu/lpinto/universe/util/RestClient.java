@@ -2,6 +2,7 @@ package eu.lpinto.universe.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import eu.lpinto.universe.api.dto.AbstractDTO;
+import java.io.File;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -21,7 +23,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ServerErrorException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -41,7 +42,7 @@ public class RestClient<DTO extends AbstractDTO> {
     private static final JacksonJsonProvider JSON_PROVIDER;
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    protected final String BEARER;
+    private final String BEARER;
 
     static {
 
@@ -77,9 +78,8 @@ public class RestClient<DTO extends AbstractDTO> {
     }
 
     private final ClientBuilder clientBuilder;
-    protected final Client client;
     private final GenericType<Collection<DTO>> dtoList;
-    protected final Class<DTO> dtoClass;
+    private final Class<DTO> dtoClass;
     private final String endpoint; // if ending with / it is removed
 
     /*
@@ -106,9 +106,9 @@ public class RestClient<DTO extends AbstractDTO> {
     /**
      *
      * @param dtoClass Service's Data Transportation Object class
-     * @param dtoList Service's Data Transportation Object List class
+     * @param dtoList  Service's Data Transportation Object List class
      * @param endpoint Service endpoint, if ending with '/' the slash will be removed
-     * @param bearer An oAuth bearer token
+     * @param bearer   An oAuth bearer token
      */
     public RestClient(final Class<DTO> dtoClass, final GenericType<Collection<DTO>> dtoList, final String endpoint, final String bearer) {
         try {
@@ -118,14 +118,13 @@ public class RestClient<DTO extends AbstractDTO> {
 
             this.dtoList = dtoList;
             this.dtoClass = dtoClass;
-            this.client = clientBuilder.register(JSON_PROVIDER).build();
-            if (endpoint.endsWith("/")) {
+            if(endpoint.endsWith("/")) {
                 this.endpoint = endpoint.substring(0, endpoint.length() - 1);
             } else {
                 this.endpoint = endpoint;
             }
             this.BEARER = bearer;
-        } catch (KeyManagementException | NoSuchAlgorithmException ex) {
+        } catch(KeyManagementException | NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -151,17 +150,17 @@ public class RestClient<DTO extends AbstractDTO> {
      */
     public Collection<DTO> findAll(final String subPath) {
         WebTarget target;
-        if (subPath == null || subPath.isEmpty() || "/".equals(subPath)) {
-            target = client.target(endpoint);
+        if(subPath == null || subPath.isEmpty() || "/".equals(subPath)) {
+            target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint);
         } else {
-            target = client.target(endpoint
-                                   + (subPath.endsWith("/") ? subPath.substring(0, subPath.length() - 1) : subPath));
+            target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint
+                                                                          + (subPath.endsWith("/") ? subPath.substring(0, subPath.length() - 1) : subPath));
         }
 
         Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
         int status = response.getStatus();
 
-        if (status == Response.Status.OK.getStatusCode()) {
+        if(status == Response.Status.OK.getStatusCode()) {
             return response.readEntity(dtoList);
 
         } else {
@@ -174,9 +173,9 @@ public class RestClient<DTO extends AbstractDTO> {
      * Find
      */
     public Collection<DTO> find(final Object... params) {
-        Map<String, String> options = new HashMap<>(1 + params.length / 2);
+        Map<String, Object> options = new HashMap<>(1 + params.length / 2);
 
-        for (int i = 1; i < params.length; i += 2) {
+        for(int i = 1; i < params.length; i += 2) {
             options.put("" + params[i - 1], "" + params[i]);
         }
 
@@ -190,16 +189,16 @@ public class RestClient<DTO extends AbstractDTO> {
      *
      * @return
      */
-    public Collection<DTO> find(final Map<String, String> params) {
+    public Collection<DTO> find(final Map<String, Object> params) {
         return find(null, params);
     }
 
-    protected Collection<DTO> find(final String subPath, final Map<String, String> params) {
+    protected Collection<DTO> find(final String subPath, final Map<String, Object> params) {
         /* Url */
         StringBuilder sb = new StringBuilder(30);
         sb.append("?");
 
-        for (Map.Entry<String, String> entry : params.entrySet()) {
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
             sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
         }
 
@@ -209,12 +208,13 @@ public class RestClient<DTO extends AbstractDTO> {
         String url = (queryParams == null || queryParams.isEmpty()) ? path : path + queryParams.substring(0, queryParams.length() - 1);
 
         /* request */
-        WebTarget target = client.target(url);
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(url);
 
         Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
 
-        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-            return response.readEntity(dtoList);
+        if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+            Collection<DTO> x = response.readEntity(dtoList);
+            return x;
         } else {
             handleError(response, target);
             throw new Error("This code line should not be reachable");
@@ -232,7 +232,48 @@ public class RestClient<DTO extends AbstractDTO> {
      * @return The resource object if it exists or NULL otherwise.
      */
     public DTO retrieve(final Long id) {
-        WebTarget target = client.target(endpoint + "/" + id);
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/" + id);
+        Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
+        if(response.getStatus() == 200) {
+            return response.readEntity(dtoClass);
+        } else {
+            throw new RuntimeException(response.readEntity(String.class));
+        }
+    }
+
+    public File retrievePDF(final Long id) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/" + id + "/pdf");
+        Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
+        return response.readEntity(File.class);
+    }
+
+    public DTO retrieveFromJasmin(final String aux, final Long companyID) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/jasmin/" + aux + "?company=" + companyID);
+        Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
+        return response.readEntity(dtoClass);
+    }
+
+    public DTO retrieveSync(final Long id) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/" + id + "/sync");
+        Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
+        return response.readEntity(dtoClass);
+    }
+
+    public DTO retrieve(final String subPath, final Map<String, Object> params) {
+        /* Url */
+        StringBuilder sb = new StringBuilder(30);
+        sb.append("?");
+
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
+            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+        }
+
+        String path = (null == subPath || subPath.isEmpty()) ? endpoint : endpoint + "/" + subPath;
+        String queryParams = sb.toString();
+
+        String url = (queryParams == null || queryParams.isEmpty()) ? path : path + queryParams.substring(0, queryParams.length() - 1);
+
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(url);
         Response response = target.request(MediaType.APPLICATION_JSON).header("Authorization", "Bearer " + BEARER).get();
         return response.readEntity(dtoClass);
     }
@@ -244,17 +285,17 @@ public class RestClient<DTO extends AbstractDTO> {
         return create(null, dto);
     }
 
-    public DTO create(final String subPath, DTO dto) {
-        WebTarget target = client.target(subPath == null ? endpoint : endpoint + subPath);
+    protected DTO create(final String subPath, DTO dto) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(subPath == null ? endpoint : endpoint + subPath);
 
         Response response = target
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + BEARER)
+                .header("Accept-Language", "pt")
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON));
         int status = response.getStatus();
 
-        if (status == Response.Status.CREATED.getStatusCode() || status == Response.Status.OK.getStatusCode()) {
-            System.out.println(response.readEntity(String.class));
+        if(status == Response.Status.CREATED.getStatusCode() || status == Response.Status.OK.getStatusCode()) {
             return response.readEntity(dtoClass);
         } else {
             handleError(response, target, dto);
@@ -263,7 +304,7 @@ public class RestClient<DTO extends AbstractDTO> {
     }
 
     public Collection<DTO> create(final String subPath, Collection<DTO> list) {
-        WebTarget target = client.target(subPath == null ? endpoint : endpoint + subPath);
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(subPath == null ? endpoint : endpoint + subPath);
 
         Response response = target
                 .request(MediaType.APPLICATION_JSON)
@@ -271,9 +312,10 @@ public class RestClient<DTO extends AbstractDTO> {
                 .post(Entity.entity(list, MediaType.APPLICATION_JSON));
         int status = response.getStatus();
 
-        if (status == Response.Status.CREATED.getStatusCode() || status == Response.Status.OK.getStatusCode()) {
+        if(status == Response.Status.CREATED.getStatusCode() || status == Response.Status.OK.getStatusCode()) {
             return response.readEntity(dtoList);
         } else {
+            System.out.println("PMS responded with error status: " + status);
             handleError(response, target, list);
             throw new AssertionError("This code line should not be reachable");
         }
@@ -283,15 +325,57 @@ public class RestClient<DTO extends AbstractDTO> {
      * Update
      */
     public void update(DTO dto) {
-        WebTarget target = client.target(endpoint + "/" + dto.getId());
+        update(dto, "" + dto.getId());
+    }
+
+    public void update(DTO dto, String subPath) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/" + subPath);
 
         Response response = target
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + BEARER)
-                .put(Entity.entity(dto, MediaType.APPLICATION_JSON));
+                .put(Entity.entity(dto, MediaType.APPLICATION_JSON + "; charset=utf-8"));
 
         int status = response.getStatus();
-        if (status != Response.Status.NO_CONTENT.getStatusCode() && status != Response.Status.OK.getStatusCode()) {
+        if(status != Response.Status.NO_CONTENT.getStatusCode() && status != Response.Status.OK.getStatusCode()) {
+            handleError(response, target, dto);
+        }
+    }
+
+    public Collection<DTO> update(final String subPath, Collection<DTO> list) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(subPath == null ? endpoint : endpoint + subPath);
+
+        Response response = target
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + BEARER)
+                .put(Entity.entity(list, MediaType.APPLICATION_JSON));
+        int status = response.getStatus();
+
+        if(status == Response.Status.CREATED.getStatusCode() || status == Response.Status.OK.getStatusCode()) {
+            return response.readEntity(dtoList);
+        } else {
+            handleError(response, target, list);
+            throw new AssertionError("This code line should not be reachable");
+        }
+    }
+
+    /*
+     * Delete
+     */
+    public void delete(DTO dto) {
+        delete(dto, "" + dto.getId());
+    }
+
+    public void delete(DTO dto, String subPath) {
+        WebTarget target = clientBuilder.register(JSON_PROVIDER).build().target(endpoint + "/" + subPath);
+
+        Response response = target
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + BEARER)
+                .delete();
+
+        int status = response.getStatus();
+        if(status != Response.Status.NO_CONTENT.getStatusCode() && status != Response.Status.OK.getStatusCode()) {
             handleError(response, target, dto);
         }
     }
@@ -300,16 +384,16 @@ public class RestClient<DTO extends AbstractDTO> {
         handleError(response, target, null);
     }
 
-    protected void handleError(final Response response, final WebTarget target, final Object dto) {
+    private void handleError(final Response response, final WebTarget target, final Object dto) {
         int status = response.getStatus();
 
-        if (status == Response.Status.NOT_FOUND.getStatusCode()) {
+        if(status == Response.Status.NOT_FOUND.getStatusCode()) {
             throw new BadRequestException(response);
 
-        } else if (status == Response.Status.UNAUTHORIZED.getStatusCode()) {
+        } else if(status == Response.Status.UNAUTHORIZED.getStatusCode()) {
             throw new BadRequestException(response);
 
-        } else if (status == Response.Status.BAD_REQUEST.getStatusCode()) {
+        } else if(status == Response.Status.BAD_REQUEST.getStatusCode()) {
             logResponseError(response, target, dto);
             throw new BadRequestException(response);
 
@@ -323,12 +407,21 @@ public class RestClient<DTO extends AbstractDTO> {
      * Helpers
      */
     private void logResponseError(Response response, WebTarget target, Object dto) throws InternalError {
-        System.out.println("\nServer responded with code " + response.getStatus()
-                           + "\nRequest to: " + target.getUri().toString()
-                           + "\nResponse: \n" + response.readEntity(String.class)
+        System.out.println("\nRequest was:\n" + toJson(dto)
                            + (dto == null ? ""
                               : "\n----------------------------------------------------------------------------------------"
-                                + "\nRequest was:\n" + StringUtil.toJson(dto))
+                                + "\nServer responded with code " + response.getStatus()
+                                + "\nRequest to: " + target.getUri().toString()
+                                + "\nResponse: \n" + response.readEntity(String.class))
         );
+    }
+
+    static private String toJson(final Object obj) {
+        try {
+            return mapper.writeValueAsString(obj);
+        } catch(JsonProcessingException ex) {
+            System.out.println("Cannot serialize object: " + obj);
+            return "[cannot serialize]";
+        }
     }
 }
