@@ -152,6 +152,14 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 .getResultList();
     }
 
+    public List<Organization> findByCustomField(final String customField) {
+        return getEntityManager().createQuery("SELECT o"
+                                              + " FROM Organization o"
+                                              + " WHERE o.customField = :customField", Organization.class)
+                .setParameter("customField", customField)
+                .getResultList();
+    }
+
     public List<Organization> getCompany(final Long companyID) {
         return getEntityManager()
                 .createQuery("SELECT o"
