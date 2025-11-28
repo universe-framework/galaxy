@@ -184,20 +184,11 @@ public abstract class AbstractService {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         queryParameters.keySet().forEach(key -> {
             List<String> values = queryParameters.get(key);
-            if(values != null && !values.isEmpty() && values.size() == 1) {
-                if("true".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.TRUE);
-
-                } else if("false".equalsIgnoreCase(values.get(0))) {
-                    options.put(key, Boolean.FALSE);
-
+            if(values != null && !values.isEmpty()) {
+                if(values.size() == 1) {
+                    options.put(key, toType(values.get(0)));
                 } else {
-                    try {
-                        Long l = Long.valueOf(values.get(0));
-                        options.put(key, l);
-                    } catch(NumberFormatException ex) {
-                        options.put(key, values.get(0));
-                    }
+                    options.put(key, values.stream().map(e -> toType(e)));
                 }
             }
         });
@@ -207,20 +198,7 @@ public abstract class AbstractService {
             hh.keySet().forEach(key -> {
                 List<String> values = hh.get(key);
                 if(values != null && !values.isEmpty() && values.size() == 1) {
-                    if("true".equalsIgnoreCase(values.get(0))) {
-                        options.put(key, Boolean.TRUE);
-
-                    } else if("false".equalsIgnoreCase(values.get(0))) {
-                        options.put(key, Boolean.FALSE);
-
-                    } else {
-                        try {
-                            Long l = Long.valueOf(values.get(0));
-                            options.put(key, l);
-                        } catch(NumberFormatException ex) {
-                            options.put(key, values.get(0));
-                        }
-                    }
+                    options.put(key, toType(values.get(0)));
                 }
             });
         }
@@ -228,6 +206,31 @@ public abstract class AbstractService {
         options.put("service.start", System.currentTimeMillis());
 
         return options;
+    }
+
+    private Object toType(String value) {
+        if("true".equalsIgnoreCase(value)) {
+            return Boolean.TRUE;
+
+        } else if("false".equalsIgnoreCase(value)) {
+            return Boolean.FALSE;
+
+        } else if(value.startsWith("[")) {
+            if(value.matches("\\[(0-9,)+\\]")) {
+                return Arrays.asList(value.substring(1, value.length() - 1));
+
+            } else {
+                return value;
+            }
+
+        } else {
+            try {
+                return Long.valueOf(value);
+
+            } catch(NumberFormatException ex) {
+                return value;
+            }
+        }
     }
 
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName) {
