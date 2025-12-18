@@ -216,8 +216,8 @@ public abstract class AbstractService {
             return Boolean.FALSE;
 
         } else if(value.startsWith("[")) {
-            if(value.matches("\\[(0-9,)+\\]")) {
-                return Arrays.asList(value.substring(1, value.length() - 1));
+            if(value.matches("\\[([0-9]+[, ]*)+\\]")) {
+                return Arrays.asList(value.substring(1, value.length() - 1).replaceAll(" ", "").split(","));
 
             } else {
                 return value;
