@@ -5,29 +5,16 @@ import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnexpectedException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.AbstractEntity;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.EmployeeFacade;
-import eu.lpinto.universe.persistence.facades.Facade;
-import eu.lpinto.universe.persistence.facades.OrganizationFacade;
-import eu.lpinto.universe.persistence.facades.UserFacade;
-import eu.lpinto.universe.persistence.facades.WorkerFacade;
+import eu.lpinto.universe.persistence.entities.*;
+import eu.lpinto.universe.persistence.facades.*;
 import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -196,25 +183,11 @@ public class WorkerController extends AbstractControllerCRUD<Worker> {
 
     @Override
     public Boolean assertPremissionsRead(Long userID, Worker entity) throws PermissionDeniedException {
-        if(userID != null) {
-            return true;
-        } else {
-            throw new PermissionDeniedException();
-        }
+        return true;
     }
 
     @Override
     public Boolean assertPremissionsUpdateDelete(Long userID, Worker entity) throws PermissionDeniedException {
-        try {
-            Worker savedWorker = super.doRetrieve(userID, new HashMap<>(0), entity.getId());
-            if(savedWorker.getEnable() == true) {
-                return true;
-            } else {
-                throw new PermissionDeniedException();
-            }
-        } catch(UnknownIdException | PreConditionException ex) {
-            Logger.getLogger(WorkerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return true;
     }
 }

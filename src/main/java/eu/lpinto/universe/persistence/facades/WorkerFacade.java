@@ -28,6 +28,7 @@ public class WorkerFacade extends AbstractFacade<Worker> {
         return em;
     }
 
+    @Override
     public List<Worker> findAll() {
         try {
             List<Worker> clinics = getEntityManager().createQuery(
@@ -58,7 +59,11 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                 /*
                  * By Organization
                  */
-                return findByOrganizationAndEnable(organizationID);
+                if(options.containsKey("enable")) {
+                    return findByOrganizationAndStatus(organizationID, (boolean) options.get("enable"));
+                } else {
+                    return findByOrganizationAndStatus(organizationID, true);
+                }
             }
         }
 
@@ -77,13 +82,14 @@ public class WorkerFacade extends AbstractFacade<Worker> {
         return workers;
     }
 
-    public List<Worker> findByOrganizationAndEnable(final Long organizationID) {
+    public List<Worker> findByOrganizationAndStatus(final Long organizationID, final Boolean status) {
         List<Worker> workers = getEntityManager().createQuery(
                 "SELECT w"
                 + " FROM Worker w"
                 + " WHERE w.organization.id = :organizationID"
-                + "   AND w.enable = true", Worker.class)
+                + "   AND w.enable = :status", Worker.class)
                 .setParameter("organizationID", organizationID)
+                .setParameter("status", status)
                 .getResultList();
 
         return workers;
@@ -111,6 +117,20 @@ public class WorkerFacade extends AbstractFacade<Worker> {
                 Worker.class)
                 .setParameter("organizationID", organizationID)
                 .setParameter("userID", userID)
+                .getResultList();
+
+        return workers;
+    }
+
+    public List<Worker> findByOrganizationAndAddress(final Long organizationID, final String address) {
+        List<Worker> workers = getEntityManager().createQuery(
+                "SELECT w"
+                + " FROM Worker w"
+                + " WHERE w.organization.id = :organizationID"
+                + " AND w.address = :address",
+                Worker.class)
+                .setParameter("organizationID", organizationID)
+                .setParameter("address", address)
                 .getResultList();
 
         return workers;
