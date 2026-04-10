@@ -28,7 +28,7 @@ public class PreConditionException extends Exception {
 
     public PreConditionException addError(final String field, final String message, final String... errors) {
         if (errors == null || errors.length == 0) {
-            this.errors.put(field, (String[]) Arrays.asList(message).toArray());
+            this.errors.put(field, new String[]{message});
 
         } else {
             String[] aux = new String[errors.length + 1];
