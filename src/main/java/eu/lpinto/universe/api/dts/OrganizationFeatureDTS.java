@@ -13,13 +13,14 @@ public class OrganizationFeatureDTS extends AbstractDTS<OrganizationFeature, Org
 
     @Override
     protected OrganizationFeatureDTO buildDTO(OrganizationFeature entity) {
-        if (entity == null) {
+        if(entity == null) {
             return null;
         }
 
         return new OrganizationFeatureDTO(
                 OrganizationDTS.toApiID(entity.getOrganization()),
-                FeatureDTS.toApiID(entity.getFeature())
+                FeatureDTS.toApiID(entity.getFeature()),
+                entity.getQuantity()
         );
     }
 
@@ -32,7 +33,8 @@ public class OrganizationFeatureDTS extends AbstractDTS<OrganizationFeature, Org
     protected OrganizationFeature buildEntity(OrganizationFeatureDTO dto) {
         return new OrganizationFeature(
                 OrganizationDTS.T.toDomain(dto.getOrganization()),
-                FeatureDTS.T.toDomain(dto.getFeature())
+                FeatureDTS.T.toDomain(dto.getFeature()),
+                dto.getQuantity()
         );
     }
 }

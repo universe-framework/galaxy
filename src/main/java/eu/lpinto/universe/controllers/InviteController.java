@@ -3,18 +3,8 @@ package eu.lpinto.universe.controllers;
 import eu.lpinto.universe.controllers.exceptions.PermissionDeniedException;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.controllers.exceptions.UnknownIdException;
-import eu.lpinto.universe.persistence.entities.Company;
-import eu.lpinto.universe.persistence.entities.Employee;
-import eu.lpinto.universe.persistence.entities.EmployeeProfile;
-import eu.lpinto.universe.persistence.entities.Invite;
-import eu.lpinto.universe.persistence.entities.Organization;
-import eu.lpinto.universe.persistence.entities.User;
-import eu.lpinto.universe.persistence.entities.Worker;
-import eu.lpinto.universe.persistence.entities.WorkerProfile;
-import eu.lpinto.universe.persistence.facades.EmployeeFacade;
-import eu.lpinto.universe.persistence.facades.InviteFacade;
-import eu.lpinto.universe.persistence.facades.UserFacade;
-import eu.lpinto.universe.persistence.facades.WorkerFacade;
+import eu.lpinto.universe.persistence.entities.*;
+import eu.lpinto.universe.persistence.facades.*;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -52,6 +42,9 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
     @EJB
     private WorkerController workerController;
 
+    @EJB
+    private OrganizationFeatureFacade organizationFeatureFacade;
+
     public InviteController() {
         super(Invite.class.getCanonicalName());
     }
@@ -63,6 +56,21 @@ public class InviteController extends AbstractControllerCRUD<Invite> {
         Organization savedOrganization = organizationController.retrieve(userID, options, invite.getOrganization().getId());
         Company savedCompany = savedOrganization.getCompany();
         User savedUser = userFacade.findByEmail(invitedEmail);
+
+        Long nrVeterinarians = workerFacade.countByRole(invite.getRole(), invite.getOrganization().getId());
+        List<OrganizationFeature> features = organizationFeatureFacade.getByOrganization(invite.getOrganization().getId());
+
+        Float clinicalFeatureQuantity = 0F;
+
+        for(OrganizationFeature feature : features) {
+            if(feature.getFeature().getId() == 3) {
+                clinicalFeatureQuantity = feature.getQuantity();
+            }
+        }
+
+        if(nrVeterinarians >= clinicalFeatureQuantity) {
+            throw new PreConditionException("Modules: Clinical", "already full of veterinarians!");
+        }
 
         if(savedUser == null) {
             List<Worker> savedWorkers = workerFacade.findByOrganizationAndEmail(invite.getOrganization().getId(), invitedEmail);

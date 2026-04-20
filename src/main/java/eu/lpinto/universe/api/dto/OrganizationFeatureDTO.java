@@ -1,6 +1,5 @@
 package eu.lpinto.universe.api.dto;
 
-import eu.lpinto.universe.api.dto.AbstractDTO;
 import java.io.Serializable;
 
 /**
@@ -13,6 +12,7 @@ public class OrganizationFeatureDTO extends AbstractDTO implements Serializable 
 
     private Long organization;
     private Long feature;
+    private Float quantity;
 
     public OrganizationFeatureDTO() {
     }
@@ -21,15 +21,17 @@ public class OrganizationFeatureDTO extends AbstractDTO implements Serializable 
         super(id);
     }
 
-    public OrganizationFeatureDTO(Long organization, Long feature) {
+    public OrganizationFeatureDTO(Long organization, Long feature, Float quantity) {
         this.organization = organization;
         this.feature = feature;
+        this.quantity = quantity;
     }
 
-    public OrganizationFeatureDTO(Long organization, Long feature, String name, Long id) {
+    public OrganizationFeatureDTO(Long organization, Long feature, Float quantity, String name, Long id) {
         super(name, id);
         this.organization = organization;
         this.feature = feature;
+        this.quantity = quantity;
     }
 
     public Long getOrganization() {
@@ -47,4 +49,13 @@ public class OrganizationFeatureDTO extends AbstractDTO implements Serializable 
     public void setFeature(Long feature) {
         this.feature = feature;
     }
+
+    public Float getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Float quantity) {
+        this.quantity = quantity;
+    }
+
 }
