@@ -64,6 +64,12 @@ public class TokenFacade extends AbstractFacade<Token> {
         super.create(entity);
     }
 
+    public void delete(final Long UserID) {
+        getEntityManager().createNativeQuery("DELETE FROM Token WHERE user_id = :userID")
+                .setParameter("userID", UserID)
+                .executeUpdate();
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         return em;

@@ -39,7 +39,7 @@ public class TokenController {
             throw new PreConditionException("password", "Missing password");
         }
 
-        User savedUser = userFacade.findByEmail(user.getEmail());
+        User savedUser = userFacade.findByEmailAndEnable(user.getEmail());
 
         if (savedUser == null) {
             throw new PreConditionException("user", "unknownUser");
@@ -49,9 +49,9 @@ public class TokenController {
             throw new PreConditionException("password", "invalidPassword");
         }
         /*
-        if (user.getEmailValidated() == null || user.getEmailValidated() == false) {
-            throw new PreConditionException("user.email", "notValidated");
-        }
+         * if (user.getEmailValidated() == null || user.getEmailValidated() == false) {
+         * throw new PreConditionException("user.email", "notValidated");
+         * }
          */
         Token newToken = new Token(accessToken, savedUser);
         facade.create(newToken);

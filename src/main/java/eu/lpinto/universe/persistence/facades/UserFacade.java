@@ -43,7 +43,7 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByName(final String name) {
         try {
             return (User) em.createNamedQuery("User.findByName").setParameter("name", name).getSingleResult();
-        } catch(NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -51,7 +51,17 @@ public class UserFacade extends AbstractFacade<User> {
     public User findByEmail(final String email) {
         try {
             return (User) em.createNamedQuery("User.findByEmail").setParameter("email", email).getSingleResult();
-        } catch(NoResultException ex) {
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public User findByEmailAndEnable(final String email) {
+        try {
+            return (User) em.createQuery("Select u FROM User u WHERE u.email = :email AND u.deleted IS NULL")
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -79,7 +89,7 @@ public class UserFacade extends AbstractFacade<User> {
             }
 
             return users;
-        } catch(NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }
@@ -87,11 +97,11 @@ public class UserFacade extends AbstractFacade<User> {
     public User getbyToken(final String token) {
         try {
             return getEntityManager().createQuery(
-                    "SELECT new User(u.id, u.god) FROM User u INNER JOIN Token t ON t.user.id = u.id WHERE t.token = :token", User.class)
+                    "SELECT new User(u.id, u.god) FROM User u INNER JOIN Token t ON t.user.id = u.id WHERE t.token = :token AND u.deleted IS NULL", User.class)
                     .setParameter("token", token)
                     .getSingleResult();
 
-        } catch(NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
         }
     }

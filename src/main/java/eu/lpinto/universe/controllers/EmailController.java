@@ -5,6 +5,7 @@ import eu.lpinto.universe.persistence.entities.Email;
 import eu.lpinto.universe.persistence.entities.EmailConfig;
 import eu.lpinto.universe.persistence.facades.EmailPlugin;
 import eu.lpinto.universe.persistence.facades.UserFacade;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ import javax.ejb.Stateless;
 public class EmailController {
 
     public static String streamToString(final InputStream inputStream) {
-        try (
+        try(
                 final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             return br.lines().parallel().collect(Collectors.joining("\n"));
 
@@ -57,6 +58,30 @@ public class EmailController {
         validationStrPT = setDefaultBody("validation", "pt", "Para validar o email aceda a: ${url}");
         validationStrES = setDefaultBody("validation", "es", "El enlace de validacion es: ${url}");
         validationStrEN = setDefaultBody("validation", "en", "Your email validation link is: ${url}");
+    }
+
+    public void sendAccountDeletionRequest(
+            final Long userId,
+            final String userName,
+            final String userEmail,
+            final String declaredSource,
+            final String authenticatedClient,
+            final String requestIp,
+            final String userAgent,
+            final String requestId) throws PreConditionException {
+        final String recipient = UniverseFundamentals.REPLY_TO;
+        final String subject = "Account deletion request";
+        final String content = "User: " + (userId == null ? "[undefined]" : userId)
+                               + "<br>Email: " + (userEmail == null || userEmail.trim().isEmpty() ? "[undefined]" : userEmail)
+                               + "<br>Name: " + (userName == null || userName.trim().isEmpty() ? "[undefined]" : userName)
+                               + "<br><br>requested to delete the account."
+                               + "<br><br>Declared source: " + (declaredSource == null || declaredSource.trim().isEmpty() ? "[undefined]" : declaredSource)
+                               + "<br>Authenticated client: " + (authenticatedClient == null || authenticatedClient.trim().isEmpty() ? "[undefined]" : authenticatedClient)
+                               + "<br>Request IP: " + (requestIp == null || requestIp.trim().isEmpty() ? "[undefined]" : requestIp)
+                               + "<br>User-Agent: " + (userAgent == null || userAgent.trim().isEmpty() ? "[undefined]" : userAgent)
+                               + "<br>Request ID: " + (requestId == null || requestId.trim().isEmpty() ? "[undefined]" : requestId);
+
+        new EmailPlugin(new EmailConfig()).send(new Email(recipient, subject, content));
     }
 
     private String setDefaultBody(final String fileName, final String lang, final String defaultBody) {
@@ -157,5 +182,4 @@ public class EmailController {
 
         new EmailPlugin(new EmailConfig()).send(new Email(recipient, subject, content));
     }
-
 }

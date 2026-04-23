@@ -8,6 +8,7 @@ import eu.lpinto.universe.persistence.entities.EmailValidation;
 import eu.lpinto.universe.persistence.entities.Image;
 import eu.lpinto.universe.persistence.entities.User;
 import eu.lpinto.universe.persistence.facades.EmailValidationFacade;
+import eu.lpinto.universe.persistence.facades.TokenFacade;
 import eu.lpinto.universe.persistence.facades.UserFacade;
 import java.util.Calendar;
 import java.util.Map;
@@ -26,6 +27,9 @@ public class UserController extends AbstractControllerCRUD<User> {
 
     @EJB
     private UserFacade facade;
+
+    @EJB
+    private TokenFacade tokenFacade;
 
     @EJB
     private EmailController emailController;
@@ -124,6 +128,47 @@ public class UserController extends AbstractControllerCRUD<User> {
                 throw new PreConditionException("image", "missing create permissions");
             }
         }
+    }
+
+    @Override
+    public void doDelete(final Long userID, final Map<String, Object> options, final User savedEntity) throws PreConditionException {
+        emailController.sendAccountDeletionRequest(
+                savedEntity.getId(),
+                savedEntity.getName(),
+                savedEntity.getEmail(),
+                getCandidateRequestContextValue(options, "requestSource", "source", "x-request-source", "X-Request-Source"),
+                getCandidateRequestContextValue(options, "authenticatedClient", "client", "clientId", "x-client-id", "X-Client-Id", "X-Client-ID"),
+                getCandidateRequestContextValue(options, "requestIp", "remoteAddr", "ip", "x-forwarded-for", "X-Forwarded-For"),
+                getCandidateRequestContextValue(options, "userAgent", "user-agent", "User-Agent"),
+                getCandidateRequestContextValue(options, "requestId", "x-request-id", "X-Request-Id")
+        );
+        savedEntity.setDeleted(Calendar.getInstance());
+        facade.edit(savedEntity);
+        tokenFacade.delete(savedEntity.getId());
+    }
+
+    private String getCandidateRequestContextValue(final Map<String, Object> options, final String... keys) {
+        if (options == null || keys == null) {
+            return null;
+        }
+
+        for(final String key : keys) {
+            if (key == null) {
+                continue;
+            }
+
+            final Object value = options.get(key);
+            if (value == null) {
+                continue;
+            }
+
+            final String normalized = String.valueOf(value).trim();
+            if (!normalized.isEmpty()) {
+                return normalized;
+            }
+        }
+
+        return null;
     }
 
     /*
