@@ -11,7 +11,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
-import javax.ws.rs.core.*;
+import java.util.stream.Collectors;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +45,11 @@ public abstract class AbstractService {
      * Helpers
      */
     protected static String firstCause(final Throwable ex) {
-        if(ex.getCause() == null) {
+        if (ex.getCause() == null) {
 
             String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 
-            if(message == null) {
+            if (message == null) {
                 message = ex.getClass().getSimpleName();
             }
 
@@ -65,7 +70,7 @@ public abstract class AbstractService {
 
             return result;
 
-        } catch(ParseException ex) {
+        } catch (ParseException ex) {
             return null;
         }
     }
@@ -74,7 +79,7 @@ public abstract class AbstractService {
         try {
             return LocalDate.parse(param);
 
-        } catch(DateTimeParseException ex) {
+        } catch (DateTimeParseException ex) {
             return null;
         }
     }
@@ -145,21 +150,21 @@ public abstract class AbstractService {
         List<String> keys = queryParameters.get(key);
 
         try {
-            if(keys != null && !keys.isEmpty() && keys.size() == 1) {
+            if (keys != null && !keys.isEmpty() && keys.size() == 1) {
                 options.put(key, Long.valueOf(keys.get(0)));
             }
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Invalid value: [" + keys.get(0) + "] for option: [" + key + "]");
         }
     }
 
     protected void addSKeyCalendar(String key, MultivaluedMap<String, String> queryParameters, Map<String, Object> options) throws IllegalArgumentException {
         List<String> keys = queryParameters.get(key);
-        if(keys != null && !keys.isEmpty() && keys.size() == 1) {
+        if (keys != null && !keys.isEmpty() && keys.size() == 1) {
             Calendar startedAfter = Calendar.getInstance();
             try {
                 startedAfter.setTime(new ISO8601DateFormat().parse(keys.get(0)));
-            } catch(ParseException ex) {
+            } catch (ParseException ex) {
                 throw new IllegalArgumentException("Invalid value for openAfter: " + keys.get(0));
             }
             options.put(key, startedAfter);
@@ -184,8 +189,8 @@ public abstract class AbstractService {
         MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         queryParameters.keySet().forEach(key -> {
             List<String> values = queryParameters.get(key);
-            if(values != null && !values.isEmpty()) {
-                if(values.size() == 1) {
+            if (values != null && !values.isEmpty()) {
+                if (values.size() == 1) {
                     options.put(key, toType(values.get(0)));
                 } else {
                     options.put(key, values.stream().map(e -> toType(e)));
@@ -193,11 +198,11 @@ public abstract class AbstractService {
             }
         });
 
-        if(headers != null) {
+        if (headers != null) {
             MultivaluedMap<String, String> hh = headers.getRequestHeaders();
             hh.keySet().forEach(key -> {
                 List<String> values = hh.get(key);
-                if(values != null && !values.isEmpty() && values.size() == 1) {
+                if (values != null && !values.isEmpty() && values.size() == 1) {
                     options.put(key, toType(values.get(0)));
                 }
             });
@@ -209,15 +214,16 @@ public abstract class AbstractService {
     }
 
     private Object toType(String value) {
-        if("true".equalsIgnoreCase(value)) {
+        if ("true".equalsIgnoreCase(value)) {
             return Boolean.TRUE;
 
-        } else if("false".equalsIgnoreCase(value)) {
+        } else if ("false".equalsIgnoreCase(value)) {
             return Boolean.FALSE;
 
-        } else if(value.startsWith("[")) {
-            if(value.matches("\\[([0-9]+[, ]*)+\\]")) {
-                return Arrays.asList(value.substring(1, value.length() - 1).replaceAll(" ", "").split(","));
+        } else if (value.startsWith("[")) {
+            if (value.matches("\\[([0-9]+[, ]*)+\\]")) {
+                return Arrays.asList(value.substring(1, value.length() - 1).replaceAll(" ", "").split(","))
+                        .stream().map(Long::parseLong).collect(Collectors.toList());
 
             } else {
                 return value;
@@ -227,7 +233,7 @@ public abstract class AbstractService {
             try {
                 return Long.valueOf(value);
 
-            } catch(NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 return value;
             }
         }
@@ -240,10 +246,10 @@ public abstract class AbstractService {
     protected void logRequest(final UriInfo uriInfo, Map<String, Object> options, final String methodName, final Object dto) {
         String body;
 
-        if(dto == null) {
+        if (dto == null) {
             body = "\"null\"";
 
-        } else if(dto instanceof Collection && ((Collection) dto).size() > 3) {
+        } else if (dto instanceof Collection && ((Collection) dto).size() > 3) {
             Collection col = (Collection) dto;
             body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
 
@@ -270,10 +276,10 @@ public abstract class AbstractService {
     protected void logResponse(final UriInfo uriInfo, final HttpHeaders headers, final Map<String, Object> options, final String methodName, final Object response) {
         String body;
 
-        if(response == null) {
+        if (response == null) {
             body = "\"null\"";
 
-        } else if(response instanceof Collection && ((Collection) response).size() > 3) {
+        } else if (response instanceof Collection && ((Collection) response).size() > 3) {
             Collection col = (Collection) response;
             body = "{ \"list\": \"" + col.iterator().next().getClass().getSimpleName() + "[" + col.size() + "]\" }";
         } else {
@@ -282,12 +288,12 @@ public abstract class AbstractService {
 
         Long serviceDuration = null;
         Long controllerDuration = null;
-        if(options != null) {
-            if(options.containsKey("service.start") && options.containsKey("service.end")) {
+        if (options != null) {
+            if (options.containsKey("service.start") && options.containsKey("service.end")) {
                 Long serviceEnd = options.get("service.end") == null ? System.currentTimeMillis() : (Long) options.get("service.end");
                 serviceDuration = (serviceEnd) - (Long) (options.get("service.start"));
             }
-            if(options.containsKey("controller.start") && options.containsKey("controller.end")) {
+            if (options.containsKey("controller.start") && options.containsKey("controller.end")) {
                 controllerDuration = ((Long) options.get("controller.end")) - (Long) (options.get("controller.start"));
             }
         }
@@ -315,9 +321,9 @@ public abstract class AbstractService {
                      body);
 
         Long duration = System.currentTimeMillis() - (Long) options.get("startMillis");
-        if(duration > 10000) {
+        if (duration > 10000) {
             for(Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
-                if(uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
+                if (uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
                     return;
                 }
             }

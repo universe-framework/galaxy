@@ -13,6 +13,10 @@ public abstract class AbstractDTS<E extends AbstractEntity, D extends AbstractDT
 
     @Override
     public D toAPI(E entity) {
+        if (entity == null) {
+            return null;
+        }
+
         D dto = buildDTO(entity);
 
         dto.setId(entity.getId());
