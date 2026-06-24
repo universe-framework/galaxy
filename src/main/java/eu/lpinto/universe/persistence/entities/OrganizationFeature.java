@@ -23,6 +23,8 @@ public class OrganizationFeature extends AbstractEntity implements Serializable 
     @ManyToOne(fetch = FetchType.LAZY)
     private Feature feature;
 
+    private Float quantity;
+
     /*
      * Constructors
      */
@@ -33,15 +35,17 @@ public class OrganizationFeature extends AbstractEntity implements Serializable 
         super(id);
     }
 
-    public OrganizationFeature(Organization organization, Feature feature) {
+    public OrganizationFeature(Organization organization, Feature feature, Float quantity) {
         this.organization = organization;
         this.feature = feature;
+        this.quantity = quantity;
     }
 
-    public OrganizationFeature(Organization organization, Feature feature, Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
+    public OrganizationFeature(Organization organization, Feature feature, Float quantity, Long id, String name, User creator, Calendar created, User updater, Calendar updated, Calendar deleted) {
         super(id, name, creator, created, updater, updated, deleted);
         this.organization = organization;
         this.feature = feature;
+        this.quantity = quantity;
     }
 
     /*
@@ -62,4 +66,13 @@ public class OrganizationFeature extends AbstractEntity implements Serializable 
     public void setFeature(Feature feature) {
         this.feature = feature;
     }
+
+    public Float getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Float quantity) {
+        this.quantity = quantity;
+    }
+
 }
