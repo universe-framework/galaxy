@@ -91,6 +91,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         return getEntityManager()
                 .createQuery("SELECT o"
                              + " FROM Organization o"
+                             + " JOIN FETCH o.company"
                              + " WHERE o.deleted IS NULL", Organization.class)
                 .getResultList();
     }
