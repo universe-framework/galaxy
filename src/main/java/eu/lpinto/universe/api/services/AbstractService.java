@@ -214,6 +214,8 @@ public abstract class AbstractService {
     }
 
     private Object toType(String value) {
+        value = value.trim();
+
         if ("true".equalsIgnoreCase(value)) {
             return Boolean.TRUE;
 
@@ -322,7 +324,7 @@ public abstract class AbstractService {
 
         Long duration = System.currentTimeMillis() - (Long) options.get("startMillis");
         if (duration > 5000) {
-            for(Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
+            for (Map.Entry<String, String> e : DO_NOT_TIMEOUT.entrySet()) {
                 if (uriInfo.getRequestUri().toString().contains("/" + e.getKey()) && methodName.equals(e.getValue())) {
                     return;
                 }
