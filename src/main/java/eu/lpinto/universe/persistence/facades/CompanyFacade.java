@@ -1,6 +1,7 @@
 package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.persistence.entities.Company;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -24,14 +25,7 @@ public class CompanyFacade extends AbstractFacade<Company> {
 
     @Override
     public List<Company> find(Map<String, Object> options) {
-        if (options.containsValue("god")) {
-            return getEntityManager()
-                    .createQuery("select c"
-                                 + " FROM Company c"
-                                 + " WHERE c.deleted is null", Company.class)
-                    .getResultList();
-
-        } else if (options.containsKey("god")) {
+        if (options.containsKey(UniverseFundamentals.AUTH_GOD)) {
             return findForGOD();
 
         } else {

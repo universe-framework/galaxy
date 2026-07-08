@@ -2,6 +2,7 @@ package eu.lpinto.universe.persistence.facades;
 
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Organization;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -42,12 +43,12 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         } else if (options.containsKey("companyOrgs")) {
             return findByUserAllInCompany((Long) options.get("user"));
 
-        } else if (options.containsKey("god")) {
-            if (options.containsKey("enable") && ((Boolean) options.get("enable"))) {
-                return findAllForGOD();
+        } else if (options.containsKey(UniverseFundamentals.AUTH_GOD)) {
+            if (options.containsKey("deleted") && ((Boolean) options.get("deleted"))) {
+                return findAllDeleted();
 
             } else {
-                return findForGOD();
+                return findAllNotDeleted();
             }
 
         } else if (options.containsKey("remoteAddr")) {
@@ -79,20 +80,21 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         }
     }
 
-    private List<Organization> findForGOD() {
-        return getEntityManager()
-                .createQuery("SELECT o"
-                             + " FROM Organization o"
-                             + " WHERE o.enable = true", Organization.class)
-                .getResultList();
-    }
-
-    private List<Organization> findAllForGOD() {
+    private List<Organization> findAllNotDeleted() {
         return getEntityManager()
                 .createQuery("SELECT o"
                              + " FROM Organization o"
                              + " JOIN FETCH o.company"
                              + " WHERE o.deleted IS NULL", Organization.class)
+                .getResultList();
+    }
+
+    private List<Organization> findAllDeleted() {
+        return getEntityManager()
+                .createQuery("SELECT o"
+                             + " FROM Organization o"
+                             + " JOIN FETCH o.company"
+                             + " WHERE o.deleted IS NOT NULL", Organization.class)
                 .getResultList();
     }
 

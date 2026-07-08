@@ -93,7 +93,13 @@ public class AccessTokenValidation implements ContainerRequestFilter, ContainerR
 
                     } else {
                         requestContext.getHeaders().add(USER_ID, String.valueOf(user.getId()));
-                        requestContext.getHeaders().add(GOD, String.valueOf(user.getGod()));
+
+                        if (user.getGod() != null && user.getGod()) {
+                            requestContext.getHeaders().add(GOD, "true");
+
+                        } else if (requestContext.getHeaders().containsKey(UniverseFundamentals.AUTH_GOD)) {
+                            requestContext.getHeaders().remove(UniverseFundamentals.AUTH_GOD);
+                        }
                     }
                 }
 
