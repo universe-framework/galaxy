@@ -3,15 +3,11 @@ package eu.lpinto.universe.persistence.facades;
 import eu.lpinto.universe.controllers.exceptions.PreConditionException;
 import eu.lpinto.universe.persistence.entities.Email;
 import eu.lpinto.universe.persistence.entities.EmailConfig;
+import eu.lpinto.universe.util.UniverseFundamentals;
 import java.io.IOException;
 import java.util.Properties;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -82,8 +78,14 @@ public class EmailPlugin {
             Message message = new MimeMessage(session);
             message.setFrom(from);
             message.setReplyTo(replyTo);
-            message.setRecipients(Message.RecipientType.TO, email.getRecipients());
             message.setSubject(email.getSubject());
+
+            if (UniverseFundamentals.DEBUG_ADDR == null) {
+                message.setRecipients(Message.RecipientType.TO, email.getRecipients());
+
+            } else {
+                message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{new InternetAddress(UniverseFundamentals.DEBUG_ADDR)});
+            }
 
             // creates message part
             MimeBodyPart messageBodyPart = new MimeBodyPart();
